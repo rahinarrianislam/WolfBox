@@ -1,0 +1,26 @@
+{
+  "student_id": "alex",
+  "name": "Alex Rivera",
+  "course": "CSC 116",
+  "mistake_counts": {
+    "off_by_one": 4,
+    "empty_input": 2
+  },
+  "examples": {
+    "off_by_one": [
+      {
+        "run_id": "r_20261010T143200_a001",
+        "assignment": "hw2",
+        "note": "range(len(xs)+1) indexed past end"
+      }
+    ],
+    "empty_input": [
+      {
+        "run_id": "r_20261015T190300_a005",
+        "assignment": "hw3",
+        "note": "empty string indexed before checking for input"
+      }
+    ]
+  },
+  "updated_at": "2026-10-28T15:25:00Z"
+}

@@ -1,0 +1,26 @@
+{
+  "run_id": "r_20261012T174400_a003",
+  "ts": "2026-10-12T17:44:00Z",
+  "assignment": "hw2",
+  "status": "done",
+  "passed": [
+    "test_empty"
+  ],
+  "failed": [
+    {
+      "test": "test_count",
+      "message": "IndexError: list index out of range; loop reads xs[3] after the last valid index 2."
+    }
+  ],
+  "duration_ms": 54,
+  "tags": [
+    "off_by_one"
+  ],
+  "hint": "Check how many indexes range(len(xs) + 1) produces. Which index is the final valid one?",
+  "hint_status": "ready",
+  "related_past": [],
+  "llm": {
+    "backend": "gemini",
+    "model": "gemma-4-26b-a4b-it"
+  }
+}
