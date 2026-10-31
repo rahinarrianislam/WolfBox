@@ -7,25 +7,41 @@
       "title": "Introduction to Computing - Java (sample)",
       "credits": 3,
       "prereqs": [],
-      "satisfies": ["CSC_CORE"],
+      "satisfies": [
+        "CSC_CORE"
+      ],
       "sections": [
         {
           "id": "CSC116-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "08:30",
-          "end": "09:20"
+          "end": "09:20",
+          "instructor": "Dr. Ada Park"
         },
         {
           "id": "CSC116-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "10:40",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Prof. Silas Vance"
         },
         {
           "id": "CSC116-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "13:30",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Maya Lin"
         }
       ]
     },
@@ -33,26 +49,43 @@
       "code": "CSC 216",
       "title": "Software Development Fundamentals (sample)",
       "credits": 3,
-      "prereqs": ["CSC 116"],
-      "satisfies": ["CSC_CORE"],
+      "prereqs": [
+        "CSC 116"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
       "sections": [
         {
           "id": "CSC216-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "09:35",
-          "end": "10:25"
+          "end": "10:25",
+          "instructor": "Dr. Elena Rostova"
         },
         {
           "id": "CSC216-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "08:30",
-          "end": "09:45"
+          "end": "09:45",
+          "instructor": "Prof. Kenneth Cole"
         },
         {
           "id": "CSC216-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "15:00",
-          "end": "16:15"
+          "end": "16:15",
+          "instructor": "Dr. Victor Stone"
         }
       ]
     },
@@ -60,26 +93,44 @@
       "code": "CSC 226",
       "title": "Discrete Mathematics for Computer Scientists (sample)",
       "credits": 3,
-      "prereqs": ["CSC 116"],
-      "satisfies": ["CSC_CORE"],
+      "prereqs": [
+        "CSC 116"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
       "sections": [
         {
           "id": "CSC226-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "08:30",
-          "end": "09:20"
+          "end": "09:20",
+          "instructor": "Dr. Tariq Mercer"
         },
         {
           "id": "CSC226-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "09:35",
-          "end": "10:25"
+          "end": "10:25",
+          "instructor": "Prof. Nadia Blake"
         },
         {
           "id": "CSC226-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "13:30",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Julian Hayes"
         }
       ]
     },
@@ -87,26 +138,43 @@
       "code": "CSC 230",
       "title": "C and Software Tools (sample)",
       "credits": 3,
-      "prereqs": ["CSC 216"],
-      "satisfies": ["CSC_CORE"],
+      "prereqs": [
+        "CSC 216"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
       "sections": [
         {
           "id": "CSC230-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "10:40",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Dr. Fiona Gallagher"
         },
         {
           "id": "CSC230-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "08:30",
-          "end": "09:45"
+          "end": "09:45",
+          "instructor": "Prof. Arthur Pendelton"
         },
         {
           "id": "CSC230-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "15:00",
-          "end": "16:15"
+          "end": "16:15",
+          "instructor": "Dr. Gavin MacLeod"
         }
       ]
     },
@@ -114,26 +182,43 @@
       "code": "CSC 316",
       "title": "Data Structures and Algorithms (sample)",
       "credits": 3,
-      "prereqs": ["CSC 216"],
-      "satisfies": ["CSC_CORE"],
+      "prereqs": [
+        "CSC 216"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
       "sections": [
         {
           "id": "CSC316-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "11:45",
-          "end": "12:35"
+          "end": "12:35",
+          "instructor": "Dr. Sarah Sterling"
         },
         {
           "id": "CSC316-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "10:15",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Prof. Owen Davenport"
         },
         {
           "id": "CSC316-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "13:30",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Leonard Snart"
         }
       ]
     },
@@ -141,26 +226,44 @@
       "code": "CSC 246",
       "title": "Concepts of Operating Systems (sample)",
       "credits": 3,
-      "prereqs": ["CSC 216"],
-      "satisfies": ["CSC_CORE"],
+      "prereqs": [
+        "CSC 216"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
       "sections": [
         {
           "id": "CSC246-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "12:50",
-          "end": "13:40"
+          "end": "13:40",
+          "instructor": "Dr. Harper Reed"
         },
         {
           "id": "CSC246-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "08:30",
-          "end": "09:20"
+          "end": "09:20",
+          "instructor": "Prof. Benjamin Cruz"
         },
         {
           "id": "CSC246-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "15:00",
-          "end": "16:15"
+          "end": "16:15",
+          "instructor": "Dr. Dennis Nedry"
         }
       ]
     },
@@ -169,25 +272,41 @@
       "title": "Calculus I (sample)",
       "credits": 4,
       "prereqs": [],
-      "satisfies": ["MATH_ELECTIVE"],
+      "satisfies": [
+        "MATH_ELECTIVE"
+      ],
       "sections": [
         {
           "id": "MA141-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "08:30",
-          "end": "09:35"
+          "end": "09:35",
+          "instructor": "Dr. Rachel Green"
         },
         {
           "id": "MA141-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "10:40",
-          "end": "11:45"
+          "end": "11:45",
+          "instructor": "Prof. Ross Geller"
         },
         {
           "id": "MA141-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "13:30",
-          "end": "15:10"
+          "end": "15:10",
+          "instructor": "Dr. Chandler Bing"
         }
       ]
     },
@@ -195,26 +314,43 @@
       "code": "MA 241",
       "title": "Calculus II (sample)",
       "credits": 4,
-      "prereqs": ["MA 141"],
-      "satisfies": ["MATH_ELECTIVE"],
+      "prereqs": [
+        "MA 141"
+      ],
+      "satisfies": [
+        "MATH_ELECTIVE"
+      ],
       "sections": [
         {
           "id": "MA241-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "09:35",
-          "end": "10:40"
+          "end": "10:40",
+          "instructor": "Dr. Monica Geller"
         },
         {
           "id": "MA241-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "08:30",
-          "end": "10:10"
+          "end": "10:10",
+          "instructor": "Prof. Joey Tribbiani"
         },
         {
           "id": "MA241-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "15:00",
-          "end": "16:40"
+          "end": "16:40",
+          "instructor": "Dr. Phoebe Buffay"
         }
       ]
     },
@@ -222,26 +358,43 @@
       "code": "MA 242",
       "title": "Calculus III (sample)",
       "credits": 3,
-      "prereqs": ["MA 241"],
-      "satisfies": ["MATH_ELECTIVE"],
+      "prereqs": [
+        "MA 241"
+      ],
+      "satisfies": [
+        "MATH_ELECTIVE"
+      ],
       "sections": [
         {
           "id": "MA242-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "13:55",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Iris West"
         },
         {
           "id": "MA242-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "10:15",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Prof. Cisco Ramon"
         },
         {
           "id": "MA242-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "13:30",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Harrison Wells"
         }
       ]
     },
@@ -249,26 +402,44 @@
       "code": "ST 370",
       "title": "Probability and Statistics for Engineers (sample)",
       "credits": 3,
-      "prereqs": ["MA 241"],
-      "satisfies": ["STATISTICS"],
+      "prereqs": [
+        "MA 241"
+      ],
+      "satisfies": [
+        "STATISTICS"
+      ],
       "sections": [
         {
           "id": "ST370-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "15:00",
-          "end": "15:50"
+          "end": "15:50",
+          "instructor": "Dr. Caitlin Snow"
         },
         {
           "id": "ST370-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "08:30",
-          "end": "09:45"
+          "end": "09:45",
+          "instructor": "Prof. Barry Allen"
         },
         {
           "id": "ST370-003",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "11:45",
-          "end": "12:35"
+          "end": "12:35",
+          "instructor": "Dr. Ralph Dibny"
         }
       ]
     },
@@ -277,25 +448,41 @@
       "title": "Academic Writing and Research (sample)",
       "credits": 3,
       "prereqs": [],
-      "satisfies": ["HUMANITIES"],
+      "satisfies": [
+        "HUMANITIES"
+      ],
       "sections": [
         {
           "id": "ENG101-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "08:30",
-          "end": "09:20"
+          "end": "09:20",
+          "instructor": "Dr. Chloe Sullivan"
         },
         {
           "id": "ENG101-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "12:50",
-          "end": "13:40"
+          "end": "13:40",
+          "instructor": "Prof. Lois Lane"
         },
         {
           "id": "ENG101-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "10:15",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Dr. Perry White"
         }
       ]
     },
@@ -304,25 +491,41 @@
       "title": "Introduction to Philosophy (sample)",
       "credits": 3,
       "prereqs": [],
-      "satisfies": ["HUMANITIES"],
+      "satisfies": [
+        "HUMANITIES"
+      ],
       "sections": [
         {
           "id": "PHI205-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "12:50",
-          "end": "13:40"
+          "end": "13:40",
+          "instructor": "Dr. Bruce Wayne"
         },
         {
           "id": "PHI205-002",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "10:15",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Prof. Alfred Pennyworth"
         },
         {
           "id": "PHI205-003",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "08:30",
-          "end": "09:20"
+          "end": "09:20",
+          "instructor": "Dr. Lucius Fox"
         }
       ]
     },
@@ -331,25 +534,41 @@
       "title": "Public Speaking (sample)",
       "credits": 3,
       "prereqs": [],
-      "satisfies": ["HUMANITIES"],
+      "satisfies": [
+        "HUMANITIES"
+      ],
       "sections": [
         {
           "id": "COM110-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "13:55",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Diana Prince"
         },
         {
           "id": "COM110-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "09:35",
-          "end": "10:25"
+          "end": "10:25",
+          "instructor": "Prof. Steve Trevor"
         },
         {
           "id": "COM110-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "13:30",
-          "end": "14:45"
+          "end": "14:45",
+          "instructor": "Dr. Etta Candy"
         }
       ]
     },
@@ -358,25 +577,41 @@
       "title": "Introduction to Psychology (sample)",
       "credits": 3,
       "prereqs": [],
-      "satisfies": ["HUMANITIES"],
+      "satisfies": [
+        "HUMANITIES"
+      ],
       "sections": [
         {
           "id": "PSY200-001",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "10:40",
-          "end": "11:30"
+          "end": "11:30",
+          "instructor": "Dr. Harleen Quinzel"
         },
         {
           "id": "PSY200-002",
-          "days": ["Mon", "Wed", "Fri"],
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
           "start": "15:00",
-          "end": "15:50"
+          "end": "15:50",
+          "instructor": "Prof. Pamela Isley"
         },
         {
           "id": "PSY200-003",
-          "days": ["Tue", "Thu"],
+          "days": [
+            "Tue",
+            "Thu"
+          ],
           "start": "15:00",
-          "end": "16:15"
+          "end": "16:15",
+          "instructor": "Dr. Jonathan Crane"
         }
       ]
     }

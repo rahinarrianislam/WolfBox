@@ -1029,18 +1029,63 @@
         const credits = opt.credits || 15;
         const satisfies = (opt.satisfies || []).map(s => `<span class="tag b">${escapeHtml(s)}</span>`).join(' ');
 
+        let avgRatingBadge = '';
+        if (opt.avg_rating !== null && opt.avg_rating !== undefined) {
+          avgRatingBadge = `<span class="tag" style="background:#2e7d32; color:#fff;" title="Average RateMyProfessor score">★ ${Number(opt.avg_rating).toFixed(1)} avg</span>`;
+        }
+
         // Render Week Grid
         const gridHtml = generateWeekGrid(opt.sections || []);
 
+        // Sections breakdown with instructor & rating badge
+        const sectionsHtml = (opt.sections || []).map(s => {
+          const course = escapeHtml(s.course || s.section_id);
+          const secId = escapeHtml(s.section_id || '');
+          const instructor = escapeHtml(s.instructor || 'Staff');
+          const timeStr = `${(s.days || []).join('/')} ${s.start || ''}–${s.end || ''}`;
+
+          let ratingBadge = '';
+          if (s.rating) {
+            const rVal = typeof s.rating === 'object' ? s.rating.rating : s.rating;
+            const rSrc = typeof s.rating === 'object' && (s.rating.source === 'rmp' || s.rating.source === 'cache') ? 'RMP' : 'sample';
+            const rUrl = typeof s.rating === 'object' ? s.rating.url : null;
+            const badgeText = `★ ${Number(rVal).toFixed(1)} (${rSrc})`;
+
+            if (rUrl) {
+              ratingBadge = `<a href="${escapeHtml(rUrl)}" target="_blank" rel="noopener" class="tag" style="background:#1e40af; color:#fff; text-decoration:none; font-size:0.72rem;" title="View RateMyProfessor profile">★ ${Number(rVal).toFixed(1)} (RMP) ↗</a>`;
+            } else {
+              const bg = rSrc === 'RMP' ? '#1e40af' : '#047857';
+              ratingBadge = `<span class="tag" style="background:${bg}; color:#fff; font-size:0.72rem;">★ ${Number(rVal).toFixed(1)} (${rSrc})</span>`;
+            }
+          } else {
+            ratingBadge = `<span class="tag gray" style="font-size:0.72rem;">Unrated</span>`;
+          }
+
+          return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(31,58,51,0.06); gap:0.5rem; font-size:0.8rem;">
+              <div>
+                <strong>${course}</strong> <span class="muted" style="font-size:0.75rem;">(${secId}${timeStr.trim() ? ' · ' + escapeHtml(timeStr) : ''})</span>
+                <div style="color:var(--ink-light); font-size:0.78rem;">${instructor}</div>
+              </div>
+              <div>${ratingBadge}</div>
+            </div>
+          `;
+        }).join('');
+
         card.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem;">
             <h3 style="margin:0;">${title}</h3>
-            <div>
+            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+              ${avgRatingBadge}
               <span class="tag y">${credits} credits</span>
               ${satisfies}
             </div>
           </div>
           ${gridHtml}
+          <div style="background:#fff; border:1px solid var(--card-border); border-radius:4px; padding:0.5rem 0.75rem;">
+            <div style="font-weight:600; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-light); margin-bottom:0.25rem;">Instructors & Ratings</div>
+            ${sectionsHtml}
+          </div>
           <div style="font-size: 0.85rem; line-height: 1.4; color: var(--ink-dark); background: #fff; padding: 0.6rem; border-radius: 4px; border: 1px solid var(--card-border);">
             <strong>Reasoning:</strong> ${escapeHtml(opt.explanation || 'Conflict-free schedule meeting degree requirements.')}
           </div>
@@ -1066,11 +1111,11 @@
       });
 
       // Build grid cells
-      let html = `<div class="week">`;
-      html += `<div></div><div class="h">Mon</div><div class="h">Tue</div><div class="h">Wed</div><div class="h">Thu</div><div class="h">Fri</div>`;
+      let html = `<div class=\"week\">`;
+      html += `<div></div><div class=\"h\">Mon</div><div class=\"h\">Tue</div><div class=\"h\">Wed</div><div class=\"h\">Thu</div><div class=\"h\">Fri</div>`;
 
       timeSlots.forEach((slot, slotIdx) => {
-        html += `<div class="t">${slot}</div>`;
+        html += `<div class=\"t\">${slot}</div>`;
         days.forEach(day => {
           // Find matching section for this day and approximate slot
           const match = sections.find(s => {
@@ -1088,9 +1133,17 @@
           if (match) {
             const courseName = match.course || match.section_id;
             const cClass = colorMap[courseName] || 'a';
-            html += `<div class="c ${cClass}">${escapeHtml(courseName)}</div>`;
+            const inst = match.instructor || '';
+            let rStr = '';
+            if (match.rating) {
+              const rVal = typeof match.rating === 'object' ? match.rating.rating : match.rating;
+              const rSrc = typeof match.rating === 'object' && (match.rating.source === 'rmp' || match.rating.source === 'cache') ? 'RMP' : 'sample';
+              rStr = ` · ★ ${Number(rVal).toFixed(1)} (${rSrc})`;
+            }
+            const tooltip = `${courseName} (${match.section_id || ''})${inst ? ' · ' + inst : ''}${rStr}`;
+            html += `<div class=\"c ${cClass}\" title=\"${escapeHtml(tooltip)}\">${escapeHtml(courseName)}</div>`;
           } else {
-            html += `<div class="c x"></div>`;
+            html += `<div class=\"c x\"></div>`;
           }
         });
       });
