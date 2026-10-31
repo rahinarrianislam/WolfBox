@@ -17,6 +17,7 @@ SITE = Path(__file__).resolve().parents[1] / "course_site"
 @pytest.fixture
 def site(tmp_path):
     shutil.copytree(SITE / "csc116", tmp_path / "csc116")
+    shutil.copyfile(tmp_path / "csc116/course.original.json", tmp_path / "csc116/course.json")
     return tmp_path
 
 
@@ -452,3 +453,11 @@ def test_auth_contract_matches_require_instructor(monkeypatch):
     assert client.get("/api/delegate/tasks").status_code == 403
     assert client.get("/api/delegate/tasks", headers={"Authorization": "Bearer invalid"}).status_code == 403
     assert client.get("/api/delegate/tasks", headers={"Authorization": "Bearer valid-inst"}).status_code == 200
+
+
+def test_task_responses_exclude_resume_credentials(tmp_path):
+    from wolfhub.moodle.agent import MoodleDelegate
+    delegate = MoodleDelegate(site_dir=tmp_path, mode="fake")
+    delegate.tasks["task_private"] = {"task_id": "task_private", "status": "done", "ws_token": "private-token", "created_at": "now"}
+    assert "ws_token" not in delegate.get_task("task_private")
+    assert "ws_token" not in delegate.list_tasks()[0]

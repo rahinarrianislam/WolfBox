@@ -1,4 +1,5 @@
 import shutil
+import pytest
 from pathlib import Path
 
 from wolfbox.store import Store
@@ -11,7 +12,17 @@ from wolfhub.course import publish_item
 SITE = Path(__file__).resolve().parents[2] / "orchestrator" / "course_site" / "csc116"
 
 
-def local_fetch(url, site=SITE):
+@pytest.fixture(autouse=True)
+def isolated_course(tmp_path, monkeypatch):
+    source = SITE
+    target = tmp_path / "fixture-course"
+    shutil.copytree(source, target)
+    shutil.copyfile(target / "course.original.json", target / "course.json")
+    monkeypatch.setitem(globals(), "SITE", target)
+
+
+def local_fetch(url, site=None):
+    site = site or SITE
     path = site / url.split("/course/csc116/", 1)[1]
     return path.read_bytes()
 

@@ -115,7 +115,7 @@ def resume_task(task_id: str, body: ResumeTaskRequest, request: Request):
     delegate = get_delegate(request)
     try:
         task = delegate.resume_task(task_id, body.token)
-        return task
+        return delegate.get_task(task_id)
     except KeyError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     except ValueError as exc:

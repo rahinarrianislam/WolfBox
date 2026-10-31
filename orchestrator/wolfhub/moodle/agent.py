@@ -133,17 +133,17 @@ class MoodleDelegate:
 
         worker = threading.Thread(target=self._run_task, args=(task_id,), daemon=True)
         worker.start()
-        return task
+        return self.get_task(task_id)
 
     def get_task(self, task_id: str) -> Optional[Dict[str, Any]]:
         with self._lock:
             task = self.tasks.get(task_id)
-            return dict(task) if task else None
+            return {k: v for k, v in task.items() if k != "ws_token"} if task else None
 
     def list_tasks(self) -> List[Dict[str, Any]]:
         with self._lock:
             return sorted(
-                [dict(t) for t in self.tasks.values()],
+                [{k: v for k, v in t.items() if k != "ws_token"} for t in self.tasks.values()],
                 key=lambda t: t.get("created_at", ""),
                 reverse=True,
             )
