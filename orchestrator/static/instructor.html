@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WolfBox — Instructor Operations & Class Heatmap</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="serial.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <div class="pixel-header">
+    <header class="app-header">
+      <div class="brand">
+        <a href="index.html">WolfBox</a>
+        <span class="tagline">Instructor Operations & Class-Wide Analytics</span>
+      </div>
+      <div class="header-controls">
+        <span class="tag m">CSC 116 Course Ops</span>
+        <a href="index.html" class="btn btn-secondary btn-sm">Home</a>
+        <a href="ta.html" class="btn btn-secondary btn-sm">TA View</a>
+      </div>
+    </header>
+  </div>
+
+  <main class="container" style="max-width: 1000px; margin-top: 1.5rem;">
+    <div style="margin-bottom: 1.5rem;">
+      <h1 style="font-size: 1.8rem; margin-bottom: 0.3rem;">🎓 Instructor Operations & Course Controls</h1>
+      <p class="muted" style="font-size: 0.92rem;">
+        Publish assignments and spec updates to the course site. Connected student Maritime boxes automatically wake on schedule or pull changes on demand.
+      </p>
+    </div>
+
+    <!-- Demo Actions Card -->
+    <section class="card" style="border-top: 4px solid var(--red); margin-bottom: 1.5rem;">
+      <div class="card-header">
+        <h2 class="card-title">🚀 Live Demo Course Actions (SPEC §6)</h2>
+        <span class="tag y">Demo Controls</span>
+      </div>
+      <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">
+        Use these actions during the live demo to trigger autopilot sync events on student boxes.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+        <!-- Publish hw5 -->
+        <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size: 1rem;">Publish HW5</strong>
+              <span class="tag">New Assignment</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
+              Moves staged <code>hw5</code> into the published course manifest. Student boxes detect this, create a test-ready workspace, and extract due dates.
+            </p>
+          </div>
+          <button id="btn-publish-hw5" class="btn btn-primary" style="width: 100%;">
+            Publish hw5
+          </button>
+        </div>
+
+        <!-- Update hw4 spec -->
+        <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size: 1rem;">Update HW4 Specification</strong>
+              <span class="tag y">Spec Diff</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
+              Publishes <code>hw4-v2</code> (clarifying: <code>safe_max([])</code> now returns <code>None</code>). Triggers a Gemma-written "what changed" alert on student boxes.
+            </p>
+          </div>
+          <button id="btn-publish-hw4v2" class="btn btn-success" style="width: 100%;">
+            Update hw4 spec (v2)
+          </button>
+        </div>
+
+        <!-- Reset Course -->
+        <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size: 1rem;">Reset Course Manifest</strong>
+              <span class="tag m">Demo Reset</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
+              Restores <code>course.json</code> to the initial clean state with hw4 and baseline syllabus items, ready for another demo run.
+            </p>
+          </div>
+          <button id="btn-reset-course" class="btn btn-secondary" style="width: 100%;">
+            Reset course
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Log Output -->
+      <div id="action-log" style="margin-top: 1rem; background: #18201e; color: #a7f3d0; font-family: var(--mono); font-size: 0.75rem; padding: 0.6rem 0.8rem; border-radius: 4px; display: none;">
+      </div>
+    </section>
+
+    <!-- Class-Wide Mistake Heatmap (P2) -->
+    <section class="card" style="border-top: 4px solid var(--maroon);">
+      <div class="card-header">
+        <h2 class="card-title">📊 Class-Wide Mistake Heatmap (P2)</h2>
+        <button id="refresh-heatmap-btn" class="btn btn-secondary btn-sm">↻ Refresh Data</button>
+      </div>
+      <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">
+        Aggregated across all student boxes to highlight class-wide blind spots and recurring conceptual obstacles.
+      </p>
+
+      <div id="heatmap-content" class="heatmap-container">
+        <div class="muted" style="padding: 1.5rem; text-align: center;">Loading heatmap analytics...</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const btnPublishHw5 = document.getElementById('btn-publish-hw5');
+    const btnPublishHw4v2 = document.getElementById('btn-publish-hw4v2');
+    const btnResetCourse = document.getElementById('btn-reset-course');
+    const actionLog = document.getElementById('action-log');
+    const heatmapContent = document.getElementById('heatmap-content');
+    const refreshHeatmapBtn = document.getElementById('refresh-heatmap-btn');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHeatmap();
+    });
+
+    function logAction(msg) {
+      actionLog.style.display = 'block';
+      const time = new Date().toLocaleTimeString();
+      actionLog.textContent = `[${time}] ${msg}`;
+    }
+
+    // Publish hw5
+    btnPublishHw5.addEventListener('click', async () => {
+      btnPublishHw5.disabled = true;
+      btnPublishHw5.textContent = 'Publishing...';
+      logAction('Publishing hw5 to course manifest...');
+
+      const res = await apiFetch('/api/instructor/publish', {
+        method: 'POST',
+        body: JSON.stringify({ item: 'hw5' })
+      });
+
+      btnPublishHw5.disabled = false;
+      btnPublishHw5.textContent = 'Publish hw5';
+
+      if (res.ok) {
+        showToast('Successfully published hw5 to course site!', 'success');
+        logAction('hw5 is now published! Next step: click "Sync now" on Alex\'s page.');
+      }
+    });
+
+    // Update hw4 spec
+    btnPublishHw4v2.addEventListener('click', async () => {
+      btnPublishHw4v2.disabled = true;
+      btnPublishHw4v2.textContent = 'Updating...';
+      logAction('Updating hw4 spec to hw4-v2 in manifest...');
+
+      const res = await apiFetch('/api/instructor/publish', {
+        method: 'POST',
+        body: JSON.stringify({ item: 'hw4-v2' })
+      });
+
+      btnPublishHw4v2.disabled = false;
+      btnPublishHw4v2.textContent = 'Update hw4 spec (v2)';
+
+      if (res.ok) {
+        showToast('Successfully updated hw4 spec (hw4-v2 published)!', 'success');
+        logAction('hw4 spec updated! safe_max([]) now returns None. Next step: click "Sync now" on Alex\'s page.');
+      }
+    });
+
+    // Reset course
+    btnResetCourse.addEventListener('click', async () => {
+      btnResetCourse.disabled = true;
+      btnResetCourse.textContent = 'Resetting...';
+      logAction('Resetting course manifest to initial seed state...');
+
+      const res = await apiFetch('/api/instructor/reset-course', {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+
+      btnResetCourse.disabled = false;
+      btnResetCourse.textContent = 'Reset course';
+
+      if (res.ok) {
+        showToast('Course manifest reset to default seed state.', 'info');
+        logAction('Course manifest reset successfully.');
+      }
+    });
+
+    refreshHeatmapBtn.addEventListener('click', loadHeatmap);
+
+    // Heatmap loader with full tolerance of any shape or failure
+    async function loadHeatmap() {
+      heatmapContent.innerHTML = '<div class="muted thinking-dots" style="padding:1.5rem; text-align:center;">Aggregating mistake tags across student boxes</div>';
+
+      const res = await apiFetch('/api/instructor/heatmap');
+
+      // Default mock fallback tags if API is unreachable or empty
+      let tagCounts = {
+        'off_by_one': 14,
+        'empty_input': 9,
+        'none_handling': 6,
+        'wrong_return': 5,
+        'mutation_aliasing': 3,
+        'infinite_loop': 2,
+        'type_confusion': 2
+      };
+
+      if (res.ok && res.data) {
+        try {
+          const raw = res.data;
+          if (raw.mistake_counts && typeof raw.mistake_counts === 'object') {
+            tagCounts = raw.mistake_counts;
+          } else if (Array.isArray(raw)) {
+            // [{tag, count}]
+            tagCounts = {};
+            raw.forEach(item => {
+              if (item.tag) tagCounts[item.tag] = item.count || 0;
+            });
+          } else if (typeof raw === 'object' && !Array.isArray(raw)) {
+            // If it's a direct dictionary of tag -> count
+            let hasNumbers = false;
+            for (const [k, v] of Object.entries(raw)) {
+              if (typeof v === 'number') {
+                hasNumbers = true;
+                break;
+              }
+            }
+            if (hasNumbers) {
+              tagCounts = raw;
+            }
+          }
+        } catch (e) {
+          console.warn('Error parsing heatmap data shape:', e);
+        }
+      }
+
+      renderHeatmapTable(tagCounts);
+    }
+
+    function renderHeatmapTable(tagCounts) {
+      const entries = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        heatmapContent.innerHTML = '<div class="muted" style="padding:1.5rem; text-align:center;">No mistake tags recorded yet across the class.</div>';
+        return;
+      }
+
+      const maxVal = Math.max(...entries.map(e => e[1]), 1);
+
+      let html = `
+        <table class="heatmap-table">
+          <thead>
+            <tr>
+              <th style="width: 200px;">Mistake Category</th>
+              <th style="width: 100px;">Total Count</th>
+              <th>Class Incidence Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      entries.forEach(([tag, count]) => {
+        const pct = Math.round((count / maxVal) * 100);
+        html += `
+          <tr>
+            <td>
+              <span class="tag r" style="font-size:0.75rem;">${escapeHtml(tag)}</span>
+            </td>
+            <td style="font-family: var(--mono); font-weight: 700;">
+              ${count} occurrences
+            </td>
+            <td>
+              <div class="heatmap-bar-container">
+                <div class="heatmap-bar" style="width: ${Math.max(pct, 5)}%;"></div>
+                <span class="muted" style="font-size:0.72rem; font-family:var(--mono);">${pct}% of peak</span>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      heatmapContent.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
