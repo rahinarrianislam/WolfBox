@@ -97,7 +97,7 @@ def test_profile_keeps_five_examples_and_filters_tags(tutor, store, monkeypatch)
         tutor.on_run_complete(store, failure(f"r{i}"))
     profile = store.load_profile()
     assert profile["mistake_counts"] == {"off_by_one": 7}
-    assert len(profile["examples"]["off_by_one"]) == 5
+    assert [e["run_id"] for e in profile["examples"]["off_by_one"]] == ["r6"]  # one per assignment
     assert store.get_run("r6")["tags"] == ["off_by_one"]
 
 

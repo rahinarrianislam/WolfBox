@@ -97,6 +97,10 @@ def on_run_complete(store, run) -> None:
         run["tags"] = tags
         profile = store.load_profile()
         history = copy.deepcopy(profile)
+        # Cite past assignments first: "this looks like your hw2 bug" is the product.
+        for tag, items in list(history.get("examples", {}).items()):
+            other = [e for e in items if e.get("assignment") != assignment]
+            history["examples"][tag] = other or items
         examples = profile.setdefault("examples", {})
         counts = profile.setdefault("mistake_counts", {})
         # Match old history before the current run becomes one of the examples.
@@ -113,14 +117,14 @@ def on_run_complete(store, run) -> None:
             and example["run_id"] != run["run_id"]
         ]
         note = "; ".join(
-            f"{failure.get('test', 'test')}: {failure.get('message', '')}"
-            for failure in run["failed"]
-        )[:300]
+            f"{failure.get('test', 'test')} failed" for failure in run["failed"]
+        )[:200]
         for tag in tags:
             counts[tag] = counts.get(tag, 0) + 1
+            # One example per assignment, so retries don't evict older assignments.
+            kept = [e for e in examples.get(tag, []) if e.get("assignment") != assignment]
             examples[tag] = (
-                examples.get(tag, [])
-                + [{"run_id": run["run_id"], "assignment": assignment, "note": note}]
+                kept + [{"run_id": run["run_id"], "assignment": assignment, "note": note}]
             )[-5:]
         store.save_profile(profile)
         run["hint"], run["llm"] = _call(
