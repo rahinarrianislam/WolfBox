@@ -5,10 +5,23 @@ import WolfBoxCore
 private final class OfflineProtocol: URLProtocol, @unchecked Sendable {
     static var status = 0
     static var count = 0
+    static var handler: ((URLRequest) throws -> (Int, Data))?
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
     override func startLoading() {
         Self.count += 1
+        if let handler = Self.handler {
+            do {
+                let (status, data) = try handler(request)
+                let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil, headerFields: ["Content-Type": "application/json"])!
+                client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                client?.urlProtocol(self, didLoad: data)
+                client?.urlProtocolDidFinishLoading(self)
+            } catch {
+                client?.urlProtocol(self, didFailWithError: error)
+            }
+            return
+        }
         if Self.status == 401 {
             let response = HTTPURLResponse(url: request.url!, statusCode: 401, httpVersion: nil, headerFields: nil)!
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
@@ -25,7 +38,7 @@ private final class OfflineProtocol: URLProtocol, @unchecked Sendable {
         config.protocolClasses = [OfflineProtocol.self]
         model.urlSession = URLSession(configuration: config)
         model.serverURL = "http://wolfbox-unit-tests.invalid"
-        OfflineProtocol.count = 0; OfflineProtocol.status = 0
+        OfflineProtocol.count = 0; OfflineProtocol.status = 0; OfflineProtocol.handler = nil
         return model
     }
     func testOfflineFailurePreservesDraftAndSession() async {
@@ -70,5 +83,27 @@ private final class OfflineProtocol: URLProtocol, @unchecked Sendable {
         XCTAssertEqual(model.canvasAssignment, "hw5")
         XCTAssertFalse(model.canvasAuthorized)
         XCTAssertEqual(OfflineProtocol.count, 0)
+    }
+    func testMaritimeKeyCheckPromptsWhenMissingAndUploadsKey() async {
+        let model = model()
+        model.fixtures = false
+        OfflineProtocol.handler = { request in
+            if request.url?.path == "/api/config" && request.httpMethod == "GET" {
+                return (200, Data(#"{"backend":"maritime","has_maritime_key":false}"#.utf8))
+            } else if request.url?.path == "/api/config/maritime-key" && request.httpMethod == "POST" {
+                return (200, Data(#"{"backend":"maritime","has_maritime_key":true,"maritime_key_preview":"mrt_...9999"}"#.utf8))
+            }
+            throw URLError(.badURL)
+        }
+
+        await model.checkMaritimeConfig()
+        XCTAssertFalse(model.hasMaritimeKey)
+        XCTAssertTrue(model.showMaritimePrompt)
+
+        await model.saveMaritimeKey("mrt_test_token_9999")
+        XCTAssertTrue(model.hasMaritimeKey)
+        XCTAssertFalse(model.showMaritimePrompt)
+        XCTAssertEqual(model.maritimeKeyPreview, "mrt_...9999")
+        XCTAssertNotNil(model.notice)
     }
 }

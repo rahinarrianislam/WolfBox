@@ -11,11 +11,12 @@ WolfBox is a hackathon prototype for a persistent coding tutor and course compan
 ## Architecture
 
 ```text
-Browser (student / TA / instructor pages)
+macOS SwiftUI Client (apple/build/WolfBox.app)  [Authoritative Client]
+   │ (Note: the static browser UI at orchestrator/static/ is deprecated)
    │ REST (JSON)
    ▼
 Orchestrator (FastAPI, laptop; stateless except student-to-box registry)
-   │ BoxClient: local process or Maritime agent
+   │ BoxClient: Maritime agent (default) or local process
    ▼
 WolfBox (FastAPI, one persistent box per student)
    ├─ Router → envelope handlers
@@ -29,7 +30,20 @@ WolfBox (FastAPI, one persistent box per student)
         └─ Ollama / Gemma 4 (local or offline)
 ```
 
-Student state stays in the box. The orchestrator routes requests and stores the student-to-box mapping. In offline mode, the orchestrator and boxes run locally and each box reaches Gemma 4 through Ollama.
+Student state stays in the box. The orchestrator routes requests and stores the student-to-box mapping. Maritime is the default box backend for cloud agent boxes.
+
+## Native macOS SwiftUI Client
+
+WolfBox is a native macOS application built with SwiftUI and AppKit. Build and launch:
+
+```sh
+apple/scripts/build-app.sh
+open apple/build/WolfBox.app
+```
+
+On launch, the app connects to the orchestrator at `http://127.0.0.1:8000`. If unconfigured, it prompts for your `MARITIME_API_KEY` and automatically uploads it to the backend environment, persisting it for all future runs.
+
+*(Note: The static web UI in `orchestrator/static/` is deprecated).*
 
 ## Quick start
 
@@ -37,7 +51,7 @@ Install Python 3.12 dependencies:
 
 ```sh
 uv venv -p 3.12 .venv
-uv pip install -p .venv -r box/requirements.txt -r orchestrator/requirements.txt
+uv pip install -p .venv -r box/requirements.txt -r orchestrator/requirements.txt maritime
 ```
 
 Start the local demo stack with the deterministic fake Gemma backend:
@@ -52,7 +66,7 @@ In another terminal, reset both boxes, restore the sample course, seed Alex, and
 .venv/bin/python scripts/demo_reset.py
 ```
 
-Open <http://127.0.0.1:8000>. The script is safe to run again between demos. `scripts/dev.sh` stops its child processes when you press Ctrl-C.
+Launch the native SwiftUI app: `open apple/build/WolfBox.app`. The script is safe to run again between demos. `scripts/dev.sh` stops its child processes when you press Ctrl-C.
 
 Seed a single student's current box with `python scripts/seed.py alex`; add `--backend local` or `--backend maritime` to select a backend explicitly. Seed and reset envelopes require `ALLOW_SEED=1` on each box. The local dev script sets this for its demo boxes.
 

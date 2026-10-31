@@ -63,4 +63,22 @@ final class APITests: XCTestCase {
         XCTAssertFalse(task.isTerminal)
         XCTAssertEqual(task.result?.description, "count: 3.0")
     }
+    func testFetchConfigAndUploadMaritimeKey() async throws {
+        StubProtocol.handler = { request in
+            if request.url?.path == "/api/config" && request.httpMethod == "GET" {
+                return (200, Data(#"{"backend":"maritime","has_maritime_key":false}"#.utf8))
+            } else if request.url?.path == "/api/config/maritime-key" && request.httpMethod == "POST" {
+                return (200, Data(#"{"ok":true,"backend":"maritime","has_maritime_key":true,"maritime_key_preview":"mrt_...1234"}"#.utf8))
+            }
+            throw URLError(.badURL)
+        }
+        let config = try await api.fetchConfig()
+        XCTAssertEqual(config.backend, "maritime")
+        XCTAssertEqual(config.has_maritime_key, false)
+
+        let upload = try await api.uploadMaritimeKey("mrt_secret_token_1234")
+        XCTAssertEqual(upload.backend, "maritime")
+        XCTAssertEqual(upload.has_maritime_key, true)
+        XCTAssertEqual(upload.maritime_key_preview, "mrt_...1234")
+    }
 }

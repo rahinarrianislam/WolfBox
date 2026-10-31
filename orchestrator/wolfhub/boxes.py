@@ -64,23 +64,27 @@ class LocalBoxClient:
 
 
 class MaritimeBoxClient:
-    def __init__(self):
+    def __init__(self, api_key: str | None = None):
         self._client = None
+        self._api_key = api_key
 
     @property
     def client(self):
         if self._client is None:
+            api_key = self._api_key or os.getenv("MARITIME_API_KEY")
+            if not api_key:
+                raise BoxUnavailable("MARITIME_API_KEY is not set. Please provide a Maritime API key to connect to cloud agent boxes.")
             from maritime import Maritime
 
-            self._client = Maritime(timeout=30.0, max_retries=0)
+            self._client = Maritime(api_key=api_key, timeout=30.0, max_retries=0)
         return self._client
 
     def ensure(self, student_id: str, name: str) -> str:
-        # needs WS0 verification: custom-image provisioning via the Python SDK.
+        # custom-image provisioning via the Python SDK.
         agent = self.client.agents.provision(
             external_id=f"wolfbox-{student_id}",
             name=f"wolfbox-{student_id}",
-            template=os.getenv("MARITIME_TEMPLATE", "custom"),
+            template=os.getenv("MARITIME_TEMPLATE", "openclaw"),
         )
         box_id = agent["id"]
         values = {
@@ -91,7 +95,6 @@ class MaritimeBoxClient:
         }
         for key, value in values.items():
             if value:
-                # needs WS0 verification: set_env/reload_env support for custom agents.
                 self.client.agents.set_env(box_id, key, value, secret=key == "GEMINI_API_KEY")
         self.client.agents.reload_env(box_id)
         return box_id
@@ -112,7 +115,7 @@ class MaritimeBoxClient:
 
 
 def get_client() -> BoxClient:
-    backend = os.getenv("BOX_BACKEND", "local").lower()
+    backend = os.getenv("BOX_BACKEND", "maritime").lower()
     if backend == "local":
         return LocalBoxClient()
     if backend == "maritime":

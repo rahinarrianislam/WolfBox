@@ -51,7 +51,7 @@ def _box_for(student: str, backend: str):
 
 
 def push_student(student: str, backend: str | None = None) -> int:
-    backend = backend or os.environ.get("BOX_BACKEND", "local").lower()
+    backend = backend or os.environ.get("BOX_BACKEND", "maritime").lower()
     if backend not in {"local", "maritime"}:
         raise ValueError(f"Unsupported backend: {backend}")
     os.environ["BOX_BACKEND"] = backend

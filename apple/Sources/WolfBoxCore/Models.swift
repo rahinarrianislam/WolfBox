@@ -104,6 +104,16 @@ public struct JobResponse: Codable, Sendable { public var run_id: String?; publi
 public struct RunResponse: Codable, Sendable { public var run: Run? }
 public struct SyncResponse: Codable, Sendable { public var job: SyncJob? }
 public struct EmptyResponse: Codable, Sendable {}
+public struct ConfigResponse: Codable, Sendable {
+    public var backend: String?
+    public var has_maritime_key: Bool?
+    public var maritime_key_preview: String?
+    public init(backend: String? = nil, has_maritime_key: Bool? = nil, maritime_key_preview: String? = nil) {
+        self.backend = backend
+        self.has_maritime_key = has_maritime_key
+        self.maritime_key_preview = maritime_key_preview
+    }
+}
 
 /// JSON values retain evolving delegation step/result payloads without assuming one provider's format.
 public enum JSONValue: Codable, Sendable, CustomStringConvertible {

@@ -44,7 +44,7 @@ start_box() {
 start_box alex 8101
 start_box sam 8102
 LOCAL_BOXES="alex=http://127.0.0.1:8101,sam=http://127.0.0.1:8102" \
-BOX_BACKEND=local "$PYTHON" -m uvicorn wolfhub.main:app --app-dir orchestrator --host 127.0.0.1 --port 8000 &
+BOX_BACKEND="${BOX_BACKEND:-maritime}" "$PYTHON" -m uvicorn wolfhub.main:app --app-dir orchestrator --host 127.0.0.1 --port 8000 &
 children+=("$!")
 
 wait_for_health() {

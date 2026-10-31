@@ -13,7 +13,11 @@ struct RootView: View {
         .tint(.wolfGreen)
         .frame(minWidth: 1080, minHeight: 740)
         .sheet(isPresented: $settings) { ServerSettings(model: model) }
-        .task { await model.restoreSession() }
+        .sheet(isPresented: $model.showMaritimePrompt) { MaritimeKeySheet(model: model) }
+        .task {
+            await model.restoreSession()
+            await model.checkMaritimeConfig()
+        }
     }
     var workspace: some View {
         NavigationSplitView {
@@ -69,7 +73,24 @@ struct RootView: View {
                         .disabled(!model.busy.isEmpty || model.fixtures).help("Refresh this view")
                 }
                 ToolbarItem(placement: .automatic) {
+                    if !model.fixtures {
+                        Button {
+                            model.showMaritimePrompt = true
+                        } label: {
+                            HStack(spacing: 5) {
+                                Image(systemName: model.hasMaritimeKey ? "cloud.fill" : "cloud")
+                                Text(model.hasMaritimeKey ? "Maritime · Connected" : "Maritime · Key Needed")
+                            }
+                            .font(.caption)
+                            .foregroundStyle(model.hasMaritimeKey ? Color.wolfGreen : Color.wolfRed)
+                        }
+                        .buttonStyle(.plain)
+                        .help("Configure Maritime Cloud Agent Key")
+                    }
+                }
+                ToolbarItem(placement: .automatic) {
                     Menu {
+                        Button("Maritime API Key…") { model.showMaritimePrompt = true }
                         Button("Server settings…") { settings = true }
                         if model.fixtures {
                             Divider()
@@ -146,7 +167,16 @@ struct AuthView: View {
                     Task { await model.authenticate(email: email, password: password, name: name, role: role, signup: signup); password = "" }
                 }.buttonStyle(.borderedProminent).controlSize(.large).keyboardShortcut(.defaultAction)
                     .disabled(model.busy.contains("auth") || email.trimmingCharacters(in: .whitespaces).isEmpty || password.isEmpty || (signup && name.trimmingCharacters(in: .whitespaces).isEmpty))
-                HStack { Text(model.serverURL).font(.caption).foregroundStyle(.secondary); Button("Change…") { settings = true }.buttonStyle(.link) }
+                HStack {
+                    Text(model.serverURL).font(.caption).foregroundStyle(.secondary)
+                    Button("Change…") { settings = true }.buttonStyle(.link)
+                    Spacer()
+                    Button(model.hasMaritimeKey ? "Maritime · Connected" : "Maritime Key…") {
+                        model.showMaritimePrompt = true
+                    }
+                    .buttonStyle(.link)
+                    .font(.caption)
+                }
                 Spacer().frame(height: 5)
                 Button("Explore a sample workspace") { model.fixtures = true; model.error = nil; model.loadFixtures() }.buttonStyle(.link).font(.callout)
             }.padding(52).frame(maxWidth: .infinity).disabled(model.busy.contains("auth"))
@@ -156,3 +186,78 @@ struct AuthView: View {
         VStack(alignment: .leading, spacing: 6) { Text(title).font(.callout.weight(.medium)); content().accessibilityLabel(title) }
     }
 }
+
+struct MaritimeKeySheet: View {
+    @Bindable var model: AppModel
+    @State private var key = ""
+    @State private var saving = false
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Maritime Cloud Boxes").font(.title2.weight(.bold))
+                    Text("WolfBox defaults to Maritime cloud agent boxes for persistent student workspaces. Provide your Maritime API key to auto-upload it to the environment (WS0 replacement).")
+                        .foregroundStyle(.secondary)
+                        .font(.callout)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 12)
+                Image(systemName: "shippingbox.and.arrow.backward.fill")
+                    .font(.system(size: 32))
+                    .foregroundStyle(Color.wolfGreen)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("API Key").font(.callout.weight(.medium))
+                SecureField("Enter Maritime API Key (e.g. mrt_...)", text: $key)
+                    .textFieldStyle(.roundedBorder)
+                    .controlSize(.large)
+                if let preview = model.maritimeKeyPreview {
+                    Text("Current active key: \(preview)").font(.caption).foregroundStyle(.secondary)
+                } else if model.hasMaritimeKey {
+                    Text("Current key: Active in environment").font(.caption).foregroundStyle(Color.wolfGreen)
+                } else {
+                    Text("No Maritime key set. Cloud boxes will be unavailable until a key is uploaded.").font(.caption).foregroundStyle(Color.wolfRed)
+                }
+            }
+
+            if let error = model.error {
+                Text(error).font(.callout).foregroundStyle(Color.wolfRed)
+            }
+
+            HStack {
+                Button("Continue without Key") {
+                    model.showMaritimePrompt = false
+                    dismiss()
+                }
+                .buttonStyle(.link)
+
+                Spacer()
+
+                Button("Dismiss") {
+                    model.showMaritimePrompt = false
+                    dismiss()
+                }
+
+                Button(saving ? "Uploading…" : "Save & Upload") {
+                    saving = true
+                    Task {
+                        await model.saveMaritimeKey(key)
+                        saving = false
+                        if model.error == nil {
+                            dismiss()
+                        }
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
+                .disabled(saving || key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+        .padding(24)
+        .frame(width: 480)
+    }
+}
+
