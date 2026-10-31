@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WolfBox: project proposal</title>
+<style>
+  :root {
+    --paper: #e4e4dc;
+    --ink: #1f3a33;
+    --green: #3d5a52;
+    --red: #d93a2b;
+    --yellow: #f6b92b;
+    --blue: #8db3e2;
+    --pink: #ee8079;
+    --maroon: #6b1a15;
+    --card-bg: #f4f4ee;
+    --mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--sans); color: var(--ink); }
+
+  .deck { display: flex; flex-direction: column; gap: 16px; }
+  .slide {
+    container-type: inline-size;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--paper);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 5.5cqw 6cqw 4cqw;
+    display: flex;
+    flex-direction: column;
+  }
+  /* pixel corner, echoing the Hacktoberfest deck */
+  .slide::before {
+    content: "";
+    position: absolute; top: 0; left: 0;
+    width: 9cqw; height: 4.2cqw;
+    background:
+      linear-gradient(var(--green), var(--green)) 0 0 / 7cqw 2.4cqw no-repeat,
+      linear-gradient(var(--yellow), var(--yellow)) 7cqw 0 / 1.2cqw 1.2cqw no-repeat,
+      linear-gradient(var(--pink), var(--pink)) 0 2.4cqw / 2.4cqw 0.9cqw no-repeat,
+      linear-gradient(var(--blue), var(--blue)) 5.8cqw 2.4cqw / 1.2cqw 0.9cqw no-repeat,
+      linear-gradient(var(--maroon), var(--maroon)) 0 3.3cqw / 0.8cqw 0.9cqw no-repeat;
+  }
+  .slide .num {
+    position: absolute; right: 2.5cqw; bottom: 2cqw;
+    font: 1.2cqw var(--mono); opacity: .55;
+  }
+
+  h1, h2, h3, p, ul, ol { margin: 0; }
+  .kicker { font: 600 1.35cqw var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--red); margin-bottom: 1cqw; }
+  h2 { font: 700 3.6cqw/1.12 var(--sans); letter-spacing: -.01em; margin-bottom: 2.4cqw; }
+  h2 mark, h1 mark { background: var(--yellow); color: inherit; padding: 0 .3cqw; }
+  p, li { font-size: 1.75cqw; line-height: 1.45; }
+  ul { padding-left: 2.2cqw; }
+  li + li { margin-top: .7cqw; }
+  .mono { font-family: var(--mono); }
+  .muted { opacity: .72; }
+  b { font-weight: 700; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4cqw; flex: 1; min-height: 0; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8cqw; }
+  .card { background: var(--card-bg); border-radius: 1.2cqw; padding: 1.8cqw 2cqw; }
+  .card h3 { font: 700 1.9cqw var(--sans); margin-bottom: .9cqw; }
+  .card p, .card li { font-size: 1.55cqw; }
+  .tag { display: inline-block; font: 600 1.15cqw var(--mono); padding: .25cqw .8cqw; border-radius: .5cqw; background: var(--green); color: #fff; margin: 0 .4cqw .4cqw 0; }
+  .tag.y { background: var(--yellow); color: var(--ink); }
+  .tag.r { background: var(--red); }
+  .tag.b { background: var(--blue); color: var(--ink); }
+
+  /* title slide */
+  .title { justify-content: center; padding-left: 8cqw; }
+  .title h1 { font: 800 8cqw/1 var(--sans); color: var(--red); letter-spacing: -.02em; }
+  .title .tagline { font: 500 2.6cqw/1.3 var(--mono); margin-top: 2.2cqw; max-width: 60cqw; }
+  .title .meta { font: 1.5cqw var(--mono); margin-top: 3.5cqw; opacity: .75; }
+
+  /* problem table */
+  table { border-collapse: collapse; width: 100%; font-size: 1.55cqw; }
+  td { padding: .75cqw 1cqw; border-bottom: .12cqw solid rgba(31,58,51,.15); vertical-align: top; }
+  td:first-child { width: 58%; }
+  td:last-child { font-family: var(--mono); color: var(--red); }
+
+  /* loop */
+  .loop { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1cqw; margin-top: .5cqw; }
+  .step { background: var(--card-bg); border-radius: 1cqw; padding: 1.4cqw 1.2cqw; border-top: .5cqw solid var(--green); }
+  .step:nth-child(2) { border-color: var(--blue); }
+  .step:nth-child(3) { border-color: var(--yellow); }
+  .step:nth-child(4) { border-color: var(--pink); }
+  .step:nth-child(5) { border-color: var(--red); }
+  .step:nth-child(6) { border-color: var(--maroon); }
+  .step b { display: block; font: 700 1.75cqw var(--sans); margin-bottom: .6cqw; }
+  .step p { font-size: 1.3cqw; line-height: 1.4; }
+  .step .fix { font: 1.1cqw var(--mono); opacity: .6; margin-top: .8cqw; }
+
+  /* architecture */
+  .arch { display: flex; align-items: stretch; gap: 1.2cqw; flex: 1; min-height: 0; }
+  .node { background: var(--card-bg); border-radius: 1.2cqw; padding: 1.6cqw; flex: 1; display: flex; flex-direction: column; }
+  .node h3 { font: 700 1.8cqw var(--sans); margin-bottom: .8cqw; }
+  .node p, .node li { font-size: 1.4cqw; }
+  .node.box { background: var(--green); color: #fff; flex: 1.5; }
+  .node.box code { background: rgba(255,255,255,.14); }
+  .arrow { align-self: center; font: 700 2.6cqw var(--mono); color: var(--red); }
+  code { font: .92em var(--mono); background: rgba(31,58,51,.08); padding: .05em .3em; border-radius: .3em; }
+  .note { margin-top: 1.8cqw; font-size: 1.45cqw; }
+
+  /* schedule mock */
+  .week { display: grid; grid-template-columns: 3.2cqw repeat(5, 1fr); gap: .35cqw; font: 1.05cqw var(--mono); }
+  .week .h { text-align: center; opacity: .6; }
+  .week .t { opacity: .5; }
+  .week .c { border-radius: .4cqw; padding: .3cqw .4cqw; color: #fff; }
+  .c.a { background: var(--green); } .c.b2 { background: var(--red); } .c.c3 { background: var(--blue); color: var(--ink); }
+  .c.d { background: var(--maroon); } .c.e { background: var(--yellow); color: var(--ink); }
+  .c.x { background: transparent; }
+
+  /* timeline */
+  .tl { display: grid; grid-template-columns: 9cqw 1fr; row-gap: .9cqw; column-gap: 1.5cqw; font-size: 1.5cqw; }
+  .tl .when { font: 600 1.4cqw var(--mono); color: var(--red); }
+
+  ol.demo { padding-left: 2.6cqw; }
+  ol.demo li { font-size: 1.7cqw; }
+  .quote { margin-top: 1.6cqw; background: var(--card-bg); border-left: .6cqw solid var(--yellow); padding: 1.3cqw 1.8cqw; font: 1.5cqw/1.45 var(--mono); border-radius: 0 1cqw 1cqw 0; }
+
+  /* presentation mode */
+  body.present { background: #11201c; margin: 0; overflow: hidden; }
+  body.present .deck { display: block; }
+  body.present .slide { display: none; position: absolute; border-radius: 0; }
+  body.present .slide.on { display: flex; }
+  .hint { display: none; }
+  body.present .hint { display: block; position: fixed; left: 12px; bottom: 10px; font: 12px var(--mono); color: #9fb3ac; opacity: .6; }
+  @media print {
+    body.present { background: none; overflow: visible; }
+    body.present .slide { display: flex !important; position: relative !important; width: 100% !important; left: 0 !important; top: 0 !important; break-after: page; border-radius: 0; }
+    .hint { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1 -->
+  <section class="slide title">
+    <h1>WolfBox</h1>
+    <p class="tagline">AI tutors forget you.<br><mark style="background:var(--yellow);padding:0 .4cqw">WolfBox remembers</mark>, and so does your TA.</p>
+    <p class="meta">Project proposal · Hacktoberfest Hack Day Raleigh · Oct 31, 2026</p>
+    <span class="num">1</span>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="kicker">The problem</div>
+    <h2>Every student starts from <mark>zero</mark>, every time.</h2>
+    <table>
+      <tr><td>"Works on my laptop, fails the autograder." Day 1 setup hell.</td><td>forgets your environment</td></tr>
+      <tr><td>Making the same off-by-one bug on every assignment</td><td>forgets your mistakes</td></tr>
+      <tr><td>ChatGPT doesn't know your code, attempts, or course rules</td><td>forgets your context</td></tr>
+      <tr><td>Office hours: first 10 minutes spent explaining what you tried</td><td>forgets your story</td></tr>
+      <tr><td>Stuck for 2 days but never asks for help</td><td>forgets how long you've struggled</td></tr>
+      <tr><td>Registration: 40 sections, time conflicts, surprise prereqs</td><td>forgets your degree progress</td></tr>
+    </table>
+    <span class="num">2</span>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="kicker">The idea</div>
+    <h2>One persistent box per student,<br>for the <mark>whole degree</mark>.</h2>
+    <div class="grid3">
+      <div class="card">
+        <span class="tag">LEARN</span>
+        <h3>Coding tutor</h3>
+        <p>Runs your code in an environment that matches the autograder. Gives hints, not answers, based on your history.</p>
+      </div>
+      <div class="card">
+        <span class="tag r">HELP</span>
+        <h3>TA handoff</h3>
+        <p>Notices when you've been stuck too long. Hands your TA a one-page summary of what you've tried.</p>
+      </div>
+      <div class="card">
+        <span class="tag y">PLAN</span>
+        <h3>Registration planner</h3>
+        <p>Knows your transcript and preferences. Builds conflict-free schedules and tracks remaining requirements.</p>
+      </div>
+    </div>
+    <p class="note muted">It sleeps when you're away, wakes in ~1 second, and keeps everything in <code>/data</code>.</p>
+    <span class="num">3</span>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="kicker">Learn + Help: the core loop</div>
+    <h2>Work → Run → Hint → Nudge → Hand off</h2>
+    <div class="loop">
+      <div class="step"><b>Work</b><p>Code in a box set up to match the autograder, from any laptop.</p><div class="fix">setup hell</div></div>
+      <div class="step"><b>Run</b><p>Every test run is logged to <code>/data</code>: code snapshot, errors, time.</p><div class="fix">lost work</div></div>
+      <div class="step"><b>Hint</b><p>Gemma 4 gives Socratic hints using your code and past mistakes.</p><div class="fix">repeat mistakes</div></div>
+      <div class="step"><b>Nudge</b><p>5 failed runs on one test? Suggests office hours and drafts what to say.</p><div class="fix">silent strugglers</div></div>
+      <div class="step"><b>Hand off</b><p>TA opens a one-page summary: tried, stuck on, patterns.</p><div class="fix">OH context</div></div>
+      <div class="step"><b>Combine</b><p>Instructor sees an anonymized heatmap of where the class is stuck.</p><div class="fix">blind spots</div></div>
+    </div>
+    <div class="quote">"Tests 3 and 4 fail. This looks like the loop-bound issue from hw2. What does your loop do on the last index?"</div>
+    <span class="num">4</span>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="kicker">Plan: registration &amp; schedules</div>
+    <h2>Registration without the <mark>spreadsheet</mark>.</h2>
+    <div class="grid2">
+      <div>
+        <ul>
+          <li><b>Remembers you:</b> transcript, completed requirements, preferences like "no 8 AMs" or "I work Tue/Thu afternoons", max credits.</li>
+          <li><b>Generates 3 schedule options</b> with no conflicts, ranked by your preferences, and explains the trade-offs.</li>
+          <li><b>Checks prereqs</b> and shows what's left for your degree. The 4-year plan updates each semester.</li>
+          <li><b>Section full?</b> Suggests the next-best swap that keeps the rest of your week intact.</li>
+          <li><b>Reminds you</b> before your enrollment window opens.</li>
+        </ul>
+        <p class="note muted">A real solver builds the schedules. Gemma 4 reads your preferences in plain English and explains the options, so it can't invent sections.</p>
+      </div>
+      <div class="card">
+        <h3>Option A <span class="tag y">no 8 AMs</span><span class="tag b">Tue/Thu PM free</span></h3>
+        <div class="week">
+          <div></div><div class="h">Mon</div><div class="h">Tue</div><div class="h">Wed</div><div class="h">Thu</div><div class="h">Fri</div>
+          <div class="t">9:30</div><div class="c a">CSC 316</div><div class="c d">MA 305</div><div class="c a">CSC 316</div><div class="c d">MA 305</div><div class="c a">CSC 316</div>
+          <div class="t">11:45</div><div class="c b2">CSC 226</div><div class="c x"></div><div class="c b2">CSC 226</div><div class="c x"></div><div class="c x"></div>
+          <div class="t">1:30</div><div class="c c3">ST 370</div><div class="c x"></div><div class="c c3">ST 370</div><div class="c x"></div><div class="c e">CSC 236 lab</div>
+          <div class="t">3:00</div><div class="c x"></div><div class="c x"></div><div class="c x"></div><div class="c x"></div><div class="c x"></div>
+        </div>
+        <p style="margin-top:1.2cqw;font-size:1.35cqw">15 credits · 4 requirements satisfied · <b>Tue/Thu afternoons free</b></p>
+        <p class="muted" style="font-size:1.15cqw;margin-top:.6cqw">Mock-up with sample courses; we'd seed a sample catalog for the demo.</p>
+      </div>
+    </div>
+    <span class="num">5</span>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="kicker">Why this wins</div>
+    <h2>One project, <mark>three tracks</mark>.</h2>
+    <div class="grid3">
+      <div class="card">
+        <span class="tag">MARITIME</span>
+        <h3>Persistence is the product</h3>
+        <ul>
+          <li>Agent box per student, kept in <code>/data</code></li>
+          <li>Runs student code isolated from other students</li>
+          <li>Sleeps when idle, wakes in ~1s</li>
+          <li>Each box costs ~$1/month, so it scales</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag b">GEMMA 4</span>
+        <h3>The brain</h3>
+        <ul>
+          <li>Hints that use your history</li>
+          <li>TA summaries</li>
+          <li>Plain-English schedule preferences</li>
+          <li>Through the Gemini API</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag y">OPEN-SOURCE AI</span>
+        <h3>Open weights</h3>
+        <ul>
+          <li>Gemma 4 counts as open-weight</li>
+          <li>We open-source the repo</li>
+          <li>Schools could self-host the whole thing</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note"><b>Judging fit:</b> clear impact (every judge was a student) · creative (memory is the twist) · realistic (~$1/student/month) · easy to demo.</p>
+    <span class="num">6</span>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="kicker">Architecture</div>
+    <h2>Small and boring on purpose.</h2>
+    <div class="arch">
+      <div class="node">
+        <h3>Web app</h3>
+        <ul>
+          <li>Student view: code, hints, schedule</li>
+          <li>TA view: handoff summary</li>
+          <li>Instructor heatmap (stretch)</li>
+        </ul>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node">
+        <h3>Orchestrator</h3>
+        <ul>
+          <li>Maps student → box</li>
+          <li>Creates boxes from a template through the Maritime API</li>
+          <li>Routes requests to the right box</li>
+        </ul>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node box">
+        <h3>WolfBox (one per student)</h3>
+        <p><code>GET /health</code> · <code>POST /chat</code></p>
+        <p style="margin-top:.8cqw"><code>/data/repo/</code> course code<br>
+        <code>/data/runs.jsonl</code> test history<br>
+        <code>/data/profile.json</code> mistake patterns<br>
+        <code>/data/plan.json</code> transcript + prefs</p>
+        <p style="margin-top:.8cqw">Test runner · schedule solver · Gemma 4</p>
+      </div>
+    </div>
+    <p class="note muted">Gotcha: <code>/chat</code> must answer in under 30s, so start test runs in the background and poll for results.</p>
+    <span class="num">7</span>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="kicker">The demo (~3 minutes)</div>
+    <h2>Show the <mark>memory</mark>, not the chat.</h2>
+    <ol class="demo">
+      <li>Meet <b>Alex</b>, a student whose box is pre-seeded with "3 weeks" of history. Box is asleep; ask a question; it wakes in ~1s.</li>
+      <li>Alex submits buggy hw4. WolfBox links the bug to the hw2 mistake.</li>
+      <li><b>Side by side:</b> a fresh student asks the same question and gets a generic hint. That's why persistence matters.</li>
+      <li>Alex hits the stuck threshold and gets a nudge. Click through to the <b>TA summary</b>.</li>
+      <li>Switch to <b>Plan</b>: "no 8 AMs, I work Tue/Thu", which returns 3 schedules and what's left for the degree.</li>
+    </ol>
+    <span class="num">8</span>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="kicker">Build plan · 10:30 → 2:45</div>
+    <h2>Scope and who does what.</h2>
+    <div class="grid2">
+      <div class="tl">
+        <div class="when">10:30</div><div>Maritime signup + test box. Gemma key. Repo skeleton.</div>
+        <div class="when">11:00</div><div>Box template: <code>/health</code>, <code>/chat</code>, test runner, <code>/data</code> logging</div>
+        <div class="when">11:45</div><div>Lunch, then hint prompts using history, and the solver</div>
+        <div class="when">1:00</div><div>Web UI, TA summary, nudge rule</div>
+        <div class="when">1:45</div><div><b>Feature freeze.</b> Seed Alex's history, rehearse the demo</div>
+        <div class="when">2:30</div><div>Submit on MLH. Buffer.</div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1.4cqw">
+          <h3>Must have</h3>
+          <p>Box per student · run tests · log to <code>/data</code> · hints that use history</p>
+          <h3 style="margin-top:1cqw">Should have</h3>
+          <p>TA summary · stuck nudge · schedule options from seeded catalog</p>
+          <h3 style="margin-top:1cqw">Stretch</h3>
+          <p>Plain-English rollback · instructor heatmap · enrollment reminders</p>
+        </div>
+        <p style="font-size:1.4cqw"><span class="tag">A</span>Box + Maritime <span class="tag r">B</span>Orchestrator + UI <span class="tag b">C</span>Gemma prompts + memory <span class="tag y">D</span>Planner + demo/pitch</p>
+        <p class="muted" style="font-size:1.25cqw;margin-top:.5cqw">3 people? Merge C+D. 2 people? Cut Plan to the mock-up.</p>
+      </div>
+    </div>
+    <span class="num">9</span>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="kicker">Decide before we code</div>
+    <h2>Open questions.</h2>
+    <div class="grid2">
+      <ul>
+        <li><b>Stack:</b> Python (FastAPI) or TypeScript for the box and orchestrator? Maritime has SDKs for both.</li>
+        <li><b>Course:</b> which assignment do we fake? A tiny Python/Java homework with ~5 unit tests.</li>
+        <li><b>Plan scope:</b> live solver, or demo only? It depends on team size.</li>
+        <li><b>Billing:</b> who signs up for Maritime? It needs a card; promo code <code>HACKNCSTATE</code>.</li>
+      </ul>
+      <div class="card">
+        <h3>Out of scope today</h3>
+        <ul>
+          <li>Real MyPack / Moodle / autograder integration</li>
+          <li>Auth and real student data. Seeded fake students only.</li>
+          <li>Group project boxes, exam prep</li>
+        </ul>
+        <p class="note muted">These go on the "future work" slide, which also covers the scalability score.</p>
+      </div>
+    </div>
+    <span class="num">10</span>
+  </section>
+
+</div>
+<div class="hint">← → to navigate · S to toggle all slides · P to print</div>
+
+<script>
+  (function () {
+    var body = document.body;
+    if (body.classList.contains('stack-only')) return;
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+    function fit() {
+      if (!body.classList.contains('present')) return;
+      var w = Math.min(innerWidth, innerHeight * 16 / 9);
+      slides.forEach(function (s, k) {
+        s.classList.toggle('on', k === i);
+        s.style.width = w + 'px';
+        s.style.left = (innerWidth - w) / 2 + 'px';
+        s.style.top = (innerHeight - w * 9 / 16) / 2 + 'px';
+      });
+      history.replaceState(null, '', '#' + (i + 1));
+    }
+    function toggle() {
+      body.classList.toggle('present');
+      if (!body.classList.contains('present')) slides.forEach(function (s) { s.removeAttribute('style'); });
+      fit();
+    }
+    body.classList.add('present');
+    fit();
+    addEventListener('resize', fit);
+    addEventListener('keydown', function (e) {
+      if (e.key === 's' || e.key === 'S') return toggle();
+      if (e.key === 'p' || e.key === 'P') return print();
+      if (!body.classList.contains('present')) return;
+      if (['ArrowRight', 'PageDown', ' '].indexOf(e.key) > -1) i = Math.min(slides.length - 1, i + 1);
+      else if (['ArrowLeft', 'PageUp'].indexOf(e.key) > -1) i = Math.max(0, i - 1);
+      else if (e.key === 'Home') i = 0;
+      else if (e.key === 'End') i = slides.length - 1;
+      else return;
+      e.preventDefault();
+      fit();
+    });
+    addEventListener('click', function (e) {
+      if (!body.classList.contains('present')) return;
+      i = e.clientX > innerWidth / 2 ? Math.min(slides.length - 1, i + 1) : Math.max(0, i - 1);
+      fit();
+    });
+  })();
+</script>
+</body>
+</html>
