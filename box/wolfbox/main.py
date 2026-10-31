@@ -50,7 +50,12 @@ def create_app():
     @app.get("/schedules")
     def schedules():
         return [
-            {"id": "sync", "cron": "*/15 * * * *", "prompt": '{"v":1,"type":"sync"}'}
+            {"id": "sync", "cron": "*/15 * * * *", "prompt": '{"v":1,"type":"sync"}'},
+            {
+                "id": "catalog",
+                "cron": "0 */6 * * *",
+                "prompt": '{"v":1,"type":"plan_refresh"}',
+            },
         ]
 
     return app

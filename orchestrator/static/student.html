@@ -222,7 +222,7 @@
 
     <!-- TAB 3: DEGREE PLANNER -->
     <div id="tab-plan" class="tab-content">
-      <div class="sample-banner">
+      <div id="plan-source-label" class="sample-banner">
         ⚠️ SAMPLE DATA: Course catalog & degree requirements are simulated for the NC State hackathon demo.
       </div>
 
@@ -970,6 +970,7 @@
         planPrefsInput.value = planData.prefs_text;
       }
 
+      renderPlanSource(res.data.catalog);
       renderPlanOptions(options);
       renderPlanRemaining(remaining);
     }
@@ -1007,10 +1008,24 @@
 
       if (res.ok && res.data) {
         const options = res.data.options || [];
+        renderPlanSource(res.data.catalog);
         renderPlanOptions(options);
         showToast(`Generated ${options.length} conflict-free schedules!`, 'success');
       }
     });
+
+    function renderPlanSource(catalog) {
+      const label = document.getElementById('plan-source-label');
+      if (catalog && catalog.sample === false) {
+        const term = String(catalog.term || '');
+        const season = {'1': 'Spring', '6': 'Summer I', '7': 'Summer II', '8': 'Fall'}[term[3]];
+        const semester = season && /^2\d{3}$/.test(term) ? `${season} ${2000 + Number(term.slice(1, 3))}` : `Term ${term}`;
+        const updated = catalog.fetched_at ? new Date(catalog.fetched_at).toLocaleString() : 'unknown';
+        label.textContent = `Live NC State class schedule · ${semester} · updated ${updated}. Degree requirements and transcript are sample data.`;
+      } else {
+        label.textContent = '⚠️ SAMPLE DATA: Course catalog & degree requirements are simulated for the NC State hackathon demo.';
+      }
+    }
 
     function renderPlanOptions(options) {
       planOptionsContainer.innerHTML = '';
@@ -1047,6 +1062,7 @@
           const secId = escapeHtml(s.section_id || '');
           const instructor = escapeHtml(s.instructor || 'Staff');
           const timeStr = `${(s.days || []).join('/')} ${s.start || ''}–${s.end || ''}`;
+          const seats = s.seats ? `<span class="tag gray">${escapeHtml(String(s.seats.open))}/${escapeHtml(String(s.seats.capacity))} open</span>` : '';
 
           let ratingBadge = '';
           if (s.rating) {
@@ -1071,7 +1087,7 @@
                 <strong>${course}</strong> <span class="muted" style="font-size:0.75rem;">(${secId}${timeStr.trim() ? ' · ' + escapeHtml(timeStr) : ''})</span>
                 <div style="color:var(--ink-light); font-size:0.78rem;">${instructor}</div>
               </div>
-              <div>${ratingBadge}</div>
+              <div>${seats} ${ratingBadge}</div>
             </div>
           `;
         }).join('');
