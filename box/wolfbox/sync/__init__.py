@@ -1,0 +1,1 @@
+"""Course synchronization for WolfBox."""

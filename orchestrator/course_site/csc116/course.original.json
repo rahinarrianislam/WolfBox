@@ -1,0 +1,131 @@
+{
+  "course": "csc116",
+  "title": "CSC 116 (sample)",
+  "sample": true,
+  "items": [
+    {
+      "id": "syllabus",
+      "type": "doc",
+      "title": "CSC 116 (sample) Syllabus",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "syllabus.md",
+          "url": "/course/csc116/published/syllabus.md"
+        }
+      ]
+    },
+    {
+      "id": "lecture-05",
+      "type": "doc",
+      "title": "Lecture 05: Functions (sample)",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "lecture-05.pdf",
+          "url": "/course/csc116/published/lecture-05.pdf"
+        }
+      ]
+    },
+    {
+      "id": "lecture-06",
+      "type": "doc",
+      "title": "Lecture 06: Strings (sample)",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "lecture-06.md",
+          "url": "/course/csc116/published/lecture-06.md"
+        }
+      ]
+    },
+    {
+      "id": "hw2",
+      "type": "assignment",
+      "title": "HW2: loops",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "hw2/README.md",
+          "url": "/course/csc116/published/hw2/README.md"
+        },
+        {
+          "path": "hw2/hw2.py",
+          "url": "/course/csc116/published/hw2/hw2.py",
+          "role": "starter"
+        },
+        {
+          "path": "hw2/test_hw2.py",
+          "url": "/course/csc116/published/hw2/test_hw2.py",
+          "role": "tests"
+        }
+      ],
+      "due": "2026-11-03T23:59:00-05:00"
+    },
+    {
+      "id": "hw3",
+      "type": "assignment",
+      "title": "HW3: strings",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "hw3/README.md",
+          "url": "/course/csc116/published/hw3/README.md"
+        },
+        {
+          "path": "hw3/hw3.py",
+          "url": "/course/csc116/published/hw3/hw3.py",
+          "role": "starter"
+        },
+        {
+          "path": "hw3/test_hw3.py",
+          "url": "/course/csc116/published/hw3/test_hw3.py",
+          "role": "tests"
+        }
+      ],
+      "due": "2026-11-06T23:59:00-05:00"
+    },
+    {
+      "id": "hw4",
+      "type": "assignment",
+      "title": "HW4: list utilities",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "hw4/README.md",
+          "url": "/course/csc116/published/hw4/README.md"
+        },
+        {
+          "path": "hw4/hw4.py",
+          "url": "/course/csc116/published/hw4/hw4.py",
+          "role": "starter"
+        },
+        {
+          "path": "hw4/test_hw4.py",
+          "url": "/course/csc116/published/hw4/test_hw4.py",
+          "role": "tests"
+        }
+      ],
+      "due": "2026-11-09T23:59:00-05:00"
+    },
+    {
+      "id": "announce-01",
+      "type": "announcement",
+      "title": "Announcement 01 (sample)",
+      "version": 1,
+      "published_at": "2026-10-31T10:00:00-04:00",
+      "files": [
+        {
+          "path": "announce-01.md",
+          "url": "/course/csc116/published/announce-01.md"
+        }
+      ]
+    }
+  ]
+}
