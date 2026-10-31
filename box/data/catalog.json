@@ -1,0 +1,384 @@
+{
+  "sample": true,
+  "disclaimer": "This is synthetic sample data for the WolfBox hackathon project. Not official NC State course catalog data.",
+  "courses": [
+    {
+      "code": "CSC 116",
+      "title": "Introduction to Computing - Java (sample)",
+      "credits": 3,
+      "prereqs": [],
+      "satisfies": ["CSC_CORE"],
+      "sections": [
+        {
+          "id": "CSC116-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "08:30",
+          "end": "09:20"
+        },
+        {
+          "id": "CSC116-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "10:40",
+          "end": "11:30"
+        },
+        {
+          "id": "CSC116-003",
+          "days": ["Tue", "Thu"],
+          "start": "13:30",
+          "end": "14:45"
+        }
+      ]
+    },
+    {
+      "code": "CSC 216",
+      "title": "Software Development Fundamentals (sample)",
+      "credits": 3,
+      "prereqs": ["CSC 116"],
+      "satisfies": ["CSC_CORE"],
+      "sections": [
+        {
+          "id": "CSC216-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "09:35",
+          "end": "10:25"
+        },
+        {
+          "id": "CSC216-002",
+          "days": ["Tue", "Thu"],
+          "start": "08:30",
+          "end": "09:45"
+        },
+        {
+          "id": "CSC216-003",
+          "days": ["Tue", "Thu"],
+          "start": "15:00",
+          "end": "16:15"
+        }
+      ]
+    },
+    {
+      "code": "CSC 226",
+      "title": "Discrete Mathematics for Computer Scientists (sample)",
+      "credits": 3,
+      "prereqs": ["CSC 116"],
+      "satisfies": ["CSC_CORE"],
+      "sections": [
+        {
+          "id": "CSC226-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "08:30",
+          "end": "09:20"
+        },
+        {
+          "id": "CSC226-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "09:35",
+          "end": "10:25"
+        },
+        {
+          "id": "CSC226-003",
+          "days": ["Tue", "Thu"],
+          "start": "13:30",
+          "end": "14:45"
+        }
+      ]
+    },
+    {
+      "code": "CSC 230",
+      "title": "C and Software Tools (sample)",
+      "credits": 3,
+      "prereqs": ["CSC 216"],
+      "satisfies": ["CSC_CORE"],
+      "sections": [
+        {
+          "id": "CSC230-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "10:40",
+          "end": "11:30"
+        },
+        {
+          "id": "CSC230-002",
+          "days": ["Tue", "Thu"],
+          "start": "08:30",
+          "end": "09:45"
+        },
+        {
+          "id": "CSC230-003",
+          "days": ["Tue", "Thu"],
+          "start": "15:00",
+          "end": "16:15"
+        }
+      ]
+    },
+    {
+      "code": "CSC 316",
+      "title": "Data Structures and Algorithms (sample)",
+      "credits": 3,
+      "prereqs": ["CSC 216"],
+      "satisfies": ["CSC_CORE"],
+      "sections": [
+        {
+          "id": "CSC316-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "11:45",
+          "end": "12:35"
+        },
+        {
+          "id": "CSC316-002",
+          "days": ["Tue", "Thu"],
+          "start": "10:15",
+          "end": "11:30"
+        },
+        {
+          "id": "CSC316-003",
+          "days": ["Tue", "Thu"],
+          "start": "13:30",
+          "end": "14:45"
+        }
+      ]
+    },
+    {
+      "code": "CSC 246",
+      "title": "Concepts of Operating Systems (sample)",
+      "credits": 3,
+      "prereqs": ["CSC 216"],
+      "satisfies": ["CSC_CORE"],
+      "sections": [
+        {
+          "id": "CSC246-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "12:50",
+          "end": "13:40"
+        },
+        {
+          "id": "CSC246-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "08:30",
+          "end": "09:20"
+        },
+        {
+          "id": "CSC246-003",
+          "days": ["Tue", "Thu"],
+          "start": "15:00",
+          "end": "16:15"
+        }
+      ]
+    },
+    {
+      "code": "MA 141",
+      "title": "Calculus I (sample)",
+      "credits": 4,
+      "prereqs": [],
+      "satisfies": ["MATH_ELECTIVE"],
+      "sections": [
+        {
+          "id": "MA141-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "08:30",
+          "end": "09:35"
+        },
+        {
+          "id": "MA141-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "10:40",
+          "end": "11:45"
+        },
+        {
+          "id": "MA141-003",
+          "days": ["Tue", "Thu"],
+          "start": "13:30",
+          "end": "15:10"
+        }
+      ]
+    },
+    {
+      "code": "MA 241",
+      "title": "Calculus II (sample)",
+      "credits": 4,
+      "prereqs": ["MA 141"],
+      "satisfies": ["MATH_ELECTIVE"],
+      "sections": [
+        {
+          "id": "MA241-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "09:35",
+          "end": "10:40"
+        },
+        {
+          "id": "MA241-002",
+          "days": ["Tue", "Thu"],
+          "start": "08:30",
+          "end": "10:10"
+        },
+        {
+          "id": "MA241-003",
+          "days": ["Tue", "Thu"],
+          "start": "15:00",
+          "end": "16:40"
+        }
+      ]
+    },
+    {
+      "code": "MA 242",
+      "title": "Calculus III (sample)",
+      "credits": 3,
+      "prereqs": ["MA 241"],
+      "satisfies": ["MATH_ELECTIVE"],
+      "sections": [
+        {
+          "id": "MA242-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "13:55",
+          "end": "14:45"
+        },
+        {
+          "id": "MA242-002",
+          "days": ["Tue", "Thu"],
+          "start": "10:15",
+          "end": "11:30"
+        },
+        {
+          "id": "MA242-003",
+          "days": ["Tue", "Thu"],
+          "start": "13:30",
+          "end": "14:45"
+        }
+      ]
+    },
+    {
+      "code": "ST 370",
+      "title": "Probability and Statistics for Engineers (sample)",
+      "credits": 3,
+      "prereqs": ["MA 241"],
+      "satisfies": ["STATISTICS"],
+      "sections": [
+        {
+          "id": "ST370-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "15:00",
+          "end": "15:50"
+        },
+        {
+          "id": "ST370-002",
+          "days": ["Tue", "Thu"],
+          "start": "08:30",
+          "end": "09:45"
+        },
+        {
+          "id": "ST370-003",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "11:45",
+          "end": "12:35"
+        }
+      ]
+    },
+    {
+      "code": "ENG 101",
+      "title": "Academic Writing and Research (sample)",
+      "credits": 3,
+      "prereqs": [],
+      "satisfies": ["HUMANITIES"],
+      "sections": [
+        {
+          "id": "ENG101-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "08:30",
+          "end": "09:20"
+        },
+        {
+          "id": "ENG101-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "12:50",
+          "end": "13:40"
+        },
+        {
+          "id": "ENG101-003",
+          "days": ["Tue", "Thu"],
+          "start": "10:15",
+          "end": "11:30"
+        }
+      ]
+    },
+    {
+      "code": "PHI 205",
+      "title": "Introduction to Philosophy (sample)",
+      "credits": 3,
+      "prereqs": [],
+      "satisfies": ["HUMANITIES"],
+      "sections": [
+        {
+          "id": "PHI205-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "12:50",
+          "end": "13:40"
+        },
+        {
+          "id": "PHI205-002",
+          "days": ["Tue", "Thu"],
+          "start": "10:15",
+          "end": "11:30"
+        },
+        {
+          "id": "PHI205-003",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "08:30",
+          "end": "09:20"
+        }
+      ]
+    },
+    {
+      "code": "COM 110",
+      "title": "Public Speaking (sample)",
+      "credits": 3,
+      "prereqs": [],
+      "satisfies": ["HUMANITIES"],
+      "sections": [
+        {
+          "id": "COM110-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "13:55",
+          "end": "14:45"
+        },
+        {
+          "id": "COM110-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "09:35",
+          "end": "10:25"
+        },
+        {
+          "id": "COM110-003",
+          "days": ["Tue", "Thu"],
+          "start": "13:30",
+          "end": "14:45"
+        }
+      ]
+    },
+    {
+      "code": "PSY 200",
+      "title": "Introduction to Psychology (sample)",
+      "credits": 3,
+      "prereqs": [],
+      "satisfies": ["HUMANITIES"],
+      "sections": [
+        {
+          "id": "PSY200-001",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "10:40",
+          "end": "11:30"
+        },
+        {
+          "id": "PSY200-002",
+          "days": ["Mon", "Wed", "Fri"],
+          "start": "15:00",
+          "end": "15:50"
+        },
+        {
+          "id": "PSY200-003",
+          "days": ["Tue", "Thu"],
+          "start": "15:00",
+          "end": "16:15"
+        }
+      ]
+    }
+  ]
+}

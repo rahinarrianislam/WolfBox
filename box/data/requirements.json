@@ -1,0 +1,27 @@
+{
+  "sample": true,
+  "disclaimer": "This is synthetic sample data for the WolfBox hackathon project. Not official NC State degree requirements.",
+  "program": "Computer Science BS (sample)",
+  "requirements": [
+    {
+      "id": "CSC_CORE",
+      "name": "Computer Science Core",
+      "courses_needed": 4
+    },
+    {
+      "id": "MATH_ELECTIVE",
+      "name": "Mathematics Elective",
+      "courses_needed": 2
+    },
+    {
+      "id": "STATISTICS",
+      "name": "Statistics Requirement",
+      "courses_needed": 1
+    },
+    {
+      "id": "HUMANITIES",
+      "name": "Humanities & Social Sciences",
+      "courses_needed": 2
+    }
+  ]
+}

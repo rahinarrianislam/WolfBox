@@ -1,0 +1,13 @@
+{
+  "sample": true,
+  "disclaimer": "This is synthetic sample data for the WolfBox hackathon project. Not official NC State student records.",
+  "student_id": "alex",
+  "program": "Computer Science BS (sample)",
+  "completed": [
+    "CSC 116",
+    "CSC 216",
+    "MA 141",
+    "MA 241",
+    "ENG 101"
+  ]
+}
