@@ -525,9 +525,10 @@ def change_note(title, old_text, new_text):
             {"title": title, "diff": diff},
         )
     )
-    if len(re.split(r"(?<=[.!?])\s+", text)) > 2:
-        raise ValueError("Change note exceeds 2 sentences")
-    return text
+    sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+    if not sentences or not sentences[0]:
+        raise ValueError("Empty change note")
+    return " ".join(sentences[:2])
 
 
 class FakeGemma:

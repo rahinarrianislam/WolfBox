@@ -315,7 +315,7 @@ def test_gemini_sdk_thinking_retry_and_transport_timeouts(monkeypatch):
         ("summarize_doc", "one\ntwo\nthree\nfour"),
         ("ta_summary", "No required sections"),
         ("nudge_draft", ""),
-        ("change_note", "One. Two. Three."),
+        ("change_note", ""),
     ],
 )
 def test_tasks_reject_malformed_outputs(monkeypatch, task, reply):
