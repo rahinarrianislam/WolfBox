@@ -1,0 +1,33 @@
+Another instance of SwiftPM (PID: 63298) is already running using '/Users/chanatun/.t3/worktrees/hacktoberfesthack/t3-4af5fdce/apple/.build', waiting until that process has finished execution...Building for debugging...
+[Computing dependencies]
+[2 / 26]
+[3 / 27] WolfBoxCore
+[5 / 28] WolfBoxCore
+[9 / 20] WolfBox
+[15 / 26] WolfBox-product
+[19 / 28] WolfBox-product
+[19 / 31] WolfBox-product
+[19 / 31] WolfBox
+[21 / 31] WolfBox
+[23 / 33] WolfBox-product
+[26 / 27] WolfBoxAppTests-product
+Build complete! (6.19 sec)
+Test Suite 'Selected tests' started at 2026-10-31 13:08:01.139.
+Test Suite 'WolfBoxCoreTests.xctest' started at 2026-10-31 13:08:01.142.
+Test Suite 'LiveTests' started at 2026-10-31 13:08:01.142.
+Test Case '-[WolfBoxCoreTests.LiveTests testLocalDemoContracts]' started.
+Test Case '-[WolfBoxCoreTests.LiveTests testLocalDemoContracts]' passed (2.496 seconds).
+Test Suite 'LiveTests' passed at 2026-10-31 13:08:03.638.
+	 Executed 1 test, with 0 failures (0 unexpected) in 2.496 (2.496) seconds
+Test Suite 'WolfBoxCoreTests.xctest' passed at 2026-10-31 13:08:03.638.
+	 Executed 1 test, with 0 failures (0 unexpected) in 2.496 (2.496) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 13:08:03.638.
+	 Executed 1 test, with 0 failures (0 unexpected) in 2.496 (2.499) seconds
+LIVE: auth/me unavailable (404); auth UI remains fixture/transport-tested only.
+LIVE PASS: state, assignments, submit/poll, tutor, TA summary/history, publish/update, sync/poll, encoded document reader, deadlines, planner prefs/solve, heatmap, reset. GEMMA_BACKEND=fake.
+Test Suite 'Selected tests' started at 2026-10-31 13:08:03.764.
+Test Suite 'WolfBoxAppTests.xctest' started at 2026-10-31 13:08:03.766.
+Test Suite 'WolfBoxAppTests.xctest' passed at 2026-10-31 13:08:03.766.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 13:08:03.766.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
