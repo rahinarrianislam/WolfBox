@@ -298,7 +298,7 @@ def test_gemini_sdk_thinking_retry_and_transport_timeouts(monkeypatch):
     first = json.loads(requests[0].content)
     second = json.loads(requests[1].content)
     thinking = first["generationConfig"]["thinkingConfig"]
-    assert thinking.get("thinkingBudget", thinking.get("thinking_budget")) == 0
+    assert str(thinking.get("thinkingLevel", thinking.get("thinking_level"))).upper().endswith("MINIMAL")
     assert "thinkingConfig" not in second["generationConfig"]
 
 

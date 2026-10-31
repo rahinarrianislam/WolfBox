@@ -36,6 +36,7 @@ TAGS = [
 _circuit_until = 0.0
 _state_lock = threading.Lock()
 _last = ContextVar("wolfbox_last_llm", default=None)
+_last_used = {"backend": None, "at": 0.0}  # process-wide, for the UI badge
 _deadline = ContextVar("wolfbox_llm_deadline", default=None)
 
 
@@ -58,15 +59,23 @@ def _model(backend):
     return "fake"
 
 
+def _route(selected) -> str:
+    if selected != "auto":
+        return selected
+    return (
+        "ollama"
+        if time.monotonic() < _circuit_until or not os.environ.get("GEMINI_API_KEY")
+        else "gemini"
+    )
+
+
 def status() -> dict:
     selected = mode()
-    backend = selected
+    backend = _route(selected)
     if selected == "auto":
-        backend = (
-            "ollama"
-            if time.monotonic() < _circuit_until or not os.environ.get("GEMINI_API_KEY")
-            else "gemini"
-        )
+        # Prefer what actually answered recently over the routing prediction.
+        if _last_used["backend"] and time.monotonic() - _last_used["at"] < 300:
+            backend = _last_used["backend"]
     return {
         "mode": selected,
         "active_backend": backend,
@@ -88,6 +97,7 @@ def _reset_state():
     with _state_lock:
         _circuit_until = 0.0
     _last.set(None)
+    _last_used.update(backend=None, at=0.0)
     _deadline.set(None)
 
 
@@ -167,8 +177,8 @@ def _gemini(system, user, json_mode, timeout):
     config = {"system_instruction": system, "temperature": 0, "max_output_tokens": 1024}
     if json_mode:
         config["response_mime_type"] = "application/json"
-    # needs WS0 verification: Gemma model support for thinking_budget=0.
-    config["thinking_config"] = types.ThinkingConfig(thinking_budget=0)
+    # Gemma 4 docs: thinking_level="minimal" turns thinking off (verify in WS0).
+    config["thinking_config"] = types.ThinkingConfig(thinking_level="minimal")
     with genai.Client(api_key=key, http_options=http_options) as client:
         try:
             response = client.models.generate_content(
@@ -240,12 +250,14 @@ def _generate(
             backend = "fake"
             text = FakeGemma.generate(system, user, json_mode)
         else:
-            backend = status()["active_backend"]
+            backend = _route(selected)
             if backend == "gemini":
                 try:
                     # Auto probes are capped so Ollama still has a useful budget.
+                    # Offline is caught by the 3s connect timeout in _gemini; a slow but
+                    # healthy cloud still gets up to 10s, leaving time for Ollama.
                     probe_timeout = _remaining(
-                        min(timeout, 3.0) if selected == "auto" else timeout
+                        min(timeout, 10.0) if selected == "auto" else timeout
                     )
                     text = _bounded(
                         lambda: _gemini(system, user, json_mode, probe_timeout),
@@ -276,6 +288,7 @@ def _generate(
             raise ValueError("Model response must be text")  # noqa: TRY004 - invalid external output
         model = _model(backend)
         _last.set({"backend": backend, "model": model})
+        _last_used.update(backend=backend, at=time.monotonic())
         return text, backend, model
 
 
