@@ -1,0 +1,606 @@
+{
+  "user": {
+    "id": "alex",
+    "email": "alex@example.test",
+    "name": "Alex Rivera",
+    "role": "student",
+    "box_id": "box_alex",
+    "backend": "local"
+  },
+  "students": [
+    {
+      "id": "alex",
+      "name": "Alex Rivera",
+      "box_id": "box_alex",
+      "backend": "local"
+    },
+    {
+      "id": "sam",
+      "name": "Sam Chen",
+      "box_id": "box_sam",
+      "backend": "local"
+    }
+  ],
+  "state": {
+    "student_id": "alex",
+    "name": "Alex Rivera",
+    "assignment": "hw4",
+    "code": "def sum_list(xs):\n    \"\"\"Return the sum of all values in xs.\"\"\"\n    total = 0\n    for i in range(len(xs) - 1):\n        total += xs[i]\n    return total\n\n\ndef safe_max(xs):\n    \"\"\"Return the largest value, or None.\"\"\"\n    if not xs:\n        return None\n    return max(xs)\n",
+    "profile": {
+      "mistake_counts": {
+        "off_by_one": 4,
+        "empty_input": 2,
+        "none_handling": 1
+      }
+    },
+    "nudge": {
+      "active": true,
+      "reason": "test_last_index has failed 5 runs in a row.",
+      "draft": "Hi! I\u2019m working on HW4 and my loop keeps missing the last value. I\u2019ve tried changing the bounds, but test_last_index still fails. Could we go over it in office hours?"
+    },
+    "llm": {
+      "active_backend": "fake",
+      "model": "gemma4:fake"
+    },
+    "last_run": {
+      "run_id": "r_hw4_05",
+      "ts": "2026-10-31T12:34:00-04:00",
+      "assignment": "hw4",
+      "status": "done",
+      "passed": [
+        "test_sum_basic",
+        "test_sum_negative",
+        "test_safe_max",
+        "test_empty"
+      ],
+      "failed": [
+        {
+          "test": "test_last_index",
+          "message": "Expected 15, received 10.\nThe last element was not included."
+        }
+      ],
+      "duration_ms": 812,
+      "tags": [
+        "off_by_one"
+      ],
+      "hint_status": "ready",
+      "hint": "This looks like the loop-bound issue from hw2. Your loop stops just before the last index. What happens if the value you need is at the very end of the list?",
+      "related_past": [
+        {
+          "run_id": "r_hw2_03",
+          "assignment": "hw2",
+          "tag": "off_by_one"
+        }
+      ],
+      "llm": {
+        "backend": "fake",
+        "model": "gemma4:fake"
+      }
+    }
+  },
+  "assignments": [
+    {
+      "id": "hw4",
+      "title": "List utilities",
+      "due": "2026-11-06T23:59:00-05:00",
+      "has_tests": true
+    },
+    {
+      "id": "hw5",
+      "title": "Dictionaries & counting",
+      "due": "2026-11-13T23:59:00-05:00",
+      "has_tests": true
+    }
+  ],
+  "docs": [
+    {
+      "doc_id": "csc116/hw5",
+      "title": "HW5: Dictionaries & counting",
+      "type": "assignment",
+      "version": 1,
+      "summary": "Build a word counter using dictionaries. Your workspace and tests are ready.",
+      "fetched_at": "2026-10-31T12:40:00-04:00"
+    },
+    {
+      "doc_id": "csc116/hw4",
+      "title": "HW4: List utilities",
+      "type": "assignment",
+      "version": 2,
+      "summary": "Practice iteration, accumulation, and empty inputs.",
+      "change_note": "safe_max([]) now returns None. The empty-input test has been updated.",
+      "fetched_at": "2026-10-31T12:40:00-04:00"
+    },
+    {
+      "doc_id": "csc116/syllabus",
+      "title": "Course syllabus",
+      "type": "doc",
+      "version": 1,
+      "summary": "Course expectations, office hours, and the weekly rhythm."
+    },
+    {
+      "doc_id": "csc116/loops",
+      "title": "Iteration & loop boundaries",
+      "type": "doc",
+      "version": 1,
+      "summary": "A guide to ranges, indices, and tracing loops by hand."
+    }
+  ],
+  "document": {
+    "doc": {
+      "doc_id": "csc116/hw4",
+      "title": "HW4: List utilities",
+      "type": "assignment",
+      "version": 2,
+      "summary": "Practice iteration, accumulation, and empty inputs.",
+      "change_note": "safe_max([]) now returns None. The empty-input test has been updated.",
+      "fetched_at": "2026-10-31T12:40:00-04:00"
+    },
+    "text": "# HW4: List utilities\n\nBuild two functions that work with lists of numbers.\n\n## sum_list(xs)\n\nReturn the sum of every value in the list. Include the first and last elements. An empty list returns 0.\n\n## safe_max(xs)\n\nReturn the largest value. For an empty list, return **None**.\n\n## Before you submit\n\nTrace your loop on a list with one element, then on a list with three elements. Run the full test suite."
+  },
+  "deadlines": [
+    {
+      "what": "HW4: List utilities",
+      "due": "2026-11-06T23:59:00-05:00",
+      "source_doc": "csc116/hw4"
+    },
+    {
+      "what": "HW5: Dictionaries & counting",
+      "due": "2026-11-13T23:59:00-05:00",
+      "source_doc": "csc116/hw5"
+    }
+  ],
+  "plan": {
+    "plan": {
+      "prefs_text": "No 8 AMs. I work Tuesday and Thursday afternoons. Keep it under 15 credits."
+    },
+    "catalog": {
+      "sample": true,
+      "term": "Spring 2027"
+    },
+    "options": [
+      {
+        "sections": [
+          {
+            "course": "CSC 216",
+            "section_id": "CSC216-001",
+            "days": [
+              "Mon",
+              "Wed",
+              "Fri"
+            ],
+            "start": "09:35",
+            "end": "10:25",
+            "instructor": "Dr. Eliza Thorne",
+            "rating": {
+              "rating": 4.6,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 12,
+              "capacity": 40
+            }
+          },
+          {
+            "course": "CSC 226",
+            "section_id": "CSC226-002",
+            "days": [
+              "Mon",
+              "Wed",
+              "Fri"
+            ],
+            "start": "10:40",
+            "end": "11:30",
+            "instructor": "Prof. Nadia Blake",
+            "rating": {
+              "rating": 4.4,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 8,
+              "capacity": 35
+            }
+          },
+          {
+            "course": "MA 241",
+            "section_id": "MA241-002",
+            "days": [
+              "Tue",
+              "Thu"
+            ],
+            "start": "09:00",
+            "end": "10:15",
+            "instructor": "Prof. Joey Tribbiani",
+            "rating": {
+              "rating": 4.1,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 6,
+              "capacity": 50
+            }
+          },
+          {
+            "course": "ENG 101",
+            "section_id": "ENG101-003",
+            "days": [
+              "Tue",
+              "Thu"
+            ],
+            "start": "10:30",
+            "end": "11:45",
+            "instructor": "Dr. Perry White",
+            "rating": {
+              "rating": 4.5,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 3,
+              "capacity": 24
+            }
+          }
+        ],
+        "credits": 13,
+        "avg_rating": 4.4,
+        "score": 0.92,
+        "explanation": "A steady morning rhythm, with Tuesday and Thursday afternoons kept free for work."
+      },
+      {
+        "sections": [
+          {
+            "course": "CSC 216",
+            "section_id": "CSC216-001",
+            "days": [
+              "Mon",
+              "Wed",
+              "Fri"
+            ],
+            "start": "09:35",
+            "end": "10:25",
+            "instructor": "Dr. Eliza Thorne",
+            "rating": {
+              "rating": 4.6,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 12,
+              "capacity": 40
+            }
+          },
+          {
+            "course": "CSC 226",
+            "section_id": "CSC226-004",
+            "days": [
+              "Mon",
+              "Wed",
+              "Fri"
+            ],
+            "start": "13:30",
+            "end": "14:20",
+            "instructor": "Prof. Nadia Blake",
+            "rating": {
+              "rating": 4.4,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 8,
+              "capacity": 35
+            }
+          },
+          {
+            "course": "MA 241",
+            "section_id": "MA241-002",
+            "days": [
+              "Tue",
+              "Thu"
+            ],
+            "start": "09:00",
+            "end": "10:15",
+            "instructor": "Prof. Joey Tribbiani",
+            "rating": {
+              "rating": 4.1,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 6,
+              "capacity": 50
+            }
+          },
+          {
+            "course": "ENG 101",
+            "section_id": "ENG101-003",
+            "days": [
+              "Tue",
+              "Thu"
+            ],
+            "start": "10:30",
+            "end": "11:45",
+            "instructor": "Dr. Perry White",
+            "rating": {
+              "rating": 4.5,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 3,
+              "capacity": 24
+            }
+          }
+        ],
+        "credits": 13,
+        "avg_rating": 4.4,
+        "score": 0.89,
+        "explanation": "A longer break between classes on Monday, Wednesday, and Friday. Afternoons on workdays stay free."
+      },
+      {
+        "sections": [
+          {
+            "course": "CSC 216",
+            "section_id": "CSC216-005",
+            "days": [
+              "Mon",
+              "Wed",
+              "Fri"
+            ],
+            "start": "14:30",
+            "end": "15:20",
+            "instructor": "Dr. Eliza Thorne",
+            "rating": {
+              "rating": 4.6,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 12,
+              "capacity": 40
+            }
+          },
+          {
+            "course": "CSC 226",
+            "section_id": "CSC226-002",
+            "days": [
+              "Mon",
+              "Wed",
+              "Fri"
+            ],
+            "start": "10:40",
+            "end": "11:30",
+            "instructor": "Prof. Nadia Blake",
+            "rating": {
+              "rating": 4.4,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 8,
+              "capacity": 35
+            }
+          },
+          {
+            "course": "MA 241",
+            "section_id": "MA241-002",
+            "days": [
+              "Tue",
+              "Thu"
+            ],
+            "start": "09:00",
+            "end": "10:15",
+            "instructor": "Prof. Joey Tribbiani",
+            "rating": {
+              "rating": 4.1,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 6,
+              "capacity": 50
+            }
+          },
+          {
+            "course": "ENG 101",
+            "section_id": "ENG101-003",
+            "days": [
+              "Tue",
+              "Thu"
+            ],
+            "start": "10:30",
+            "end": "11:45",
+            "instructor": "Dr. Perry White",
+            "rating": {
+              "rating": 4.5,
+              "source": "sample"
+            },
+            "seats": {
+              "open": 3,
+              "capacity": 24
+            }
+          }
+        ],
+        "credits": 13,
+        "avg_rating": 4.4,
+        "score": 0.8600000000000001,
+        "explanation": "A later CSC 216 section leaves room for focused study in the morning."
+      }
+    ],
+    "remaining": [
+      {
+        "id": "CSC_CORE",
+        "name": "Computer science core",
+        "remaining": 4,
+        "courses_needed": 6,
+        "options": [
+          "CSC 216",
+          "CSC 226",
+          "CSC 316"
+        ]
+      },
+      {
+        "id": "MATH",
+        "name": "Mathematics",
+        "remaining": 2,
+        "courses_needed": 4,
+        "options": [
+          "MA 241",
+          "MA 242"
+        ]
+      },
+      {
+        "id": "HUM",
+        "name": "Humanities",
+        "remaining": 1,
+        "courses_needed": 2,
+        "options": [
+          "ENG 101",
+          "PHI 205"
+        ]
+      }
+    ]
+  },
+  "runs": [
+    {
+      "run_id": "r_hw4_05",
+      "ts": "2026-10-31T12:34:00-04:00",
+      "assignment": "hw4",
+      "status": "done",
+      "passed": [
+        "test_sum_basic",
+        "test_sum_negative",
+        "test_safe_max",
+        "test_empty"
+      ],
+      "failed": [
+        {
+          "test": "test_last_index",
+          "message": "Expected 15, received 10.\nThe last element was not included."
+        }
+      ],
+      "duration_ms": 812,
+      "tags": [
+        "off_by_one"
+      ],
+      "hint_status": "ready",
+      "hint": "This looks like the loop-bound issue from hw2. Your loop stops just before the last index. What happens if the value you need is at the very end of the list?",
+      "related_past": [
+        {
+          "run_id": "r_hw2_03",
+          "assignment": "hw2",
+          "tag": "off_by_one"
+        }
+      ],
+      "llm": {
+        "backend": "fake",
+        "model": "gemma4:fake"
+      }
+    },
+    {
+      "run_id": "r_hw4_04",
+      "ts": "2026-10-31T12:29:00-04:00",
+      "assignment": "hw4",
+      "status": "done",
+      "passed": [
+        "test_sum_basic",
+        "test_sum_negative",
+        "test_safe_max",
+        "test_empty"
+      ],
+      "failed": [
+        {
+          "test": "test_last_index",
+          "message": "Expected 15, received 10.\nThe last element was not included."
+        }
+      ],
+      "duration_ms": 812,
+      "tags": [
+        "off_by_one"
+      ],
+      "hint_status": "ready",
+      "hint": "This looks like the loop-bound issue from hw2. Your loop stops just before the last index. What happens if the value you need is at the very end of the list?",
+      "related_past": [
+        {
+          "run_id": "r_hw2_03",
+          "assignment": "hw2",
+          "tag": "off_by_one"
+        }
+      ],
+      "llm": {
+        "backend": "fake",
+        "model": "gemma4:fake"
+      }
+    },
+    {
+      "run_id": "r_hw2_03",
+      "ts": "2026-10-17T10:20:00-04:00",
+      "assignment": "hw2",
+      "status": "done",
+      "passed": [
+        "test_sum_basic",
+        "test_sum_negative",
+        "test_safe_max",
+        "test_empty"
+      ],
+      "failed": [
+        {
+          "test": "test_last_index",
+          "message": "Expected 15, received 10.\nThe last element was not included."
+        }
+      ],
+      "duration_ms": 812,
+      "tags": [
+        "off_by_one"
+      ],
+      "hint_status": "ready",
+      "hint": "This looks like the loop-bound issue from hw2. Your loop stops just before the last index. What happens if the value you need is at the very end of the list?",
+      "related_past": [
+        {
+          "run_id": "r_hw2_03",
+          "assignment": "hw2",
+          "tag": "off_by_one"
+        }
+      ],
+      "llm": {
+        "backend": "fake",
+        "model": "gemma4:fake"
+      }
+    }
+  ],
+  "summary": {
+    "markdown": "## Where Alex is stuck\n\nAlex is working on **HW4: List utilities**. Four tests pass; **test_last_index** still fails after five consecutive attempts.\n\n## What they tried\n\nThey changed the accumulator and tested empty inputs. The loop still stops before the final element.\n\n## A pattern worth revisiting\n\n**off_by_one** appeared on HW2 and has now occurred four times. Empty-input handling has improved.\n\n## Start here\n\nAsk: \u201cFor a list with three values, which indices does your range visit?\u201d Trace one example together before editing the code."
+  },
+  "heatmap": {
+    "students": 2,
+    "mistake_tags": {
+      "off_by_one": 7,
+      "empty_input": 4,
+      "none_handling": 2,
+      "wrong_return": 1
+    },
+    "failing_tests": {
+      "test_last_index": 5,
+      "test_empty": 3,
+      "test_safe_max": 1
+    }
+  },
+  "sync": {
+    "job_id": "s_demo",
+    "status": "done",
+    "new": [
+      "csc116/hw5"
+    ],
+    "changed": [
+      "csc116/hw4"
+    ],
+    "unchanged": 2,
+    "errors": []
+  },
+  "delegation": {
+    "task_id": "task_demo",
+    "status": "completed",
+    "steps": [
+      "Opened the authorized course",
+      "Read the assignment list"
+    ],
+    "result": {
+      "course": "csc116",
+      "assignments": [
+        "HW4: List utilities",
+        "HW5: Dictionaries & counting"
+      ]
+    },
+    "mode": "fake"
+  }
+}

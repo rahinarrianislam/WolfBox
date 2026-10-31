@@ -7,3 +7,12 @@ __pycache__/
 .pytest_cache/
 .DS_Store
 students.json
+
+# Swift / Xcode
+apple/.build/
+apple/DerivedData/
+**/xcuserdata/
+*.xcuserstate
+apple/build/
+.data-apple-live.*/
+apple/.venv/

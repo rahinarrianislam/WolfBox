@@ -1,0 +1,78 @@
+Building for debugging...
+[Computing dependencies]
+[3 / 27] WolfBoxCore
+[5 / 28] WolfBoxCore
+[9 / 20] WolfBox
+[17 / 28] WolfBox
+[17 / 28] WolfBox-product
+[22 / 34] WolfBox
+[22 / 34] WolfBox-product
+[26 / 36] WolfBox-product
+[29 / 34] WolfBoxAppTests-product
+[32 / 33] WolfBoxAppTests-product
+Build complete! (4.73 sec)
+Test Suite 'All tests' started at 2026-10-31 13:05:27.002.
+Test Suite 'WolfBoxCoreTests.xctest' started at 2026-10-31 13:05:27.003.
+Test Suite 'APITests' started at 2026-10-31 13:05:27.003.
+Test Case '-[WolfBoxCoreTests.APITests testBearerAndBodySent]' started.
+Test Case '-[WolfBoxCoreTests.APITests testBearerAndBodySent]' passed (0.013 seconds).
+Test Case '-[WolfBoxCoreTests.APITests testDelegateStepShapesDecodeWithoutLosingResult]' started.
+Test Case '-[WolfBoxCoreTests.APITests testDelegateStepShapesDecodeWithoutLosingResult]' passed (0.001 seconds).
+Test Case '-[WolfBoxCoreTests.APITests testNumericAndObjectRatingsDecode]' started.
+Test Case '-[WolfBoxCoreTests.APITests testNumericAndObjectRatingsDecode]' passed (0.001 seconds).
+Test Case '-[WolfBoxCoreTests.APITests testServerErrorAndMalformedResponseStayRecoverable]' started.
+Test Case '-[WolfBoxCoreTests.APITests testServerErrorAndMalformedResponseStayRecoverable]' passed (0.001 seconds).
+Test Case '-[WolfBoxCoreTests.APITests testUnauthorizedIsDistinctFromOfflineFailure]' started.
+Test Case '-[WolfBoxCoreTests.APITests testUnauthorizedIsDistinctFromOfflineFailure]' passed (0.001 seconds).
+Test Suite 'APITests' passed at 2026-10-31 13:05:27.021.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.017 (0.017) seconds
+Test Suite 'ContractTests' started at 2026-10-31 13:05:27.021.
+Test Case '-[WolfBoxCoreTests.ContractTests testCalendarPreservesActualTimesAndAllMeetings]' started.
+Test Case '-[WolfBoxCoreTests.ContractTests testCalendarPreservesActualTimesAndAllMeetings]' passed (0.000 seconds).
+Test Case '-[WolfBoxCoreTests.ContractTests testDocIDsAreOneEncodedPathSegment]' started.
+Test Case '-[WolfBoxCoreTests.ContractTests testDocIDsAreOneEncodedPathSegment]' passed (0.000 seconds).
+Test Case '-[WolfBoxCoreTests.ContractTests testHeatmapAcceptsStudentListAndCount]' started.
+Test Case '-[WolfBoxCoreTests.ContractTests testHeatmapAcceptsStudentListAndCount]' passed (0.000 seconds).
+Test Case '-[WolfBoxCoreTests.ContractTests testMoodleFailsClosed]' started.
+Test Case '-[WolfBoxCoreTests.ContractTests testMoodleFailsClosed]' passed (0.000 seconds).
+Test Case '-[WolfBoxCoreTests.ContractTests testRejectsInvalidServerAndCredentialsInURL]' started.
+Test Case '-[WolfBoxCoreTests.ContractTests testRejectsInvalidServerAndCredentialsInURL]' passed (0.000 seconds).
+Test Case '-[WolfBoxCoreTests.ContractTests testRunWaitsForBothTestsAndHint]' started.
+Test Case '-[WolfBoxCoreTests.ContractTests testRunWaitsForBothTestsAndHint]' passed (0.000 seconds).
+Test Suite 'ContractTests' passed at 2026-10-31 13:05:27.023.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'LiveTests' started at 2026-10-31 13:05:27.023.
+Test Case '-[WolfBoxCoreTests.LiveTests testLocalDemoContracts]' started.
+/Users/chanatun/.t3/worktrees/hacktoberfesthack/t3-4af5fdce/apple/Tests/WolfBoxCoreTests/LiveTests.swift:6: -[WolfBoxCoreTests.LiveTests testLocalDemoContracts] : Test skipped - Run apple/scripts/live-check.sh for the isolated live backend test.
+Test Case '-[WolfBoxCoreTests.LiveTests testLocalDemoContracts]' skipped (0.001 seconds).
+Test Suite 'LiveTests' passed at 2026-10-31 13:05:27.024.
+	 Executed 1 test, with 1 test skipped and 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'WolfBoxCoreTests.xctest' passed at 2026-10-31 13:05:27.024.
+	 Executed 12 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.019 (0.021) seconds
+Test Suite 'All tests' passed at 2026-10-31 13:05:27.024.
+	 Executed 12 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.019 (0.022) seconds
+Test Suite 'All tests' started at 2026-10-31 13:05:27.211.
+Test Suite 'WolfBoxAppTests.xctest' started at 2026-10-31 13:05:27.212.
+Test Suite 'AppModelTests' started at 2026-10-31 13:05:27.212.
+Test Case '-[WolfBoxAppTests.AppModelTests test401ReturnsToSignInAndClearsStudentData]' started.
+Test Case '-[WolfBoxAppTests.AppModelTests test401ReturnsToSignInAndClearsStudentData]' passed (0.020 seconds).
+Test Case '-[WolfBoxAppTests.AppModelTests testFixtureScreensAndFakeMoodleAreComplete]' started.
+Test Case '-[WolfBoxAppTests.AppModelTests testFixtureScreensAndFakeMoodleAreComplete]' passed (0.002 seconds).
+Test Case '-[WolfBoxAppTests.AppModelTests testMoodleRejectsNonInstructorWithoutAnyRequest]' started.
+Test Case '-[WolfBoxAppTests.AppModelTests testMoodleRejectsNonInstructorWithoutAnyRequest]' passed (0.001 seconds).
+Test Case '-[WolfBoxAppTests.AppModelTests testOfflineFailurePreservesDraftAndSession]' started.
+Test Case '-[WolfBoxAppTests.AppModelTests testOfflineFailurePreservesDraftAndSession]' passed (0.004 seconds).
+Test Suite 'AppModelTests' passed at 2026-10-31 13:05:27.239.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.027 (0.028) seconds
+Test Suite 'WolfBoxAppTests.xctest' passed at 2026-10-31 13:05:27.239.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.027 (0.028) seconds
+Test Suite 'All tests' passed at 2026-10-31 13:05:27.239.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.027 (0.029) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 2403
+􀄵  Target Platform: arm64e-apple-macos14.0
+􁁛  Test run with 0 tests in 0 suites passed after 0.001 seconds.
+􀟈  Test run started.
+􀄵  Testing Library Version: 2403
+􀄵  Target Platform: arm64e-apple-macos14.0
+􁁛  Test run with 0 tests in 0 suites passed after 0.001 seconds.

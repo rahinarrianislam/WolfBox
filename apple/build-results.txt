@@ -1,0 +1,8 @@
+Building for production...
+[2 / 4] WolfBox-product
+[3 / 5] WolfBox-product
+[5 / 5] WolfBox-product
+[6 / 6] WolfBox-product
+Build complete! (11.03 sec)
+/Users/chanatun/.t3/worktrees/hacktoberfesthack/t3-4af5fdce/apple/build/WolfBox.app: replacing existing signature
+/Users/chanatun/.t3/worktrees/hacktoberfesthack/t3-4af5fdce/apple/build/WolfBox.app
