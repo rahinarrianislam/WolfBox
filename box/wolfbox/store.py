@@ -20,7 +20,7 @@ import json
 import os
 import tempfile
 import threading
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -28,7 +28,7 @@ _lock = threading.RLock()
 
 
 def now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
 class Store:
@@ -95,8 +95,19 @@ class Store:
         d = self.path("runs")
         if not d.exists():
             return []
-        runs = [r for r in (self.read_json(f"runs/{p.name}") for p in d.glob("*.json")) if r]
+        runs = [
+            r for r in (self.read_json(f"runs/{p.name}") for p in d.glob("*.json")) if r
+        ]
         if assignment:
             runs = [r for r in runs if r.get("assignment") == assignment]
-        runs.sort(key=lambda r: (r.get("ts", ""), r.get("run_id", "")), reverse=True)
+
+        def sort_key(run):
+            try:
+                ts = datetime.fromisoformat(run.get("ts", ""))
+                timestamp = ts.replace(tzinfo=ts.tzinfo or UTC).timestamp()
+            except (TypeError, ValueError):
+                timestamp = float("-inf")
+            return timestamp, run.get("run_id", "")
+
+        runs.sort(key=sort_key, reverse=True)
         return runs[:limit] if limit else runs
