@@ -69,8 +69,8 @@ wait_for_health alex http://127.0.0.1:8101/health
 wait_for_health sam http://127.0.0.1:8102/health
 wait_for_health orchestrator http://127.0.0.1:8000/api/health
 curl -fsS -X POST http://127.0.0.1:8000/api/students \
-  -H 'Content-Type: application/json' -d '{"id":"alex","name":"Alex Rivera"}' >/dev/null
+  -H 'Content-Type: application/json' -d '{"id":"alex","name":"Alex Rivera"}' >/dev/null 2>&1 || true
 curl -fsS -X POST http://127.0.0.1:8000/api/students \
-  -H 'Content-Type: application/json' -d '{"id":"sam","name":"Sam Chen"}' >/dev/null
+  -H 'Content-Type: application/json' -d '{"id":"sam","name":"Sam Chen"}' >/dev/null 2>&1 || true
 echo "WolfBox dev stack is ready at http://127.0.0.1:8000"
 wait

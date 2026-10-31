@@ -168,14 +168,13 @@ struct AuthView: View {
                 }.buttonStyle(.borderedProminent).controlSize(.large).keyboardShortcut(.defaultAction)
                     .disabled(model.busy.contains("auth") || email.trimmingCharacters(in: .whitespaces).isEmpty || password.isEmpty || (signup && name.trimmingCharacters(in: .whitespaces).isEmpty))
                 HStack {
-                    Text(model.serverURL).font(.caption).foregroundStyle(.secondary)
-                    Button("Change…") { settings = true }.buttonStyle(.link)
-                    Spacer()
                     Button(model.hasMaritimeKey ? "Maritime · Connected" : "Maritime Key…") {
                         model.showMaritimePrompt = true
                     }
                     .buttonStyle(.link)
                     .font(.caption)
+                    .foregroundStyle(model.hasMaritimeKey ? Color.wolfGreen : Color.wolfRed)
+                    Spacer()
                 }
                 Spacer().frame(height: 5)
                 Button("Explore a sample workspace") { model.fixtures = true; model.error = nil; model.loadFixtures() }.buttonStyle(.link).font(.callout)
