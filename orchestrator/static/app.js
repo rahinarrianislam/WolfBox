@@ -207,7 +207,7 @@ function parseInline(text) {
   text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
   // Italic: *text* or _text_
   text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  text = text.replace(/_([^_]+)_/g, '<em>$1</em>');
+  text = text.replace(/(^|[^A-Za-z0-9_])_([^_]+)_(?![A-Za-z0-9_])/g, '$1<em>$2</em>');
   return text;
 }
 

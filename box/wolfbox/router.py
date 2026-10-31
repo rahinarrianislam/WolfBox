@@ -200,7 +200,8 @@ def list_runs(store, payload):
     limit = payload.get("limit", 20)
     if type(limit) is not int or limit < 0:
         raise ValueError("limit must be a nonnegative integer")
-    assignment = default_assignment(store, payload)
+    # History view: all assignments unless one is asked for (TA page shows hw2/hw3 too).
+    assignment = payload.get("assignment")
     return {
         "runs": [
             {k: v for k, v in r.items() if k != "code"}

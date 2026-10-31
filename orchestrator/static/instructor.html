@@ -199,21 +199,14 @@
 
       const res = await apiFetch('/api/instructor/heatmap');
 
-      // Default mock fallback tags if API is unreachable or empty
-      let tagCounts = {
-        'off_by_one': 14,
-        'empty_input': 9,
-        'none_handling': 6,
-        'wrong_return': 5,
-        'mutation_aliasing': 3,
-        'infinite_loop': 2,
-        'type_confusion': 2
-      };
+      let tagCounts = {};
 
       if (res.ok && res.data) {
         try {
           const raw = res.data;
-          if (raw.mistake_counts && typeof raw.mistake_counts === 'object') {
+          if (raw.mistake_tags && typeof raw.mistake_tags === 'object') {
+            tagCounts = raw.mistake_tags;
+          } else if (raw.mistake_counts && typeof raw.mistake_counts === 'object') {
             tagCounts = raw.mistake_counts;
           } else if (Array.isArray(raw)) {
             // [{tag, count}]
