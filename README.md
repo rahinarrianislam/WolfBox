@@ -188,7 +188,7 @@ Set `CATALOG_SOURCE=ncsu` on the box to solve using
 the sample catalog and the Plan tab retains its sample-data banner. The sample
 notice above describes the default demo: the saved NC State response fixtures
 and an explicitly refreshed public schedule are real public course data.
-Degree requirements, requirement mappings, and Alex's transcript remain synthetic. (NOTE: Due to MFA authentication processes on Moodle (WolfWare by extension) and MyPack, we were unable to integrate the aforementioned LMS services into our program, along with privacy concerns stemming from password storage.
+Degree requirements, requirement mappings, and Alex's transcript remain synthetic. (NOTE: Due to MFA authentication processes on Moodle (WolfWare by extension) and MyPack, we were unable to integrate the aforementioned LMS services into our program, along with privacy concerns stemming from password storage.)
 
 `NCSU_TERM` defaults to `2271` (Spring 2027). To refresh a local box's data directory:
 
