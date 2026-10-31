@@ -197,9 +197,10 @@ def test_nudge_has_fallback(tutor, store, monkeypatch):
     assert len(draft.split()) <= 60
 
 
-def test_default_assignment_uses_latest_due_workspace(tutor, store, monkeypatch):
+def test_default_assignment_prefers_latest_run(tutor, store, monkeypatch):
     store.save_run(failure("r4", "hw4"))
     store.write_text("repo/hw4/test_hw4.py", "")
+    store.write_text("repo/hw4/hw4.py", "# current hw4 code")
     store.write_text("repo/hw5/test_hw5.py", "")
     store.write_text("repo/hw5/hw5.py", "# current hw5 code")
     store.write_json(
@@ -227,7 +228,9 @@ def test_default_assignment_uses_latest_due_workspace(tutor, store, monkeypatch)
         ),
     )
     tutor.HANDLERS["ask"](store, {"text": "What next?"})
-    assert observed == [("# current hw5 code", None)]
+    # The student is still working on hw4 even though hw5 is due later.
+    assert observed[0][0] == "# current hw4 code"
+    assert observed[0][1]["run_id"] == "r4"
 
 
 def test_ta_summary_includes_snapshot_diffs(tutor, store, monkeypatch):

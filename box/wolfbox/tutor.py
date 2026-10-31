@@ -51,6 +51,10 @@ def _assignment(store, requested=None):
         ):
             raise ValueError("Invalid assignment")
         return requested
+    # What the student is actually working on wins (TA summary, ask).
+    runs = store.list_runs(limit=1)
+    if runs and runs[0].get("assignment"):
+        return _assignment(store, runs[0]["assignment"])
     # Synced metadata wins over an older run from a previously due assignment.
     dated = []
     courses = store.path("courses")
