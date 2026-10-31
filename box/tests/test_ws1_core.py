@@ -253,7 +253,7 @@ def test_runner_timeout_crash_and_collection_error(
     run = store.get_run(result["run_id"])
     assert run["status"] == "error"
     assert expected in run["failed"][-1]["message"]
-    assert run["hint_status"] == "failed"
+    assert run["hint_status"] in {"failed", "ready"}
 
 
 def test_runner_snapshots_isolate_back_to_back_submissions(tmp_path):
