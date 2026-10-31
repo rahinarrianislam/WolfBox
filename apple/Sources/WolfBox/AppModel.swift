@@ -68,6 +68,9 @@ final class AppModel {
     var delegateTasks: [DelegateTask] = []
     var urlSession: URLSession = .shared
     var delegateTimedOut = false
+    var hasMaritimeKey = false
+    var showMaritimePrompt = false
+    var maritimeKeyPreview: String?
     private var token: String?
     private var generation = UUID()
     private var drafts: [String: String] = [:]
@@ -103,6 +106,7 @@ final class AppModel {
         studentStates = ["alex": f.state]
         summary = f.summary.markdown ?? ""; runs = f.runs; heatmap = f.heatmap; syncJob = f.sync
         delegateTask = f.delegation; delegateTasks = [f.delegation]; canvasCourse = "csc116"; canvasAssignment = "hw5"; canvasAuthorized = false; optionIndex = 0
+        hasMaritimeKey = true; showMaritimePrompt = false
     }
     func perform(_ key: String, _ work: () async throws -> Void) async {
         guard !busy.contains(key) else { return }
@@ -142,6 +146,29 @@ final class AppModel {
             guard let saved = response.token, !saved.isEmpty else { throw APIError.invalidResponse }
             try keychain.save(saved, server: serverURL)
             token = saved; user = response.user; destination = destinations.first ?? .learn
+        }
+        await checkMaritimeConfig()
+    }
+    func checkMaritimeConfig() async {
+        guard !fixtures else { return }
+        do {
+            let config = try await client.fetchConfig()
+            hasMaritimeKey = config.has_maritime_key ?? false
+            maritimeKeyPreview = config.maritime_key_preview
+            if !hasMaritimeKey {
+                showMaritimePrompt = true
+            }
+        } catch {}
+    }
+    func saveMaritimeKey(_ key: String) async {
+        let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        await perform("maritime-key") {
+            let res = try await client.uploadMaritimeKey(trimmed)
+            hasMaritimeKey = res.has_maritime_key ?? true
+            maritimeKeyPreview = res.maritime_key_preview
+            showMaritimePrompt = false
+            notice = "Maritime API key active. Connected to cloud agent boxes."
         }
     }
     func endSession() {
