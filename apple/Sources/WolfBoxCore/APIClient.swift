@@ -52,4 +52,12 @@ public struct APIClient: Sendable {
         do { return try JSONDecoder().decode(type, from: data.isEmpty ? Data("{}".utf8) : data) }
         catch { throw APIError.invalidResponse }
     }
+
+    public func fetchConfig() async throws -> ConfigResponse {
+        try await request(ConfigResponse.self, ["api", "config"])
+    }
+
+    public func uploadMaritimeKey(_ key: String) async throws -> ConfigResponse {
+        try await request(ConfigResponse.self, ["api", "config", "maritime-key"], method: "POST", body: ["key": .string(key)])
+    }
 }
