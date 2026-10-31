@@ -97,68 +97,72 @@
       </div>
     </section>
 
-    <!-- Maritime Moodle Delegation Card -->
+    <!-- Maritime Canvas Delegation Card -->
     <section class="card" style="border-top: 4px solid #6366f1; margin-bottom: 1.5rem;">
       <div class="card-header">
-        <h2 class="card-title">🤖 Delegating to Maritime (OpenClaw → Moodle)</h2>
-        <span class="tag" style="background:#e0e7ff; color:#3730a3;">OpenClaw Agent</span>
+        <h2 class="card-title">Canvas assignments</h2>
+        <span class="tag" style="background:#e0e7ff; color:#3730a3;">Canvas API</span>
       </div>
       <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">
-        Delegate course operations to an OpenClaw agent running in a Maritime Linux Desktop. Supports live watch sessions, human takeover login for institutional SSO, and sync-compatible course manifests.
+        Connect to Canvas using the server’s access token. Import assignment instructions and due dates into student boxes.
       </p>
 
+      <label for="canvas-course-picker">Canvas course</label>
+      <select id="canvas-course-picker"><option value="">Choose a course…</option></select>
+      <button id="canvas-courses-refresh" class="btn btn-secondary btn-sm">Refresh courses</button>
+      <p id="canvas-course-status" class="muted" role="status"></p>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
-        <!-- Open Moodle via OpenClaw -->
+        <!-- Open Canvas course -->
         <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="font-size: 1rem;">Open Moodle</strong>
-              <span class="tag">Browser View</span>
+              <strong style="font-size: 1rem;">Open Canvas</strong>
+              <span class="tag">Course link</span>
             </div>
             <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
-              Launches OpenClaw in a Maritime Linux Desktop to view the course site and opens the live watch link.
+              Verifies access to the configured Canvas course and provides its link.
             </p>
           </div>
-          <button id="btn-open-moodle" class="btn btn-secondary" style="width: 100%;">
-            Open Moodle via OpenClaw
+          <button id="btn-open-canvas" class="btn btn-secondary" style="width: 100%;">
+            Open Canvas course
           </button>
         </div>
 
-        <!-- Import assignments from Moodle -->
+        <!-- Import assignments from Canvas -->
         <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <strong style="font-size: 1rem;">Import Assignments</strong>
-              <span class="tag y">course.moodle.json</span>
+              <span class="tag y">course.canvas.json</span>
             </div>
             <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
-              Crawls Moodle assignments & starter files, producing a WolfBox manifest for boxes to sync seamlessly.
+              Reads Canvas assignments and instructions, producing a WolfBox manifest for boxes to sync seamlessly.
             </p>
           </div>
-          <button id="btn-import-moodle" class="btn btn-primary" style="width: 100%;">
-            Import assignments from Moodle
+          <button id="btn-import-canvas" class="btn btn-primary" style="width: 100%;">
+            Import assignments from Canvas
           </button>
         </div>
 
-        <!-- Publish hw5 to Moodle -->
+        <!-- Publish hw5 to Canvas -->
         <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="font-size: 1rem;">Publish HW5 to Moodle</strong>
-              <span class="tag">Create Mod</span>
+              <strong style="font-size: 1rem;">Publish HW5 to Canvas</strong>
+              <span class="tag">Create assignment</span>
             </div>
             <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
-              Stages hw5 into Moodle with assignment title, README description, and starter attachments.
+              Creates hw5 in Canvas with its title, instructions, and due date. Requires instructor permissions.
             </p>
           </div>
-          <button id="btn-publish-moodle-hw5" class="btn btn-success" style="width: 100%;">
-            Publish hw5 to Moodle
+          <button id="btn-publish-canvas-hw5" class="btn btn-success" style="width: 100%;">
+            Publish hw5 to Canvas
           </button>
         </div>
       </div>
 
       <!-- Task Panel -->
-      <div id="moodle-task-panel" style="margin-top: 1.2rem; display: none; background: #fafafa; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem;">
+      <div id="canvas-task-panel" style="margin-top: 1.2rem; display: none; background: #fafafa; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
           <div>
             <strong id="task-panel-title" style="font-size: 0.95rem;">Task Progress</strong>
@@ -361,11 +365,11 @@
       heatmapContent.innerHTML = html;
     }
 
-    // --- Moodle OpenClaw Delegation Controls ---
-    const btnOpenMoodle = document.getElementById('btn-open-moodle');
-    const btnImportMoodle = document.getElementById('btn-import-moodle');
-    const btnPublishMoodleHw5 = document.getElementById('btn-publish-moodle-hw5');
-    const moodleTaskPanel = document.getElementById('moodle-task-panel');
+    // --- Canvas OpenClaw Delegation Controls ---
+    const btnOpenCanvas = document.getElementById('btn-open-canvas');
+    const btnImportCanvas = document.getElementById('btn-import-canvas');
+    const btnPublishCanvasHw5 = document.getElementById('btn-publish-canvas-hw5');
+    const canvasTaskPanel = document.getElementById('canvas-task-panel');
     const taskBadge = document.getElementById('task-badge');
     const taskStepsList = document.getElementById('task-steps-list');
     const taskWatchLink = document.getElementById('task-watch-link');
@@ -379,7 +383,7 @@
     let pollInterval = null;
     function startTaskPolling(taskId) {
       if (pollInterval) clearInterval(pollInterval);
-      moodleTaskPanel.style.display = 'block';
+      canvasTaskPanel.style.display = 'block';
       taskStepsList.innerHTML = '<li>Starting task...</li>';
       taskWatchLink.style.display = 'none';
       taskTakeoverLink.style.display = 'none';
@@ -391,6 +395,11 @@
         taskBadge.textContent = task.status;
         taskBadge.className = 'tag ' + (task.status === 'done' ? 'g' : task.status === 'error' ? 'r' : task.status === 'needs_human' ? 'y' : 'm');
 
+        if (task.result?.canvas_url) {
+          taskWatchLink.href = task.result.canvas_url;
+          taskWatchLink.textContent = 'Open in Canvas';
+          taskWatchLink.style.display = 'inline-block';
+        }
         if (task.watch_url) {
           taskWatchLink.href = task.watch_url;
           taskWatchLink.style.display = 'inline-block';
@@ -411,9 +420,9 @@
           clearInterval(pollInterval);
           pollInterval = null;
           if (task.status === 'done') {
-            showToast('Moodle task completed successfully!', 'success');
+            showToast('Canvas task completed successfully!', 'success');
           } else {
-            showToast('Moodle task failed: ' + (task.steps[task.steps.length - 1] || 'error'), 'error');
+            showToast('Canvas task failed: ' + (task.steps[task.steps.length - 1] || 'error'), 'error');
           }
         }
       };
@@ -422,8 +431,26 @@
       pollInterval = setInterval(poll, 1000);
     }
 
-    async function triggerMoodleTask(kind, body) {
-      const res = await apiFetch(`/api/delegate/moodle/${kind}`, {
+    async function loadCanvasCourses() {
+      const picker = document.getElementById('canvas-course-picker');
+      const status = document.getElementById('canvas-course-status');
+      const previous = picker.value;
+      status.textContent = 'Loading Canvas courses…';
+      const res = await apiFetch('/api/delegate/canvas/courses', {headers: getAuthHeaders()});
+      if (!res.ok) { status.textContent = 'Could not load courses. Check your instructor access and Canvas connection.'; return; }
+      picker.replaceChildren(new Option('Choose a course…', ''));
+      for (const course of res.data.courses) picker.add(new Option(course.name, course.id));
+      picker.value = previous;
+      status.textContent = res.data.courses.length ? '' : 'No Canvas courses available.';
+    }
+    document.getElementById('canvas-courses-refresh').addEventListener('click', loadCanvasCourses);
+    loadCanvasCourses();
+    async function triggerCanvasTask(kind, body) {
+      const selected = document.getElementById('canvas-course-picker').value;
+      if (!selected) { showToast('Choose a Canvas course first.', 'error'); return; }
+      body.canvas_course_id = selected;
+      body.course = 'canvas-' + selected;
+      const res = await apiFetch(`/api/delegate/canvas/${kind}`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(body)
@@ -433,9 +460,9 @@
       }
     }
 
-    if (btnOpenMoodle) btnOpenMoodle.addEventListener('click', () => triggerMoodleTask('open_course', { course: 'csc116' }));
-    if (btnImportMoodle) btnImportMoodle.addEventListener('click', () => triggerMoodleTask('list_assignments', { course: 'csc116' }));
-    if (btnPublishMoodleHw5) btnPublishMoodleHw5.addEventListener('click', () => triggerMoodleTask('publish_assignment', { course: 'csc116', item: 'hw5' }));
+    if (btnOpenCanvas) btnOpenCanvas.addEventListener('click', () => triggerCanvasTask('open_course', { course: 'csc116' }));
+    if (btnImportCanvas) btnImportCanvas.addEventListener('click', () => triggerCanvasTask('list_assignments', { course: 'csc116' }));
+    if (btnPublishCanvasHw5) btnPublishCanvasHw5.addEventListener('click', () => triggerCanvasTask('publish_assignment', { course: 'csc116', item: 'hw5' }));
   </script>
 </body>
 </html>

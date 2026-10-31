@@ -1,46 +1,46 @@
 import SwiftUI
 import WolfBoxCore
 
-struct MoodleView: View {
+struct CanvasView: View {
     @Bindable var model: AppModel
     @State private var publishConfirmation = false
-    var authorization: MoodleAuthorization { MoodleAuthorization(authorized: model.moodleAuthorized, role: model.user?.role ?? "") }
+    var authorization: CanvasAuthorization { CanvasAuthorization(authorized: model.canvasAuthorized, role: model.user?.role ?? "") }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 26) {
-                PageHeading(title: "A course task, with you in control.", subtitle: "Delegate a Moodle action and follow every step.")
+                PageHeading(title: "A course task, with you in control.", subtitle: "Delegate a Canvas action and follow every step.")
                 VStack(alignment: .leading, spacing: 18) {
-                    LabeledContent("Course ID") { TextField("Course ID", text: $model.moodleCourse).textFieldStyle(.roundedBorder).controlSize(.large) }
+                    CanvasCoursePicker(model: model)
                     if model.user?.role == "instructor" {
-                        LabeledContent("Staged item ID") { TextField("Staged assignment ID", text: $model.moodleAssignment).textFieldStyle(.roundedBorder).controlSize(.large) }
+                        LabeledContent("Staged item ID") { TextField("Staged assignment ID", text: $model.canvasAssignment).textFieldStyle(.roundedBorder).controlSize(.large) }
                     }
-                    Toggle("I authorize WolfBox to perform the selected action in this Moodle course.", isOn: $model.moodleAuthorized)
-                    Text("Instructor access is required. Publishing uses an existing staged item, such as hw5. If Moodle needs your sign-in, use the task’s takeover link.").foregroundStyle(.secondary).font(.callout)
+                    Toggle("I authorize WolfBox to perform the selected action in this Canvas course.", isOn: $model.canvasAuthorized)
+                    Text("Instructor access is required. Publishing uses an existing staged item, such as hw5. Canvas uses the access token configured on the server.").foregroundStyle(.secondary).font(.callout)
                     HStack(spacing: 12) {
-                        Button("Open course") { Task { await model.startMoodle("open_course") } }.disabled(!authorization.allows("open_course"))
-                        Button("List assignments") { Task { await model.startMoodle("list_assignments") } }.disabled(!authorization.allows("list_assignments"))
-                        if model.user?.role == "instructor" { Button("Publish assignment…") { publishConfirmation = true }.disabled(!authorization.allows("publish_assignment") || model.moodleAssignment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) }
-                    }.controlSize(.large).disabled(model.busy.contains("moodle") || model.moodleCourse.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        Button("Open course") { Task { await model.startCanvas("open_course") } }.disabled(!authorization.allows("open_course"))
+                        Button("List assignments") { Task { await model.startCanvas("list_assignments") } }.disabled(!authorization.allows("list_assignments"))
+                        if model.user?.role == "instructor" { Button("Publish assignment…") { publishConfirmation = true }.disabled(!authorization.allows("publish_assignment") || model.canvasAssignment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) }
+                    }.controlSize(.large).disabled(model.busy.contains("canvas") || model.canvasCourse.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }.padding(24).background(Color.wolfSurface, in: RoundedRectangle(cornerRadius: 8))
                 if let task = model.delegateTask {
                     VStack(alignment: .leading, spacing: 22) {
                         HStack {
                             SectionHeading(title: "Task progress", detail: task.status?.replacingOccurrences(of: "_", with: " ").capitalized ?? "Unknown")
-                            Button("Refresh status") { Task { await model.refreshMoodle() } }.disabled(model.busy.contains("moodle") || model.fixtures)
+                            Button("Refresh status") { Task { await model.refreshCanvas() } }.disabled(model.busy.contains("canvas") || model.fixtures)
                         }
-                        if task.mode == "fake" { StatusLabel(text: "Simulated task · no Moodle action", symbol: "square.stack.3d.up", color: .orange) }
+                        if task.mode == "fake" { StatusLabel(text: "Simulated task · no Canvas action", symbol: "square.stack.3d.up", color: .orange) }
                         if ["failed", "error", "denied"].contains(task.status ?? "") { StatusLabel(text: task.error ?? "The task could not be completed. Review its result below.", symbol: "exclamationmark.circle", color: .wolfRed) }
-                        if model.busy.contains("moodle") { ProgressView("Following the task…").controlSize(.small) }
+                        if model.busy.contains("canvas") { ProgressView("Following the task…").controlSize(.small) }
                         if model.delegateTimedOut { StatusLabel(text: "Status check timed out. Refresh to continue following this task.", symbol: "clock.badge.exclamationmark", color: .orange) }
                         ForEach(Array((task.steps ?? []).enumerated()), id: \.offset) { index, step in
                             HStack(alignment: .top, spacing: 16) {
                                 Text("\(index + 1)").font(.body.weight(.semibold)).foregroundStyle(.secondary).frame(width: 20)
-                                MoodleStep(step: step)
+                                CanvasStep(step: step)
                             }
                         }
                         if let result = task.result, !result.description.isEmpty {
                             Text("Result").font(.headline)
-                            MoodleResult(result: result)
+                            CanvasResult(result: result)
                         }
                         if let error = task.error { Text(error).foregroundStyle(Color.wolfRed).textSelection(.enabled) }
                         HStack(spacing: 20) {
@@ -54,25 +54,25 @@ struct MoodleView: View {
                 }
                 DisclosureGroup("Task history (\(model.delegateTasks.count))") {
                     VStack(alignment: .leading, spacing: 12) {
-                        Button("Refresh task history") { Task { await model.loadMoodleTasks() } }.disabled(model.fixtures || model.busy.contains("moodle-history"))
+                        Button("Refresh task history") { Task { await model.loadCanvasTasks() } }.disabled(model.fixtures || model.busy.contains("canvas-history"))
                         ForEach(Array(model.delegateTasks.enumerated()), id: \.offset) { _, task in
-                            Button { Task { await model.openMoodleTask(task) } } label: {
+                            Button { Task { await model.openCanvasTask(task) } } label: {
                                 HStack { Text(task.task_id ?? "Task"); Spacer(); if task.mode == "fake" { Text("Simulated").foregroundStyle(.orange) }; Text(task.status?.capitalized ?? "Unknown").foregroundStyle(.secondary) }
-                            }.buttonStyle(.plain).disabled(model.busy.contains("moodle"))
+                            }.buttonStyle(.plain).disabled(model.busy.contains("canvas"))
                         }
                     }.padding(.top, 12)
                 }
             }.padding(30)
         }
-        .confirmationDialog("Publish this assignment to Moodle?", isPresented: $publishConfirmation, titleVisibility: .visible) {
-            Button("Publish assignment") { Task { await model.startMoodle("publish_assignment") } }
-        } message: { Text("\(model.moodleAssignment)\nCourse: \(model.moodleCourse)") }
-        .onChange(of: model.moodleCourse) { _, _ in model.moodleAuthorized = false }
-        .onChange(of: model.moodleAssignment) { _, _ in model.moodleAuthorized = false }
+        .confirmationDialog("Publish this assignment to Canvas?", isPresented: $publishConfirmation, titleVisibility: .visible) {
+            Button("Publish assignment") { Task { await model.startCanvas("publish_assignment") } }
+        } message: { Text("\(model.canvasAssignment)\nCourse: \(model.canvasCourse)") }
+        .onChange(of: model.canvasCourse) { _, _ in model.canvasAuthorized = false }
+        .onChange(of: model.canvasAssignment) { _, _ in model.canvasAuthorized = false }
     }
 }
 
-private struct MoodleStep: View {
+private struct CanvasStep: View {
     var step: JSONValue
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -83,7 +83,7 @@ private struct MoodleStep: View {
         }
     }
 }
-private struct MoodleResult: View {
+private struct CanvasResult: View {
     var result: JSONValue
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {

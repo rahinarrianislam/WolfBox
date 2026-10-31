@@ -6,7 +6,7 @@ WolfBox is a hackathon prototype for a persistent coding tutor and course compan
 
 ## Sample data notice
 
-**Everything in this repository is fake sample data.** The course site, assignments, catalog, degree requirements, transcript, and students are synthetic and are not real NC State data or real student records. Alex Rivera and Sam Chen are fictional demo students.
+**The bundled demo records are fake sample data.** Live Canvas imports use the connected account’s actual course records. The course site, assignments, catalog, degree requirements, transcript, and students are synthetic and are not real NC State data or real student records. Alex Rivera and Sam Chen are fictional demo students.
 
 ## Architecture
 
@@ -43,7 +43,7 @@ uv pip install -p .venv -r box/requirements.txt -r orchestrator/requirements.txt
 Start the local demo stack with the deterministic fake Gemma backend:
 
 ```sh
-GEMMA_BACKEND=fake scripts/dev.sh
+COURSE_SOURCE=mock GEMMA_BACKEND=fake scripts/dev.sh
 ```
 
 In another terminal, reset both boxes, restore the sample course, seed Alex, and sync both boxes:
@@ -92,7 +92,9 @@ Values shown are defaults where applicable. `.env` is loaded by `scripts/dev.sh`
 | `OLLAMA_TIMEOUT` | Maximum seconds for local model calls; defaults to 20. |
 | `BOX_BACKEND` | `local` or `maritime`; local is the dev default. |
 | `MARITIME_API_KEY` | Maritime credential, if required by the installed SDK/environment. |
-| `COURSE_URL` | Course manifest URL fetched by a box; local dev sets the mock CSC 116 manifest. |
+| `COURSE_URL` | Optional initial manifest URL. App-selected Canvas courses override this for later syncs. |
+| `COURSE_SOURCE` | `canvas` (dev default) or `mock` for the offline sample demo. |
+| `CANVAS_URL` / `CANVAS_API_TOKEN` | Canvas host and access token; keep in `.env`. |
 | `STUCK_MINUTES` | Minutes before a student is considered stuck; local dev sets 2 for the demo. |
 | `ALLOW_SEED` | Must be `1` to accept seed and reset envelopes. |
 | `LOCAL_BOXES` | Comma-separated `student_id=http://host:port` mappings; dev defaults Alex to `8101` and Sam to `8102`. |
@@ -101,62 +103,42 @@ Values shown are defaults where applicable. `.env` is loaded by `scripts/dev.sh`
 
 The current outline provisions one agent per student, builds or selects the WolfBox image, sets `ALLOW_SEED=1`, `GEMINI_API_KEY`, `GEMMA_MODEL`, and a publicly reachable `COURSE_URL`, then records each agent id in the orchestrator registry. Use the `maritime` CLI or Python SDK path described in [IMPLEMENTATION.md §7](IMPLEMENTATION.md#7-maritime-deployment-verify-in-ws0-then-fill-in-the-exact-commands). **Verify every provisioning, custom image, environment, and wake/sleep step per WS0 before relying on it; those provider details are not yet confirmed in this repository.**
 
-## Delegating to Maritime (OpenClaw → Moodle)
+## Canvas assignments
 
-Instructors can delegate Moodle course administration to an autonomous OpenClaw agent running on Maritime. The agent crawls assignments, downloads course attachments, and publishes staged homework items directly to Moodle.
+The assignments integration uses Canvas REST directly. The web and macOS Course
+screens include a Canvas course picker and a refresh button. Choose a course and
+select **Sync now** to import its published assignment instructions, Canvas links,
+and due dates. WolfBox remembers each student's selected course for later syncs.
+Switching courses keeps previously imported documents available.
 
-### Flow diagram
+Configure the server in the ignored `.env` file:
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Instructor as Instructor UI
-    participant Orch as Orchestrator API
-    participant Agent as MoodleDelegate
-    participant Maritime as Maritime (OpenClaw Agent)
-    participant Moodle as Moodle LMS
-    participant Box as Student WolfBox
-
-    Instructor->>Orch: POST /api/delegate/moodle/list_assignments
-    Orch->>Agent: start_task("list_assignments", {course})
-    Orch-->>Instructor: 202 Accepted {task_id}
-    Agent->>Maritime: Ensure OpenClaw agent (client.agents)
-    Maritime->>Moodle: Browse course & collect resources
-    Maritime-->>Agent: Assignments & attachments
-    Agent->>Orch: Write course.moodle.json & save attachments
-    Instructor->>Orch: GET /api/delegate/tasks/{task_id} (Polls steps)
-    Orch-->>Instructor: status: done, steps: [...]
-    Box->>Orch: Sync course.moodle.json
+```sh
+CANVAS_URL=https://your-school.instructure.com
+CANVAS_API_TOKEN=your-access-token
 ```
 
-### Environment variables
+Run `scripts/dev.sh`, choose a course in the app, then sync. No course ID needs to
+be configured in a file. The existing local course key `csc116` is used only by the
+optional CLI import; app imports use `canvas-<course-id>`.
 
-| Variable | Description |
-| --- | --- |
-| `MARITIME_API_KEY` | Maritime API token for provisioning and interacting with OpenClaw agents. |
-| `MOODLE_DELEGATE` | Mode of operation: `fake` (deterministic local simulation) or `real` (live Maritime OpenClaw agent). Defaults to `real`; without `MARITIME_API_KEY`, real tasks fail closed with a clear configuration error. |
-| `MOODLE_URL` | Base URL of the Moodle LMS. Defaults to `https://school.moodledemo.net`. |
-| `MOODLE_WS_TOKEN` | Optional Moodle web-service REST token (`moodle_mobile_app` service) used for direct REST operations or institutional login. |
+Instructor Canvas tasks also use a course picker. Opening a course verifies API
+access and returns a Canvas link; publishing creates a staged assignment's title,
+instructions, and due date. Publishing requires Canvas instructor permissions.
+The existing instructor authentication boundary still applies to these routes;
+without a configured `wolfhub.auth` provider, instructor routes return 503.
+Student sync uses the existing prototype student routing boundary.
 
-### Desktop attachment limitation & watch/takeover links
+The Canvas integration imports instructions and due dates, rather than downloading
+starter files, uploading staged attachments, or importing grades/submissions.
+Canvas assignment imports do not automatically create executable test workspaces.
+Credentials remain on the server, pagination is supported, and bearer tokens are
+never forwarded across origins. Imported Canvas content is ignored by Git.
+For remotely hosted boxes, set `COURSE_ORIGIN` to the orchestrator URL they can reach.
 
-Official Maritime SDK inspection reveals that OpenClaw runs in headless agent containers (`client.agents`), distinct from standalone persistent desktop sessions (`client.computers`). There is currently no official bridge connecting an OpenClaw agent container to a Maritime desktop session. As a result, watch and interactive takeover links are omitted (`None`), and task logs explicitly report this architectural limitation.
-
-### Institutional authentication & resume flow
-
-When connecting to institutional Moodle instances (outside the exact demo allowlist `school.moodledemo.net` and `sandbox.moodledemo.net`), tasks require authentication:
-1. If neither `task.ws_token` nor `MOODLE_WS_TOKEN` is present, the task transitions to `needs_human`.
-2. The instructor can resume the task via `POST /api/delegate/tasks/{task_id}/resume` with `{"token": "<token>"}`.
-3. Resuming without a token fails closed with an explicit error detailing that interactive desktop takeover is unsupported without desktop integration.
-
-### Implementation status vs. live validation
-
-- **Implemented & verified in test suite:** Strict Pydantic models with input sanitization, Moodle REST client adapter with authenticated file downloads, deterministic fake simulation mode, exact allowlist hostname enforcement, fail-closed auth and no-key configuration error handling, background worker exception trapping, concrete resume API flow, and stubbed agent interaction tests for `open_course` and `publish_assignment`.
-- **Remaining live validation:** Live OpenClaw browser execution against a real Maritime cluster and live Moodle instance requires an active `MARITIME_API_KEY` and reachable remote infrastructure.
-
-### Public demo hourly reset caveat
-
-The public demo instance (`https://school.moodledemo.net`, Mount Orange) automatically resets its database hourly on the hour (e.g., at :00 UTC). Any assignments published to the demo site will be wiped on the subsequent reset.
+Optional CLI import: set `CANVAS_COURSE_ID` and run
+`PYTHONPATH=orchestrator .venv/bin/python scripts/import_canvas.py`.
+The implementation follows the [Canvas assignments API](https://developerdocs.instructure.com/services/canvas/resources/assignments).
 
 ## Demo flow
 

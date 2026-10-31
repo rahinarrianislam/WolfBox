@@ -33,6 +33,10 @@ class PrefsRequest(BaseModel):
     text: str
 
 
+class SyncRequest(BaseModel):
+    canvas_course_id: str | None = None
+
+
 class SolveRequest(BaseModel):
     full_sections: list[str] | None = None
 
@@ -150,8 +154,39 @@ def create_app(box_client=None, registry=None) -> FastAPI:
         return call(student_id, "plan_solve", payload)
 
     @app.post("/api/students/{student_id}/sync")
-    def sync(student_id: str):
+    def sync(student_id: str, request: Request, body: SyncRequest | None = None):
+        record = student(student_id)
+        selected = (body.canvas_course_id if body else None) or record.get("canvas_course_id")
+        if selected:
+            import secrets
+            import httpx
+            from wolfhub.canvas import CanvasRest
+            if not selected.isascii() or not selected.isdigit():
+                raise HTTPException(status_code=422, detail="Select a valid Canvas course")
+            course = f"canvas-{selected}"
+            try:
+                with httpx.Client(timeout=20, follow_redirects=False) as client:
+                    CanvasRest(client=client).import_course(course, selected, ROOT / "course_site", "task_" + secrets.token_hex(6))
+            except (ValueError, KeyError, httpx.HTTPError):
+                raise HTTPException(status_code=502, detail="Canvas import failed; check course access and server credentials")
+            app.state.registry.select_canvas_course(student_id, selected)
+            origin = os.getenv("COURSE_ORIGIN") or str(request.base_url).rstrip("/")
+            return call(student_id, "sync", {"course_url": f"{origin}/course/{course}/course.canvas.json"})
+        if os.getenv("COURSE_SOURCE") == "canvas":
+            raise HTTPException(status_code=400, detail="Choose a Canvas course before syncing")
         return call(student_id, "sync")
+
+    @app.get("/api/students/{student_id}/canvas/courses")
+    def canvas_courses(student_id: str):
+        student(student_id)
+        from wolfhub.canvas import CanvasRest
+        import httpx
+        try:
+            with httpx.Client(timeout=20, follow_redirects=False) as client:
+                courses = CanvasRest(client=client).courses()
+            return {"courses": courses, "selected_course_id": student(student_id).get("canvas_course_id")}
+        except (ValueError, KeyError, httpx.HTTPError):
+            raise HTTPException(status_code=502, detail="Could not load Canvas courses; check server credentials and connectivity")
 
     @app.get("/api/students/{student_id}/sync/{job_id}")
     def get_sync(student_id: str, job_id: str):

@@ -7,9 +7,10 @@ struct CourseView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 HStack(alignment: .top) {
-                    PageHeading(title: "Your course, caught up.", subtitle: "CSC 116 · Specifications, deadlines, and what changed.")
+                    PageHeading(title: "Your course, caught up.", subtitle: "Canvas · Assignments, deadlines, and what changed.")
                     Button { Task { await model.syncCourse() } } label: { Label(model.busy.contains("sync") ? "Syncing…" : "Sync now", systemImage: "arrow.triangle.2.circlepath") }.buttonStyle(.borderedProminent).controlSize(.large).disabled(model.busy.contains("sync"))
                 }
+                CanvasCoursePicker(model: model)
                 HStack(alignment: .top, spacing: 32) {
                     VStack(alignment: .leading, spacing: 20) {
                         SectionHeading(title: "Since your last sync")
@@ -86,5 +87,22 @@ struct DocumentReader: View {
                 }.padding(30)
             }
         }.frame(width: 760, height: 700).background(Color.wolfPaper)
+    }
+}
+
+
+struct CanvasCoursePicker: View {
+    @Bindable var model: AppModel
+    var body: some View {
+        HStack {
+            Picker("Canvas course", selection: $model.selectedCanvasCourse) {
+                Text("Choose a course…").tag("")
+                ForEach(model.canvasCourses) { course in Text(course.name).tag(course.id) }
+            }.pickerStyle(.menu)
+            Button { Task { await model.loadCanvasCourses() } } label: { Label("Refresh courses", systemImage: "arrow.clockwise") }
+                .disabled(model.busy.contains("canvas-courses"))
+            if model.busy.contains("canvas-courses") { ProgressView().controlSize(.small) }
+            if model.canvasCourses.isEmpty && !model.busy.contains("canvas-courses") { Text("No courses loaded.").foregroundStyle(.secondary) }
+        }.onChange(of: model.selectedCanvasCourse) { _, _ in model.canvasAuthorized = false }
     }
 }

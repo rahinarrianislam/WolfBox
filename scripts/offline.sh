@@ -20,4 +20,5 @@ fi
 
 export BOX_BACKEND=local
 export GEMMA_BACKEND=ollama
+export COURSE_SOURCE=mock
 exec scripts/dev.sh

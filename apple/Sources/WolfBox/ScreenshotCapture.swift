@@ -20,7 +20,7 @@ import AppKit
                 ("plan-option-3", { model.optionIndex = 2 }),
                 ("ta", { model.loadFixtures(role: "ta") }),
                 ("instructor", { model.loadFixtures(role: "instructor") }),
-                ("moodle", { model.loadFixtures(role: "instructor"); model.destination = .moodle })
+                ("canvas", { model.loadFixtures(role: "instructor"); model.destination = .canvas })
             ]
             for (name, prepare) in screens {
                 prepare()

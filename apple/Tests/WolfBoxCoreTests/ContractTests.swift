@@ -17,14 +17,14 @@ final class ContractTests: XCTestCase {
         let done = try JSONDecoder().decode(Run.self, from: Data(#"{"run_id":"r1","status":"done","hint_status":"ready"}"#.utf8))
         XCTAssertTrue(done.isComplete)
     }
-    func testMoodleFailsClosed() {
-        XCTAssertFalse(MoodleAuthorization(authorized: false, role: "instructor").allows("publish_assignment"))
-        XCTAssertFalse(MoodleAuthorization(authorized: true, role: "student").allows("publish_assignment"))
-        XCTAssertFalse(MoodleAuthorization(authorized: true, role: "instructor").allows("unknown"))
-        XCTAssertFalse(MoodleAuthorization(authorized: true, role: "student").allows("list_assignments"))
-        XCTAssertFalse(MoodleAuthorization(authorized: true, role: "ta").allows("open_course"))
-        XCTAssertTrue(MoodleAuthorization(authorized: true, role: "instructor").allows("list_assignments"))
-        XCTAssertTrue(MoodleAuthorization(authorized: true, role: "instructor").allows("publish_assignment"))
+    func testCanvasFailsClosed() {
+        XCTAssertFalse(CanvasAuthorization(authorized: false, role: "instructor").allows("publish_assignment"))
+        XCTAssertFalse(CanvasAuthorization(authorized: true, role: "student").allows("publish_assignment"))
+        XCTAssertFalse(CanvasAuthorization(authorized: true, role: "instructor").allows("unknown"))
+        XCTAssertFalse(CanvasAuthorization(authorized: true, role: "student").allows("list_assignments"))
+        XCTAssertFalse(CanvasAuthorization(authorized: true, role: "ta").allows("open_course"))
+        XCTAssertTrue(CanvasAuthorization(authorized: true, role: "instructor").allows("list_assignments"))
+        XCTAssertTrue(CanvasAuthorization(authorized: true, role: "instructor").allows("publish_assignment"))
     }
     func testCalendarPreservesActualTimesAndAllMeetings() throws {
         let sections = try JSONDecoder().decode([CourseSection].self, from: Data(#"[{"course":"A","days":["Mon","Wed"],"start":"09:35","end":"10:25"},{"course":"B","days":["Fri"],"start":"18:15","end":"19:30"}]"#.utf8))

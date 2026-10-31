@@ -5,9 +5,11 @@ from .jobs import run_sync, start_sync
 
 
 def sync(store, payload):
-    url = payload.get("course_url") or os.environ.get("COURSE_URL")
+    url = payload.get("course_url") or store.read_json("sync_source.json", {}).get("course_url") or os.environ.get("COURSE_URL")
     if not url:
         raise ValueError("course_url is required (or set COURSE_URL)")
+    if payload.get("course_url"):
+        store.write_json("sync_source.json", {"course_url": url})
     return start_sync(store, url)
 
 

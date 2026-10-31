@@ -144,7 +144,7 @@ public struct DelegateTask: Codable, Sendable {
     public var result: JSONValue?; public var watch_url: String?; public var takeover_url: String?; public var error: String?; public var mode: String?
     public var isTerminal: Bool { ["completed", "done", "succeeded", "failed", "error", "cancelled", "denied"].contains(status ?? "") }
 }
-public struct MoodleAuthorization: Sendable {
+public struct CanvasAuthorization: Sendable {
     public var authorized: Bool; public var role: String
     public init(authorized: Bool, role: String) { self.authorized = authorized; self.role = role }
     public func allows(_ kind: String) -> Bool {
@@ -176,4 +176,15 @@ public struct WeekLayout {
         startMinute = min(8 * 60, (meetings.map(\.start).min() ?? 480) / 60 * 60)
         endMinute = max(17 * 60, ((meetings.map(\.end).max() ?? 1020) + 59) / 60 * 60)
     }
+}
+
+public struct CanvasCourse: Codable, Sendable, Identifiable, Equatable {
+    public var id: String
+    public var name: String
+    public var code: String
+    public init(id: String, name: String, code: String = "") { self.id = id; self.name = name; self.code = code }
+}
+public struct CanvasCoursesResponse: Codable, Sendable {
+    public var courses: [CanvasCourse]
+    public var selected_course_id: String?
 }

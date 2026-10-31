@@ -28,9 +28,16 @@ class Registry:
 
     def set(self, student_id: str, name: str, box_id: str, backend: str) -> dict:
         entry = {"name": name, "box_id": box_id, "backend": backend}
+        selected = self.students.get(student_id, {}).get("canvas_course_id")
+        if selected:
+            entry["canvas_course_id"] = selected
         self.students[student_id] = entry
         self._save()
         return entry
+
+    def select_canvas_course(self, student_id: str, course_id: str):
+        self.students[student_id]["canvas_course_id"] = course_id
+        self._save()
 
     def list(self) -> list[dict]:
         return [dict(id=student_id, **entry) for student_id, entry in self.students.items()]

@@ -19,6 +19,7 @@ struct WolfBoxApp: App {
     }
 }
 
+#if canImport(PreviewsMacros)
 #Preview("Student workspace") { RootView(model: AppModel(fixtures: true)).frame(width: 1320, height: 920) }
 #Preview("Course") {
     let model = AppModel(fixtures: true)
@@ -40,3 +41,5 @@ struct WolfBoxApp: App {
     model.loadFixtures(role: "instructor")
     return RootView(model: model).frame(width: 1320, height: 920)
 }
+
+#endif

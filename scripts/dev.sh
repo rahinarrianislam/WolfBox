@@ -16,6 +16,10 @@ if [[ -x .venv/bin/python ]]; then
   PYTHON="$ROOT/.venv/bin/python"
 fi
 
+# Canvas is the default LMS; COURSE_SOURCE=mock retains the offline demo.
+export COURSE_SOURCE="${COURSE_SOURCE:-canvas}"
+COURSE_MANIFEST="$(PYTHONPATH=orchestrator "$PYTHON" -c 'from wolfhub.moodle.manifest import course_url; print(course_url())')"
+
 children=()
 cleanup() {
   trap - EXIT INT TERM
@@ -29,7 +33,7 @@ start_box() {
   env DATA_DIR="$ROOT/.data/$student" PORT="$port" ALLOW_SEED=1 \
     STUCK_MINUTES="${STUCK_MINUTES:-2}" \
     GEMMA_BACKEND="${GEMMA_BACKEND:-fake}" \
-    COURSE_URL="http://127.0.0.1:8000/course/csc116/course.json" \
+    COURSE_URL="${COURSE_URL:-http://127.0.0.1:8000$COURSE_MANIFEST}" \
     GEMINI_API_KEY="${GEMINI_API_KEY:-}" \
     OLLAMA_URL="${OLLAMA_URL:-http://127.0.0.1:11434}" \
     OLLAMA_MODEL="${OLLAMA_MODEL:-gemma4:e4b}" \

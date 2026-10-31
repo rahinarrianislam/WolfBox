@@ -16,3 +16,8 @@ apple/DerivedData/
 apple/build/
 .data-apple-live.*/
 apple/.venv/
+
+# Local Canvas credentials and imported private course content
+CANVAS.md
+orchestrator/course_site/*/canvas/
+orchestrator/course_site/*/course.canvas.json

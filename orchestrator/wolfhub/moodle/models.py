@@ -33,6 +33,14 @@ class StrictModel(BaseModel):
 class TaskParams(StrictModel):
     course: str
     item: str | None = None
+    canvas_course_id: str | None = None
+
+    @field_validator("canvas_course_id")
+    @classmethod
+    def canvas_id(cls, value):
+        if value is not None and not re.fullmatch(r"[0-9]+", value):
+            raise ValueError("Expected a numeric Canvas course ID")
+        return value
 
     _ids = field_validator("course", "item")(lambda v: identifier(v) if v is not None else v)
 
@@ -79,7 +87,7 @@ class ManifestItem(StrictModel):
 class Manifest(StrictModel):
     course: str
     title: str = Field(min_length=1)
-    source: Literal["moodle"]
+    source: Literal["moodle", "canvas"]
     sample: bool = False
     items: list[ManifestItem] = Field(max_length=500)
 

@@ -167,6 +167,12 @@
 
     <!-- TAB 2: COURSE SYNC & DOCS -->
     <div id="tab-sync" class="tab-content">
+      <div class="card" style="margin-bottom:1rem">
+        <label for="canvas-course-picker">Canvas course</label>
+        <select id="canvas-course-picker"><option value="">Choose a course…</option></select>
+        <button id="canvas-courses-refresh" class="btn btn-secondary btn-sm">Refresh courses</button>
+        <p id="canvas-course-status" class="muted" role="status"></p>
+      </div>
       <div class="grid-main">
         <!-- Left: Course Sync Alerts & Status -->
         <div>
@@ -178,7 +184,7 @@
               </button>
             </div>
             <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">
-              Your box mirrors everything your instructor publishes: assignment specs, starter code, syllabus changes, and lecture notes.
+              Choose a Canvas course to import assignment instructions and deadlines into your box.
             </p>
 
             <div id="sync-alerts-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -357,6 +363,7 @@
       setupEditorKeyHandlers();
       setupDeskLight();
 
+      await loadCanvasCourses();
       await loadStudentState();
       await loadAssignments();
       await loadDeadlines();
@@ -737,6 +744,19 @@
       }
     });
 
+    async function loadCanvasCourses() {
+      const picker = document.getElementById('canvas-course-picker');
+      const status = document.getElementById('canvas-course-status');
+      const previous = picker.value;
+      status.textContent = 'Loading Canvas courses…';
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/canvas/courses`);
+      if (!res.ok) { status.textContent = 'Could not load courses. Check the Canvas connection and try again.'; return; }
+      picker.replaceChildren(new Option('Choose a course…', ''));
+      for (const course of res.data.courses) picker.add(new Option(course.name, course.id));
+      picker.value = previous || res.data.selected_course_id || '';
+      status.textContent = res.data.courses.length ? 'Choose a course, then click Sync Now.' : 'No Canvas courses available.';
+    }
+    document.getElementById('canvas-courses-refresh').addEventListener('click', loadCanvasCourses);
     // --- SYNC NOW ---
     syncNowBtn.addEventListener('click', async () => {
       syncNowBtn.disabled = true;
@@ -744,7 +764,7 @@
 
       const syncRes = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/sync`, {
         method: 'POST',
-        body: JSON.stringify({})
+        body: JSON.stringify({canvas_course_id: document.getElementById('canvas-course-picker').value || null})
       });
 
       if (!syncRes.ok) {

@@ -14,7 +14,7 @@ struct Fixtures: Decodable {
 }
 
 enum Destination: String, CaseIterable, Identifiable {
-    case learn = "Learn", course = "Course", plan = "Plan", ta = "TA handoff", instructor = "Instructor", moodle = "Moodle tasks"
+    case learn = "Learn", course = "Course", plan = "Plan", ta = "TA handoff", instructor = "Instructor", canvas = "Canvas tasks"
     var id: String { rawValue }
     var symbol: String {
         switch self {
@@ -23,7 +23,7 @@ enum Destination: String, CaseIterable, Identifiable {
         case .plan: return "calendar"
         case .ta: return "person.2"
         case .instructor: return "chart.bar.xaxis"
-        case .moodle: return "arrow.up.forward.app"
+        case .canvas: return "arrow.up.forward.app"
         }
     }
 }
@@ -59,9 +59,11 @@ final class AppModel {
     var summary = ""
     var runs: [Run] = []
     var heatmap: Heatmap?
-    var moodleAuthorized = false
-    var moodleCourse = "csc116"
-    var moodleAssignment = "hw5"
+    var canvasCourses: [CanvasCourse] = []
+    var selectedCanvasCourse = ""
+    var canvasAuthorized = false
+    var canvasCourse = "csc116"
+    var canvasAssignment = "hw5"
     var delegateTask: DelegateTask?
     var delegateTasks: [DelegateTask] = []
     var urlSession: URLSession = .shared
@@ -79,7 +81,7 @@ final class AppModel {
     var destinations: [Destination] {
         switch user?.role {
         case "ta": return [.ta]
-        case "instructor": return [.instructor, .moodle]
+        case "instructor": return [.instructor, .canvas]
         default: return [.learn, .course, .plan]
         }
     }
@@ -94,12 +96,13 @@ final class AppModel {
         else if role == "instructor" { user?.name = "Dr. Morgan"; destination = .instructor }
         else { destination = .learn }
         state = f.state; code = f.state.code ?? ""; run = f.state.last_run
+        canvasCourses = [CanvasCourse(id: "116", name: "Sample · CSC 116")]; selectedCanvasCourse = "116"
         assignments = f.assignments; docs = f.docs; document = nil; deadlines = f.deadlines
         plan = f.plan; prefs = f.plan.plan?.prefs_text ?? ""; echo = "Start at 9 AM or later. Keep Tuesday and Thursday afternoons free. 12–15 credits."
         students = f.students; selectedStudent = f.students.first?.id ?? ""
         studentStates = ["alex": f.state]
         summary = f.summary.markdown ?? ""; runs = f.runs; heatmap = f.heatmap; syncJob = f.sync
-        delegateTask = f.delegation; delegateTasks = [f.delegation]; moodleCourse = "csc116"; moodleAssignment = "hw5"; moodleAuthorized = false; optionIndex = 0
+        delegateTask = f.delegation; delegateTasks = [f.delegation]; canvasCourse = "csc116"; canvasAssignment = "hw5"; canvasAuthorized = false; optionIndex = 0
     }
     func perform(_ key: String, _ work: () async throws -> Void) async {
         guard !busy.contains(key) else { return }
@@ -145,10 +148,10 @@ final class AppModel {
         generation = UUID(); if !fixtures { keychain.delete(server: serverURL) }; token = nil; user = nil
         state = nil; run = nil; code = ""; drafts = [:]; assignments = []; docs = []; deadlines = []
         plan = nil; students = []; studentStates = [:]; summary = ""; runs = []; heatmap = nil
-        delegateTask = nil; delegateTasks = []; moodleAuthorized = false; busy = []; answer = ""; document = nil; syncJob = nil
+        delegateTask = nil; delegateTasks = []; canvasCourses = []; selectedCanvasCourse = ""; canvasAuthorized = false; busy = []; answer = ""; document = nil; syncJob = nil
         prefs = ""; echo = ""; question = ""; selectedStudent = ""; optionIndex = 0
         assignment = "hw4"; runTimedOut = false; delegateTimedOut = false; notice = nil; error = nil
-        moodleCourse = "csc116"; moodleAssignment = "hw5"
+        canvasCourse = "csc116"; canvasAssignment = "hw5"
     }
     func logout() async {
         if fixtures { endSession(); fixtures = false; return }
@@ -170,7 +173,7 @@ final class AppModel {
         case .plan: await loadPlan()
         case .ta: await loadRoster()
         case .instructor: await loadHeatmap()
-        case .moodle: await loadMoodleTasks()
+        case .canvas: await loadCanvasCourses(); await loadCanvasTasks()
         }
     }
     func loadStudent() async {
@@ -226,7 +229,21 @@ final class AppModel {
             answer = try await request(TextResponse.self, studentPath + ["ask"], method: "POST", body: ["text": .string(text)]).reply ?? "The tutor returned no answer. Try a more specific question."
         }
     }
+    func loadCanvasCourses() async {
+        if fixtures {
+            canvasCourses = [CanvasCourse(id: "116", name: "Sample · CSC 116")]
+            selectedCanvasCourse = "116"
+            return
+        }
+        await perform("canvas-courses") {
+            let path = user?.role == "instructor" ? ["api", "delegate", "canvas", "courses"] : studentPath + ["canvas", "courses"]
+            let response = try await request(CanvasCoursesResponse.self, path)
+            canvasCourses = response.courses
+            if selectedCanvasCourse.isEmpty { selectedCanvasCourse = response.selected_course_id ?? "" }
+        }
+    }
     func loadCourse() async {
+        await loadCanvasCourses()
         await perform("docs") { docs = try await request(ListResponse.self, studentPath + ["docs"]).docs ?? [] }
         await perform("deadlines") { deadlines = try await request(ListResponse.self, studentPath + ["deadlines"]).deadlines ?? [] }
     }
@@ -239,7 +256,8 @@ final class AppModel {
     func syncCourse() async {
         if fixtures { syncJob = fixtureData?.sync; notice = "Fixture sync shown. The course site was not contacted."; return }
         await perform("sync") {
-            let job = try await request(JobResponse.self, studentPath + ["sync"], method: "POST", body: [:])
+            guard !selectedCanvasCourse.isEmpty else { throw APIError.server(400, "Choose a Canvas course first.") }
+            let job = try await request(JobResponse.self, studentPath + ["sync"], method: "POST", body: ["canvas_course_id": .string(selectedCanvasCourse)])
             guard let id = job.job_id else { throw APIError.invalidResponse }
             let deadline = Date().addingTimeInterval(75)
             while Date() < deadline {
@@ -315,24 +333,25 @@ final class AppModel {
             notice = "Course manifest restored to its initial state."
         }
     }
-    func startMoodle(_ kind: String) async {
-        guard MoodleAuthorization(authorized: moodleAuthorized, role: user?.role ?? "").allows(kind), !moodleCourse.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            error = "Moodle tasks require an instructor account and your authorization for this course."; return
+    func startCanvas(_ kind: String) async {
+        guard CanvasAuthorization(authorized: canvasAuthorized, role: user?.role ?? "").allows(kind), !canvasCourse.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            error = "Canvas tasks require an instructor account and your authorization for this course."; return
         }
-        if kind == "publish_assignment", moodleAssignment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { error = "Enter the staged assignment ID to publish first."; return }
+        if kind == "publish_assignment", canvasAssignment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { error = "Enter the staged assignment ID to publish first."; return }
         delegateTimedOut = false
-        await perform("moodle") {
-            if fixtures { delegateTask = fixtureData?.delegation; notice = "Fixture task shown. Moodle was not contacted."; return }
+        await perform("canvas") {
+            if fixtures { delegateTask = fixtureData?.delegation; notice = "Fixture task shown. Canvas was not contacted."; return }
             guard token != nil else { throw APIError.unauthorized }
-            var body: [String: JSONValue] = ["course": .string(moodleCourse.trimmingCharacters(in: .whitespacesAndNewlines))]
-            if kind == "publish_assignment" { body["item"] = .string(moodleAssignment.trimmingCharacters(in: .whitespacesAndNewlines)) }
-            let job = try await request(JobResponse.self, ["api", "delegate", "moodle", kind], method: "POST", body: body)
+            guard !selectedCanvasCourse.isEmpty else { throw APIError.server(400, "Choose a Canvas course first.") }
+            var body: [String: JSONValue] = ["course": .string("canvas-" + selectedCanvasCourse), "canvas_course_id": .string(selectedCanvasCourse)]
+            if kind == "publish_assignment" { body["item"] = .string(canvasAssignment.trimmingCharacters(in: .whitespacesAndNewlines)) }
+            let job = try await request(JobResponse.self, ["api", "delegate", "canvas", kind], method: "POST", body: body)
             guard let id = job.task_id else { throw APIError.invalidResponse }
-            try await pollMoodle(id)
-            await loadMoodleTasks()
+            try await pollCanvas(id)
+            await loadCanvasTasks()
         }
     }
-    func pollMoodle(_ id: String) async throws {
+    func pollCanvas(_ id: String) async throws {
         let deadline = Date().addingTimeInterval(75)
         while Date() < deadline {
             delegateTask = try await request(DelegateTask.self, ["api", "delegate", "tasks", id], timeout: max(0.1, min(10, deadline.timeIntervalSinceNow)))
@@ -342,18 +361,18 @@ final class AppModel {
         }
         delegateTimedOut = true; throw APIError.timedOut
     }
-    func loadMoodleTasks() async {
-        guard user?.role == "instructor" else { error = "Moodle tasks require an instructor account."; return }
+    func loadCanvasTasks() async {
+        guard user?.role == "instructor" else { error = "Canvas tasks require an instructor account."; return }
         if fixtures { return }
-        await perform("moodle-history") { delegateTasks = try await request([DelegateTask].self, ["api", "delegate", "tasks"]) }
+        await perform("canvas-history") { delegateTasks = try await request([DelegateTask].self, ["api", "delegate", "tasks"]) }
     }
-    func openMoodleTask(_ task: DelegateTask) async {
+    func openCanvasTask(_ task: DelegateTask) async {
         guard user?.role == "instructor" else { return }
         delegateTask = task
-        await refreshMoodle()
+        await refreshCanvas()
     }
-    func refreshMoodle() async {
+    func refreshCanvas() async {
         guard !fixtures, user?.role == "instructor", let id = delegateTask?.task_id, token != nil else { return }
-        await perform("moodle") { try await pollMoodle(id) }
+        await perform("canvas") { try await pollCanvas(id) }
     }
 }

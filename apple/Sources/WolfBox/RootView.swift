@@ -54,7 +54,7 @@ struct RootView: View {
                     case .plan: PlanView(model: model)
                     case .ta: TAView(model: model)
                     case .instructor: InstructorView(model: model)
-                    case .moodle: MoodleView(model: model)
+                    case .canvas: CanvasView(model: model)
                     }
                 }.frame(maxWidth: .infinity, maxHeight: .infinity)
             }

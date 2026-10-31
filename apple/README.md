@@ -84,9 +84,9 @@ chrome; dark, signup, document and section-detail captures use native hosting vi
   expandable run history.
 - **Instructor:** publish hw5, update hw4, confirm course reset, and count
   visualizations for mistake tags and failing tests.
-- **Moodle:** instructor only; explicit local authorization is required to
-  start an action. Defaults are course `csc116`, staged item `hw5`. The client
-  sends `{course}` for open/list and `{course,item}` for publish, handles the
+- **Canvas:** instructor only; explicit local authorization is required to
+  start an action. Choose a Canvas course from the picker; the staged item defaults to `hw5`. The client
+  sends the selected Canvas course ID with each action, handles the
   202 task ID, polls status, lists history, labels `mode=fake` as simulated, and
   exposes watch/takeover links only when safe, non-null URLs are present.
   Server-side instructor authorization remains authoritative.
@@ -106,3 +106,9 @@ navigation in the current session; the server owns submitted-code persistence.
 
 The bundle allows HTTP for the local demo server. It is ad-hoc signed for local
 use, not notarized or prepared for distribution.
+
+
+The Course screen includes a Canvas course picker. Refresh courses, choose one,
+and select Sync now. The server stores the selection for later syncs; no manual
+course ID configuration is required. Instructor Canvas tasks use the same picker.
+Set `CANVAS_URL` and `CANVAS_API_TOKEN` in the server's ignored `.env` file.

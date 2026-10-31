@@ -47,15 +47,15 @@ private final class OfflineProtocol: URLProtocol, @unchecked Sendable {
         XCTAssertTrue(model.busy.isEmpty)
         XCTAssertNotNil(model.error)
     }
-    func testMoodleRejectsNonInstructorWithoutAnyRequest() async {
+    func testCanvasRejectsNonInstructorWithoutAnyRequest() async {
         let model = model()
-        model.fixtures = false; model.moodleAuthorized = true
-        await model.startMoodle("list_assignments")
+        model.fixtures = false; model.canvasAuthorized = true
+        await model.startCanvas("list_assignments")
         XCTAssertEqual(OfflineProtocol.count, 0)
         XCTAssertNotNil(model.error)
-        XCTAssertFalse(model.destinations.contains(.moodle))
+        XCTAssertFalse(model.destinations.contains(.canvas))
     }
-    func testFixtureScreensAndFakeMoodleAreComplete() async {
+    func testFixtureScreensAndFakeCanvasAreComplete() async {
         let model = model()
         XCTAssertEqual(model.plan?.options?.count, 3)
         XCTAssertFalse(model.docs.isEmpty)
@@ -64,11 +64,11 @@ private final class OfflineProtocol: URLProtocol, @unchecked Sendable {
         XCTAssertFalse(model.summary.isEmpty)
         XCTAssertFalse(model.runs.isEmpty)
         model.loadFixtures(role: "instructor")
-        XCTAssertTrue(model.destinations.contains(.moodle))
+        XCTAssertTrue(model.destinations.contains(.canvas))
         XCTAssertEqual(model.delegateTask?.mode, "fake")
-        XCTAssertEqual(model.moodleCourse, "csc116")
-        XCTAssertEqual(model.moodleAssignment, "hw5")
-        XCTAssertFalse(model.moodleAuthorized)
+        XCTAssertEqual(model.canvasCourse, "csc116")
+        XCTAssertEqual(model.canvasAssignment, "hw5")
+        XCTAssertFalse(model.canvasAuthorized)
         XCTAssertEqual(OfflineProtocol.count, 0)
     }
 }
