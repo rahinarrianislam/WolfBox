@@ -1,0 +1,1126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WolfBox — Student Workspace</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="serial.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <div class="pixel-header">
+    <header class="app-header">
+      <div class="brand">
+        <a href="index.html">WolfBox</a>
+        <span class="tagline" id="student-name-display">Loading student box...</span>
+      </div>
+
+      <div class="header-controls">
+        <!-- LLM Badge -->
+        <div id="llm-badge" class="llm-badge fake" title="LLM Backend">
+          Gemma 4 · initializing
+        </div>
+
+        <!-- Desk Light Button -->
+        <button id="desk-light-btn" class="btn btn-secondary btn-sm" style="display: none;" title="Connect USB Arduino Desk Light">
+          💡 Connect desk light
+        </button>
+
+        <a href="index.html" class="btn btn-secondary btn-sm">Switch Student</a>
+        <a href="ta.html" class="btn btn-secondary btn-sm">TA View</a>
+      </div>
+    </header>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-bar">
+    <button class="tab-btn active" data-tab="tab-learn">
+      💻 Learn & Code
+    </button>
+    <button class="tab-btn" data-tab="tab-sync">
+      🔄 Course Sync & Docs
+      <span id="sync-indicator" class="tag y" style="display:none; font-size:0.65rem; padding:1px 5px;">New</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-plan">
+      📅 Degree Planner
+    </button>
+  </nav>
+
+  <main class="container">
+    <!-- Nudge Banner (Active when stuck) -->
+    <section id="nudge-container" class="nudge-banner" style="display: none;">
+      <div class="nudge-title">
+        <span>⚡ WolfBox Stuck Detection Nudge</span>
+      </div>
+      <div id="nudge-reason" class="nudge-reason">
+        You've run into recurring test failures. Don't spin your wheels!
+      </div>
+      <div id="nudge-draft" class="nudge-draft">
+        Drafting message to TA...
+      </div>
+      <div class="nudge-actions">
+        <button id="send-ta-btn" class="btn btn-primary btn-sm">
+          Send to TA Office Hours Queue
+        </button>
+        <button id="dismiss-nudge-btn" class="btn btn-secondary btn-sm">
+          Dismiss
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 1: LEARN & CODE -->
+    <div id="tab-learn" class="tab-content active">
+      <div class="grid-main">
+        <!-- Left Column: Code Editor & Submission -->
+        <div>
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="editor-toolbar">
+              <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <label for="assignment-picker" style="font-weight: 600; color: #fff;">Assignment:</label>
+                <select id="assignment-picker" style="background: #283330; color: #fff; border: 1px solid #3d4e4a; border-radius: 4px; padding: 0.25rem 0.6rem; font-family: var(--mono); font-size: 0.8rem; outline: none;">
+                  <option value="hw4">hw4 (list utilities)</option>
+                </select>
+                <span id="assignment-due" class="muted" style="font-size: 0.72rem;"></span>
+              </div>
+              <div>
+                <span id="run-status-indicator" class="tag gray">Ready</span>
+              </div>
+            </div>
+
+            <textarea id="code-editor" class="code-textarea" spellcheck="false" placeholder="# Starter code will load from your persistent box..."></textarea>
+
+            <div style="background: #18201e; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+              <span class="muted" style="font-size: 0.75rem; font-family: var(--mono);">Tab key inserts 4 spaces · Isolated Maritime box</span>
+              <button id="submit-code-btn" class="btn btn-primary">
+                ▶ Run Tests
+              </button>
+            </div>
+          </div>
+
+          <!-- Ask Box -->
+          <div class="card" style="margin-top: 1.25rem;">
+            <div class="card-header">
+              <h3 class="card-title">💬 Ask Socratic Tutor</h3>
+              <span class="tag outline" style="font-size: 0.7rem;">History-aware</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-bottom: 0.6rem;">
+              Ask questions about test failures, logic, or course concepts. WolfBox remembers past attempts without handing out solutions.
+            </p>
+            <div class="ask-input-row">
+              <input type="text" id="ask-input" class="ask-input" placeholder="e.g. Why does test_last_index fail on empty list?">
+              <button id="ask-btn" class="btn btn-success">Ask</button>
+            </div>
+            <div id="ask-reply-box" class="ask-reply" style="display: none; margin-top: 0.75rem;">
+              <!-- Reply goes here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Test Results & Hint Card -->
+        <div>
+          <!-- Test Results Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">🧪 Test Results</h3>
+              <span id="test-summary-badge" class="tag gray">No runs yet</span>
+            </div>
+
+            <div id="test-results-container" class="test-results">
+              <div class="muted" style="font-size: 0.85rem; padding: 1rem 0; text-align: center;">
+                Click "Run Tests" to execute against assignment test suite.
+              </div>
+            </div>
+
+            <!-- Hint Card -->
+            <div id="hint-card" class="hint-card" style="display: none;">
+              <div class="hint-header">
+                <span class="hint-title">💡 Socratic Hint</span>
+                <span id="hint-model-caption" class="hint-caption">via Gemma 4</span>
+              </div>
+              <div id="hint-content" class="hint-body">
+                <!-- Hint text -->
+              </div>
+              <div id="hint-chips" class="hint-chips">
+                <!-- Related tags chips -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Student Profile / Memory Stats Card -->
+          <div class="card" style="margin-top: 1.25rem;">
+            <div class="card-header">
+              <h3 class="card-title">🧠 Persistent Memory Profile</h3>
+              <span class="tag b">Cross-assignment</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-bottom: 0.75rem;">
+              WolfBox tracks recurring conceptual slip-ups across your homeworks to help you master patterns.
+            </p>
+            <div id="profile-tags-container" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+              <span class="tag gray">Loading profile...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: COURSE SYNC & DOCS -->
+    <div id="tab-sync" class="tab-content">
+      <div class="grid-main">
+        <!-- Left: Course Sync Alerts & Status -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">🔄 Course Autopilot Sync</h3>
+              <button id="sync-now-btn" class="btn btn-primary btn-sm">
+                Sync Now
+              </button>
+            </div>
+            <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">
+              Your box mirrors everything your instructor publishes: assignment specs, starter code, syllabus changes, and lecture notes.
+            </p>
+
+            <div id="sync-alerts-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 0.85rem; font-size: 0.85rem;" class="muted">
+                No recent changes. Click <strong>Sync Now</strong> to check the course site for updates.
+              </div>
+            </div>
+          </div>
+
+          <!-- Deadlines Panel -->
+          <div class="card" style="margin-top: 1.25rem;">
+            <div class="card-header">
+              <h3 class="card-title">📅 This Week's Deadlines</h3>
+              <span class="tag y">From Sync</span>
+            </div>
+            <div id="deadlines-container" class="deadlines-list">
+              <div class="muted" style="font-size: 0.85rem; text-align: center; padding: 0.75rem;">
+                Loading deadlines...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Course Documents & Specs -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">📚 Course Documents & Specs</h3>
+              <span class="tag outline" id="docs-count-badge">0 items</span>
+            </div>
+            <p class="muted" style="font-size: 0.85rem; margin-bottom: 1rem;">
+              Click any document to inspect its Gemma summary, change notes, and full text.
+            </p>
+            <div id="docs-grid" class="docs-grid">
+              <div class="muted" style="font-size: 0.85rem; padding: 1rem;">Loading documents...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DEGREE PLANNER -->
+    <div id="tab-plan" class="tab-content">
+      <div class="sample-banner">
+        ⚠️ SAMPLE DATA: Course catalog & degree requirements are simulated for the NC State hackathon demo.
+      </div>
+
+      <!-- Preferences Row -->
+      <div class="card" style="margin-bottom: 1.25rem;">
+        <div class="card-header">
+          <h3 class="card-title">🎯 Registration Preferences</h3>
+          <span class="tag b">Gemma Natural Language Parser</span>
+        </div>
+        <p class="muted" style="font-size: 0.85rem; margin-bottom: 0.6rem;">
+          State your hard and soft schedule constraints in plain English. Gemma parses them into deterministic solver rules.
+        </p>
+
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <input type="text" id="plan-prefs-input" class="ask-input" style="flex: 1; min-width: 280px;" placeholder="e.g. no 8 AMs, I work Tue/Thu afternoons, 15 credits max">
+          <button id="plan-save-prefs-btn" class="btn btn-secondary">Save Prefs</button>
+          <button id="plan-solve-btn" class="btn btn-primary">Solve Schedule</button>
+        </div>
+
+        <div id="plan-echo-row" style="margin-top: 0.75rem; font-family: var(--mono); font-size: 0.82rem; color: var(--green); display: none;">
+          Echo: <span id="plan-echo-text"></span>
+        </div>
+      </div>
+
+      <!-- Schedule Options Cards -->
+      <div class="card-header" style="margin-bottom: 0.75rem;">
+        <h3>Generated Conflict-Free Schedules</h3>
+        <span class="muted" style="font-size: 0.85rem;">Deterministic Solver + Gemma Explanation</span>
+      </div>
+
+      <div id="plan-options-container" class="option-cards-row">
+        <!-- Rendered options with Week Grids -->
+        <div class="muted" style="padding: 1.5rem; text-align: center;">
+          Loading schedule options...
+        </div>
+      </div>
+
+      <!-- Remaining Degree Requirements -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-header">
+          <h3 class="card-title">🎓 Remaining Degree Requirements</h3>
+          <span class="tag outline">Degree Audit</span>
+        </div>
+        <div id="plan-remaining-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.8rem;">
+          <div class="muted" style="font-size: 0.85rem;">Loading requirements...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Document Viewer Modal -->
+  <div id="doc-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-doc-title">Document Title</h3>
+        <button id="modal-close-btn" class="btn btn-secondary btn-sm">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-doc-meta" style="margin-bottom: 0.8rem; font-family: var(--mono); font-size: 0.75rem; color: var(--ink-light);"></div>
+        <div id="modal-doc-summary" style="background: var(--yellow-light); border-left: 3px solid var(--yellow); padding: 0.6rem 0.8rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.85rem;"></div>
+        <pre id="modal-doc-content">Loading content...</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Logic -->
+  <script>
+    // URL Params
+    const urlParams = new URLSearchParams(window.location.search);
+    const studentId = urlParams.get('id') || 'alex';
+    let currentAssignment = 'hw4';
+    let currentState = null;
+    let pollInterval = null;
+
+    // --- DOM Elements ---
+    const studentNameDisplay = document.getElementById('student-name-display');
+    const llmBadge = document.getElementById('llm-badge');
+    const deskLightBtn = document.getElementById('desk-light-btn');
+    const nudgeContainer = document.getElementById('nudge-container');
+    const nudgeReason = document.getElementById('nudge-reason');
+    const nudgeDraft = document.getElementById('nudge-draft');
+    const sendTaBtn = document.getElementById('send-ta-btn');
+    const dismissNudgeBtn = document.getElementById('dismiss-nudge-btn');
+
+    const assignmentPicker = document.getElementById('assignment-picker');
+    const assignmentDue = document.getElementById('assignment-due');
+    const runStatusIndicator = document.getElementById('run-status-indicator');
+    const codeEditor = document.getElementById('code-editor');
+    const submitCodeBtn = document.getElementById('submit-code-btn');
+
+    const testSummaryBadge = document.getElementById('test-summary-badge');
+    const testResultsContainer = document.getElementById('test-results-container');
+    const hintCard = document.getElementById('hint-card');
+    const hintContent = document.getElementById('hint-content');
+    const hintChips = document.getElementById('hint-chips');
+    const hintModelCaption = document.getElementById('hint-model-caption');
+    const profileTagsContainer = document.getElementById('profile-tags-container');
+
+    const askInput = document.getElementById('ask-input');
+    const askBtn = document.getElementById('ask-btn');
+    const askReplyBox = document.getElementById('ask-reply-box');
+
+    // Sync elements
+    const syncNowBtn = document.getElementById('sync-now-btn');
+    const syncAlertsContainer = document.getElementById('sync-alerts-container');
+    const deadlinesContainer = document.getElementById('deadlines-container');
+    const docsGrid = document.getElementById('docs-grid');
+    const docsCountBadge = document.getElementById('docs-count-badge');
+
+    // Plan elements
+    const planPrefsInput = document.getElementById('plan-prefs-input');
+    const planSavePrefsBtn = document.getElementById('plan-save-prefs-btn');
+    const planSolveBtn = document.getElementById('plan-solve-btn');
+    const planEchoRow = document.getElementById('plan-echo-row');
+    const planEchoText = document.getElementById('plan-echo-text');
+    const planOptionsContainer = document.getElementById('plan-options-container');
+    const planRemainingContainer = document.getElementById('plan-remaining-container');
+
+    // Modal elements
+    const docModal = document.getElementById('doc-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalDocTitle = document.getElementById('modal-doc-title');
+    const modalDocMeta = document.getElementById('modal-doc-meta');
+    const modalDocSummary = document.getElementById('modal-doc-summary');
+    const modalDocContent = document.getElementById('modal-doc-content');
+
+    // --- Init ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      setupTabs();
+      setupEditorKeyHandlers();
+      setupDeskLight();
+
+      await loadStudentState();
+      await loadAssignments();
+      await loadDeadlines();
+      await loadDocs();
+      await loadPlan();
+    });
+
+    // --- Tab key in textarea inserts 4 spaces ---
+    function setupEditorKeyHandlers() {
+      codeEditor.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = codeEditor.selectionStart;
+          const end = codeEditor.selectionEnd;
+          const value = codeEditor.value;
+          codeEditor.value = value.substring(0, start) + '    ' + value.substring(end);
+          codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+        }
+      });
+    }
+
+    // --- Desk Light Setup ---
+    function setupDeskLight() {
+      if (DeskLightHelper.isSupported()) {
+        deskLightBtn.style.display = 'inline-flex';
+        deskLightBtn.addEventListener('click', async () => {
+          const ok = await DeskLightHelper.connect();
+          if (ok) {
+            deskLightBtn.textContent = '💡 Desk Light Connected';
+            deskLightBtn.classList.remove('btn-secondary');
+            deskLightBtn.classList.add('btn-success');
+            showToast('Arduino Desk Light connected via Web Serial!', 'success');
+          }
+        });
+      }
+    }
+
+    // --- Load Student State ---
+    async function loadStudentState(assignmentOverride) {
+      const targetAssignment = assignmentOverride || currentAssignment;
+      let url = `/api/students/${encodeURIComponent(studentId)}/state`;
+      if (targetAssignment) {
+        url += `?assignment=${encodeURIComponent(targetAssignment)}`;
+      }
+
+      const res = await apiFetch(url);
+      if (!res.ok) {
+        studentNameDisplay.textContent = `Student: ${studentId} (box offline)`;
+        updateLlmBadge({ mode: 'fake', active_backend: 'fake', model: 'gemma4:fake' });
+        return;
+      }
+
+      const state = res.data;
+      currentState = state;
+
+      // Header info
+      studentNameDisplay.textContent = `${state.name || studentId} · ${state.course || 'CSC 116'} · Box: ${state.student_id || studentId}`;
+      if (state.assignment) {
+        currentAssignment = state.assignment;
+      }
+
+      // LLM Badge
+      updateLlmBadge(state.llm);
+
+      // Desk light hook: offline mode check
+      if (state.llm && state.llm.active_backend === 'ollama') {
+        DeskLightHelper.setState('offline');
+      }
+
+      // Populate code editor if we don't already have unsubmitted edits or on first load
+      if (state.code && (!codeEditor.value || codeEditor.value.trim() === '')) {
+        codeEditor.value = state.code;
+      }
+
+      // Nudge banner
+      updateNudgeBanner(state.nudge);
+
+      // Profile tags
+      updateProfileTags(state.profile);
+
+      // Last run if present
+      if (state.last_run) {
+        renderRunResults(state.last_run);
+      }
+    }
+
+    // --- Update LLM Badge ---
+    function updateLlmBadge(llm) {
+      llmBadge.className = 'llm-badge';
+      if (!llm) {
+        llmBadge.classList.add('fake');
+        llmBadge.textContent = 'Gemma 4 · fake';
+        return;
+      }
+
+      const backend = llm.active_backend || llm.mode || 'fake';
+      const model = llm.model || 'gemma-4';
+
+      if (backend === 'gemini') {
+        llmBadge.classList.add('cloud');
+        llmBadge.textContent = 'Gemma 4 · cloud';
+        llmBadge.title = `Cloud API (${model})`;
+      } else if (backend === 'ollama') {
+        llmBadge.classList.add('offline');
+        llmBadge.textContent = 'Gemma 4 · local (offline)';
+        llmBadge.title = `Local Ollama (${model})`;
+      } else {
+        llmBadge.classList.add('fake');
+        llmBadge.textContent = 'Gemma 4 · fake';
+        llmBadge.title = `Fake deterministic mock (${model})`;
+      }
+    }
+
+    // --- Nudge Banner ---
+    function updateNudgeBanner(nudge) {
+      if (nudge && nudge.active) {
+        nudgeContainer.style.display = 'flex';
+        nudgeReason.textContent = nudge.reason || 'You seem stuck on the current tests.';
+        nudgeDraft.textContent = nudge.draft || "Hi! I'm stuck on this assignment after several attempts. Could you help me look at my loop bounds?";
+        DeskLightHelper.setState('stuck');
+      } else {
+        nudgeContainer.style.display = 'none';
+      }
+    }
+
+    sendTaBtn.addEventListener('click', () => {
+      showToast('Sent to TA Office Hours Queue! Your TA has been notified with a 1-page handoff summary.', 'success');
+      sendTaBtn.textContent = 'Sent to TA ✓';
+      sendTaBtn.disabled = true;
+    });
+
+    dismissNudgeBtn.addEventListener('click', () => {
+      nudgeContainer.style.display = 'none';
+    });
+
+    // --- Profile Tags ---
+    function updateProfileTags(profile) {
+      profileTagsContainer.innerHTML = '';
+      if (!profile || !profile.mistake_counts || Object.keys(profile.mistake_counts).length === 0) {
+        profileTagsContainer.innerHTML = '<span class="muted" style="font-size:0.8rem;">No recurring mistakes recorded yet. Clean slate!</span>';
+        return;
+      }
+
+      const counts = profile.mistake_counts;
+      for (const [tag, count] of Object.entries(counts)) {
+        const badge = document.createElement('span');
+        badge.className = 'tag r';
+        badge.style.fontSize = '0.78rem';
+        badge.innerHTML = `${escapeHtml(tag)}: <strong>${count}</strong>`;
+        profileTagsContainer.appendChild(badge);
+      }
+    }
+
+    // --- Load Assignments ---
+    async function loadAssignments() {
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/assignments`);
+      if (!res.ok || !Array.isArray(res.data.assignments)) {
+        return;
+      }
+
+      const assignments = res.data.assignments;
+      assignmentPicker.innerHTML = '';
+
+      assignments.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = `${a.id} (${a.title || a.id})`;
+        if (a.id === currentAssignment) opt.selected = true;
+        assignmentPicker.appendChild(opt);
+      });
+
+      updateAssignmentMeta(assignments);
+    }
+
+    function updateAssignmentMeta(assignments) {
+      const current = assignments.find(a => a.id === currentAssignment);
+      if (current && current.due) {
+        assignmentDue.textContent = `Due: ${formatIsoDate(current.due)}`;
+      } else {
+        assignmentDue.textContent = '';
+      }
+    }
+
+    assignmentPicker.addEventListener('change', async (e) => {
+      currentAssignment = e.target.value;
+      runStatusIndicator.className = 'tag gray';
+      runStatusIndicator.textContent = 'Loading...';
+      await loadStudentState(currentAssignment);
+      runStatusIndicator.textContent = 'Ready';
+    });
+
+    // --- Submit Code & Polling Loop ---
+    submitCodeBtn.addEventListener('click', async () => {
+      const code = codeEditor.value;
+      if (!code) {
+        showToast('Code is empty', 'warning');
+        return;
+      }
+
+      submitCodeBtn.disabled = true;
+      runStatusIndicator.className = 'tag y';
+      runStatusIndicator.textContent = 'Running tests...';
+      testSummaryBadge.className = 'tag y';
+      testSummaryBadge.textContent = 'Running...';
+
+      // Desk light: running
+      DeskLightHelper.setState('running');
+
+      const submitRes = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/submit`, {
+        method: 'POST',
+        body: JSON.stringify({ code, assignment: currentAssignment })
+      });
+
+      if (!submitRes.ok) {
+        submitCodeBtn.disabled = false;
+        runStatusIndicator.className = 'tag r';
+        runStatusIndicator.textContent = 'Failed to submit';
+        DeskLightHelper.setState('fail');
+        return;
+      }
+
+      const runId = submitRes.data.run_id;
+      showToast(`Run ${runId} submitted. Testing inside box...`, 'info');
+
+      // Poll run status every 1s
+      let elapsedSeconds = 0;
+      if (pollInterval) clearInterval(pollInterval);
+
+      pollInterval = setInterval(async () => {
+        elapsedSeconds += 1;
+        const runRes = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/runs/${encodeURIComponent(runId)}`);
+
+        if (!runRes.ok) {
+          if (elapsedSeconds > 35) {
+            clearInterval(pollInterval);
+            submitCodeBtn.disabled = false;
+            runStatusIndicator.textContent = 'Timeout';
+          }
+          return;
+        }
+
+        const run = runRes.data.run || runRes.data;
+
+        // Render current run state
+        renderRunResults(run);
+
+        // Check if finished running tests
+        if (run.status !== 'running') {
+          // If tests finished, check if hint is also done or still pending
+          if (run.hint_status !== 'pending' || elapsedSeconds >= 40) {
+            clearInterval(pollInterval);
+            submitCodeBtn.disabled = false;
+            runStatusIndicator.className = 'tag';
+            runStatusIndicator.textContent = 'Done';
+
+            // Refresh state to update nudge & profile counts
+            await loadStudentState(currentAssignment);
+          }
+        }
+      }, 1000);
+    });
+
+    // --- Render Run Results ---
+    function renderRunResults(run) {
+      if (!run) return;
+
+      const passed = run.passed || [];
+      const failed = run.failed || [];
+      const total = passed.length + failed.length;
+
+      testResultsContainer.innerHTML = '';
+
+      if (total === 0 && run.status === 'running') {
+        testResultsContainer.innerHTML = '<div class="muted thinking-dots" style="padding:1rem; text-align:center;">Pytest executing inside student box</div>';
+        return;
+      }
+
+      // Summary badge
+      if (failed.length === 0 && total > 0) {
+        testSummaryBadge.className = 'tag';
+        testSummaryBadge.textContent = `${passed.length}/${total} Passed ✓`;
+        DeskLightHelper.setState('pass');
+      } else {
+        testSummaryBadge.className = 'tag r';
+        testSummaryBadge.textContent = `${failed.length} Failed ✗`;
+        DeskLightHelper.setState('fail');
+      }
+
+      // Passed tests list
+      passed.forEach(tName => {
+        const item = document.createElement('div');
+        item.className = 'test-item pass';
+        item.innerHTML = `
+          <div class="test-item-header">
+            <span>✓ ${escapeHtml(tName)}</span>
+            <span style="font-size: 0.7rem; opacity: 0.8;">PASSED</span>
+          </div>
+        `;
+        testResultsContainer.appendChild(item);
+      });
+
+      // Failed tests list
+      failed.forEach(f => {
+        const testName = typeof f === 'string' ? f : f.test;
+        const msg = typeof f === 'string' ? '' : (f.message || '');
+
+        const item = document.createElement('div');
+        item.className = 'test-item fail';
+        item.innerHTML = `
+          <div class="test-item-header">
+            <span>✗ ${escapeHtml(testName)}</span>
+            <span style="font-size: 0.7rem; opacity: 0.8;">FAILED</span>
+          </div>
+          ${msg ? `<div class="test-error-excerpt">${escapeHtml(msg)}</div>` : ''}
+        `;
+        testResultsContainer.appendChild(item);
+      });
+
+      // Render Hint
+      renderHint(run);
+    }
+
+    function renderHint(run) {
+      if (!run.hint && run.hint_status === 'pending') {
+        hintCard.style.display = 'flex';
+        hintContent.innerHTML = '<span class="thinking-dots">Gemma 4 reasoning over test trace and past student mistakes</span>';
+        hintChips.innerHTML = '';
+        hintModelCaption.textContent = 'thinking…';
+        return;
+      }
+
+      if (run.hint) {
+        hintCard.style.display = 'flex';
+        hintContent.textContent = run.hint;
+
+        // Model caption
+        const modelName = (run.llm && run.llm.model) ? run.llm.model : 'Gemma 4';
+        hintModelCaption.textContent = `via ${modelName}`;
+
+        // Related past chips
+        hintChips.innerHTML = '';
+        if (run.related_past && Array.isArray(run.related_past)) {
+          run.related_past.forEach(rel => {
+            const chip = document.createElement('span');
+            chip.className = 'tag y';
+            chip.style.fontSize = '0.72rem';
+            chip.textContent = `Related: ${rel.assignment || 'hw'} · ${rel.tag || 'mistake'}`;
+            hintChips.appendChild(chip);
+          });
+        }
+      } else {
+        hintCard.style.display = 'none';
+      }
+    }
+
+    // --- Ask Tutor ---
+    askBtn.addEventListener('click', async () => {
+      const text = askInput.value.trim();
+      if (!text) return;
+
+      askBtn.disabled = true;
+      askReplyBox.style.display = 'block';
+      askReplyBox.innerHTML = '<span class="thinking-dots">WolfBox is thinking</span>';
+
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/ask`, {
+        method: 'POST',
+        body: JSON.stringify({ text })
+      });
+
+      askBtn.disabled = false;
+      if (res.ok && res.data) {
+        const reply = res.data.reply || 'No response received.';
+        askReplyBox.innerHTML = renderMarkdown(reply);
+      } else {
+        askReplyBox.textContent = 'Tutor unavailable at the moment.';
+      }
+    });
+
+    // --- SYNC NOW ---
+    syncNowBtn.addEventListener('click', async () => {
+      syncNowBtn.disabled = true;
+      syncNowBtn.textContent = 'Syncing...';
+
+      const syncRes = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/sync`, {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+
+      if (!syncRes.ok) {
+        syncNowBtn.disabled = false;
+        syncNowBtn.textContent = 'Sync Now';
+        return;
+      }
+
+      const jobId = syncRes.data.job_id;
+      showToast(`Sync job started (${jobId}). Mirroring course site...`, 'info');
+
+      // Poll sync job
+      let syncPoll = setInterval(async () => {
+        const jobRes = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/sync/${encodeURIComponent(jobId)}`);
+        if (!jobRes.ok) return;
+
+        const job = jobRes.data.job || jobRes.data;
+        if (job.status !== 'running') {
+          clearInterval(syncPoll);
+          syncNowBtn.disabled = false;
+          syncNowBtn.textContent = 'Sync Now';
+
+          const newItems = job.new || [];
+          const changedItems = job.changed || [];
+
+          if (newItems.length > 0 || changedItems.length > 0) {
+            showToast(`Sync complete! ${newItems.length} new, ${changedItems.length} changed items.`, 'success');
+            DeskLightHelper.flash(3);
+          } else {
+            showToast(`Sync complete! All items up to date.`, 'info');
+          }
+
+          renderSyncAlerts(job);
+          await loadDeadlines();
+          await loadDocs();
+          await loadAssignments();
+        }
+      }, 1000);
+    });
+
+    async function renderSyncAlerts(job) {
+      syncAlertsContainer.innerHTML = '';
+
+      const newItems = job.new || [];
+      const changedItems = job.changed || [];
+
+      if (newItems.length === 0 && changedItems.length === 0) {
+        syncAlertsContainer.innerHTML = `
+          <div style="background:#fff; border:1px solid var(--card-border); border-radius:6px; padding:0.85rem; font-size:0.85rem;" class="muted">
+            All course materials are up to date (${job.unchanged || 0} unchanged items).
+          </div>
+        `;
+        return;
+      }
+
+      // Render new items
+      for (const item of newItems) {
+        const docId = typeof item === 'string' ? item : item.id;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.background = '#f0fdf4';
+        card.style.borderColor = '#86efac';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#166534;">🎉 New Material Published: ${escapeHtml(docId)}</strong>
+            <span class="tag">NEW</span>
+          </div>
+          <p id="alert-summary-${escapeHtml(docId.replace(/[^a-zA-Z0-9]/g, '_'))}" style="font-size:0.85rem; margin-top:0.4rem; color:var(--ink);">
+            Workspace created at <code>repo/${escapeHtml(docId)}</code> and ready to run.
+          </p>
+        `;
+        syncAlertsContainer.appendChild(card);
+        fetchDocSummaryForAlert(docId);
+      }
+
+      // Render changed items
+      for (const item of changedItems) {
+        const docId = typeof item === 'string' ? item : item.id;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.background = '#fffbeb';
+        card.style.borderColor = '#fde68a';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#92400e;">⚠️ Specification Updated: ${escapeHtml(docId)}</strong>
+            <span class="tag y">CHANGED</span>
+          </div>
+          <p id="alert-changed-${escapeHtml(docId.replace(/[^a-zA-Z0-9]/g, '_'))}" style="font-size:0.85rem; margin-top:0.4rem; color:var(--ink);">
+            Checking change notes...
+          </p>
+        `;
+        syncAlertsContainer.appendChild(card);
+        fetchDocChangeNoteForAlert(docId);
+      }
+    }
+
+    async function fetchDocSummaryForAlert(docId) {
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/docs/${encodeURIComponent(docId)}`);
+      if (res.ok && res.data && res.data.doc) {
+        const summary = res.data.doc.summary;
+        const safeId = docId.replace(/[^a-zA-Z0-9]/g, '_');
+        const el = document.getElementById(`alert-summary-${safeId}`);
+        if (el && summary) {
+          el.textContent = summary;
+        }
+      }
+    }
+
+    async function fetchDocChangeNoteForAlert(docId) {
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/docs/${encodeURIComponent(docId)}`);
+      if (res.ok && res.data && res.data.doc) {
+        const note = res.data.doc.change_note;
+        const safeId = docId.replace(/[^a-zA-Z0-9]/g, '_');
+        const el = document.getElementById(`alert-changed-${safeId}`);
+        if (el && note) {
+          el.innerHTML = `<strong>What changed:</strong> ${escapeHtml(note)}`;
+        }
+      }
+    }
+
+    // --- Load Deadlines ---
+    async function loadDeadlines() {
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/deadlines`);
+      deadlinesContainer.innerHTML = '';
+
+      if (!res.ok || !res.data || !Array.isArray(res.data.deadlines) || res.data.deadlines.length === 0) {
+        deadlinesContainer.innerHTML = '<div class="muted" style="padding:0.75rem; text-align:center;">No upcoming deadlines found.</div>';
+        return;
+      }
+
+      res.data.deadlines.forEach(dl => {
+        const item = document.createElement('div');
+        item.className = 'deadline-item';
+        item.innerHTML = `
+          <div class="deadline-info">
+            <span class="deadline-title">${escapeHtml(dl.what)}</span>
+            <span class="deadline-source">${escapeHtml(dl.source_doc || '')}</span>
+          </div>
+          <span class="deadline-badge">${formatIsoDate(dl.due)}</span>
+        `;
+        deadlinesContainer.appendChild(item);
+      });
+    }
+
+    // --- Load Docs ---
+    async function loadDocs() {
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/docs`);
+      docsGrid.innerHTML = '';
+
+      if (!res.ok || !res.data || !Array.isArray(res.data.docs) || res.data.docs.length === 0) {
+        docsGrid.innerHTML = '<div class="muted" style="padding:1rem;">No course documents available yet.</div>';
+        docsCountBadge.textContent = '0 items';
+        return;
+      }
+
+      const docs = res.data.docs;
+      docsCountBadge.textContent = `${docs.length} items`;
+
+      docs.forEach(doc => {
+        const card = document.createElement('div');
+        card.className = 'doc-card';
+        card.innerHTML = `
+          <div class="doc-card-title">
+            <span>📄</span>
+            <span>${escapeHtml(doc.title || doc.item_id || doc.doc_id)}</span>
+          </div>
+          <div style="font-family: var(--mono); font-size: 0.72rem; color: var(--ink-light);">
+            ${escapeHtml(doc.doc_id || '')} · v${escapeHtml(doc.version || '1')}
+          </div>
+          <div class="doc-card-summary">
+            ${escapeHtml(doc.summary || 'Click to view document text...')}
+          </div>
+          ${doc.change_note ? `<div class="tag y" style="margin-top:0.4rem; font-size:0.68rem;">Changed: ${escapeHtml(doc.change_note)}</div>` : ''}
+        `;
+
+        card.addEventListener('click', () => openDocViewer(doc.doc_id));
+        docsGrid.appendChild(card);
+      });
+    }
+
+    async function openDocViewer(docId) {
+      docModal.classList.add('active');
+      modalDocTitle.textContent = docId;
+      modalDocMeta.textContent = 'Loading document...';
+      modalDocSummary.style.display = 'none';
+      modalDocContent.textContent = 'Fetching document content...';
+
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/docs/${encodeURIComponent(docId)}`);
+      if (!res.ok || !res.data) {
+        modalDocContent.textContent = 'Failed to load document text.';
+        return;
+      }
+
+      const doc = res.data.doc || {};
+      const text = res.data.text || '(empty)';
+
+      modalDocTitle.textContent = doc.title || docId;
+      modalDocMeta.textContent = `ID: ${doc.doc_id || docId} | Version: ${doc.version || 1} | SHA: ${(doc.sha256 || '').slice(0, 10)}`;
+
+      if (doc.summary) {
+        modalDocSummary.style.display = 'block';
+        modalDocSummary.innerHTML = `<strong>Gemma Summary:</strong> ${escapeHtml(doc.summary)}`;
+      }
+
+      modalDocContent.textContent = text;
+    }
+
+    modalCloseBtn.addEventListener('click', () => docModal.classList.remove('active'));
+    docModal.addEventListener('click', (e) => {
+      if (e.target === docModal) docModal.classList.remove('active');
+    });
+
+    // --- Degree Planner ---
+    async function loadPlan() {
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/plan`);
+      if (!res.ok || !res.data) return;
+
+      const planData = res.data.plan || {};
+      const options = res.data.options || planData.last_options || [];
+      const remaining = res.data.remaining || [];
+
+      if (planData.prefs_text) {
+        planPrefsInput.value = planData.prefs_text;
+      }
+
+      renderPlanOptions(options);
+      renderPlanRemaining(remaining);
+    }
+
+    planSavePrefsBtn.addEventListener('click', async () => {
+      const text = planPrefsInput.value.trim();
+      if (!text) return;
+
+      planSavePrefsBtn.disabled = true;
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/plan/prefs`, {
+        method: 'POST',
+        body: JSON.stringify({ text })
+      });
+
+      planSavePrefsBtn.disabled = false;
+      if (res.ok && res.data) {
+        const echo = res.data.echo || res.data.prefs_text || 'Preferences saved.';
+        planEchoText.textContent = echo;
+        planEchoRow.style.display = 'block';
+        showToast('Preferences parsed by Gemma!', 'success');
+      }
+    });
+
+    planSolveBtn.addEventListener('click', async () => {
+      planSolveBtn.disabled = true;
+      planSolveBtn.textContent = 'Solving...';
+
+      const res = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/plan/solve`, {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+
+      planSolveBtn.disabled = false;
+      planSolveBtn.textContent = 'Solve Schedule';
+
+      if (res.ok && res.data) {
+        const options = res.data.options || [];
+        renderPlanOptions(options);
+        showToast(`Generated ${options.length} conflict-free schedules!`, 'success');
+      }
+    });
+
+    function renderPlanOptions(options) {
+      planOptionsContainer.innerHTML = '';
+      if (!options || options.length === 0) {
+        planOptionsContainer.innerHTML = '<div class="muted" style="padding:1.5rem; text-align:center;">No schedules generated yet. Click "Solve Schedule".</div>';
+        return;
+      }
+
+      const letterNames = ['Option A', 'Option B', 'Option C'];
+      const colorClasses = ['a', 'b2', 'c3', 'd', 'e', 'f'];
+
+      options.slice(0, 3).forEach((opt, idx) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.gap = '0.8rem';
+
+        const title = letterNames[idx] || `Option ${idx + 1}`;
+        const credits = opt.credits || 15;
+        const satisfies = (opt.satisfies || []).map(s => `<span class="tag b">${escapeHtml(s)}</span>`).join(' ');
+
+        // Render Week Grid
+        const gridHtml = generateWeekGrid(opt.sections || []);
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin:0;">${title}</h3>
+            <div>
+              <span class="tag y">${credits} credits</span>
+              ${satisfies}
+            </div>
+          </div>
+          ${gridHtml}
+          <div style="font-size: 0.85rem; line-height: 1.4; color: var(--ink-dark); background: #fff; padding: 0.6rem; border-radius: 4px; border: 1px solid var(--card-border);">
+            <strong>Reasoning:</strong> ${escapeHtml(opt.explanation || 'Conflict-free schedule meeting degree requirements.')}
+          </div>
+        `;
+        planOptionsContainer.appendChild(card);
+      });
+    }
+
+    function generateWeekGrid(sections) {
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+      const timeSlots = ['9:30', '11:45', '1:30', '3:00'];
+      const colorMap = {};
+      const colorClasses = ['a', 'b2', 'c3', 'd', 'e'];
+      let colorIdx = 0;
+
+      // Assign a color to each course
+      sections.forEach(s => {
+        const course = s.course || s.section_id || 'Class';
+        if (!colorMap[course]) {
+          colorMap[course] = colorClasses[colorIdx % colorClasses.length];
+          colorIdx++;
+        }
+      });
+
+      // Build grid cells
+      let html = `<div class="week">`;
+      html += `<div></div><div class="h">Mon</div><div class="h">Tue</div><div class="h">Wed</div><div class="h">Thu</div><div class="h">Fri</div>`;
+
+      timeSlots.forEach((slot, slotIdx) => {
+        html += `<div class="t">${slot}</div>`;
+        days.forEach(day => {
+          // Find matching section for this day and approximate slot
+          const match = sections.find(s => {
+            const hasDay = (s.days || []).some(d => d.startsWith(day));
+            if (!hasDay) return false;
+            // Slot mapping
+            const startHour = parseInt((s.start || '09:00').split(':')[0], 10);
+            if (slotIdx === 0 && startHour < 11) return true;
+            if (slotIdx === 1 && startHour >= 11 && startHour < 13) return true;
+            if (slotIdx === 2 && startHour >= 13 && startHour < 15) return true;
+            if (slotIdx === 3 && startHour >= 15) return true;
+            return false;
+          });
+
+          if (match) {
+            const courseName = match.course || match.section_id;
+            const cClass = colorMap[courseName] || 'a';
+            html += `<div class="c ${cClass}">${escapeHtml(courseName)}</div>`;
+          } else {
+            html += `<div class="c x"></div>`;
+          }
+        });
+      });
+
+      html += `</div>`;
+      return html;
+    }
+
+    function renderPlanRemaining(requirements) {
+      planRemainingContainer.innerHTML = '';
+      if (!requirements || requirements.length === 0) {
+        planRemainingContainer.innerHTML = '<span class="muted" style="font-size:0.85rem;">All core requirements on track.</span>';
+        return;
+      }
+
+      requirements.forEach(req => {
+        const card = document.createElement('div');
+        card.style.background = '#fff';
+        card.style.padding = '0.65rem 0.85rem';
+        card.style.borderRadius = '5px';
+        card.style.border = '1px solid var(--card-border)';
+        card.innerHTML = `
+          <div style="font-weight: 600; font-size: 0.88rem;">${escapeHtml(req.name || req.id)}</div>
+          <div style="font-size: 0.78rem; color: var(--ink-light); margin-top: 0.2rem;">
+            ${req.courses_needed ? `<strong>${req.courses_needed}</strong> course(s) needed` : 'Pending'}
+          </div>
+        `;
+        planRemainingContainer.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>

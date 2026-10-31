@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WolfBox — Persistent AI Coding Tutor & Course Copilot</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="serial.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="pixel-header">
+    <header class="app-header">
+      <div class="brand">
+        <a href="index.html">WolfBox</a>
+        <span class="tagline">Persistent AI tutor · Hacktoberfest Raleigh 2026</span>
+      </div>
+      <div class="header-controls">
+        <span class="tag y">Maritime + Gemma 4</span>
+      </div>
+    </header>
+  </div>
+
+  <main class="container" style="max-width: 900px; margin-top: 2rem;">
+    <div style="margin-bottom: 2rem;">
+      <h1 style="color: var(--red); font-size: 2.2rem; margin-bottom: 0.5rem;">WolfBox</h1>
+      <p style="font-size: 1.15rem; font-family: var(--mono); color: var(--ink);">
+        AI tutors forget you. <mark style="background: var(--yellow); padding: 0.1rem 0.4rem; border-radius: 3px;">WolfBox remembers</mark>, and so does your TA.
+      </p>
+      <p class="muted" style="margin-top: 0.5rem; font-size: 0.95rem;">
+        Each student has their own persistent Maritime agent box running isolated code, tracking mistakes across assignments, and waking on schedule.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+      <!-- Student Selection Card -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span>🎒 Student Workspaces</span>
+          </h2>
+          <span class="tag b" id="student-count-badge">Loading...</span>
+        </div>
+        <p class="muted" style="font-size: 0.9rem; margin-bottom: 1rem;">
+          Select a student box to open their personal editor, test runner, Socratic tutor, and schedule planner.
+        </p>
+
+        <div id="students-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+          <!-- Populated by JS -->
+          <div class="muted" style="padding: 1rem; text-align: center;">Discovering student boxes...</div>
+        </div>
+      </section>
+
+      <!-- Roles Cards Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+        <!-- TA View -->
+        <section class="card" style="border-top: 4px solid var(--blue);">
+          <div class="card-header">
+            <h3 class="card-title">🧑‍🏫 TA Dashboard</h3>
+            <span class="tag b">Office Hours</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--ink-light); margin-bottom: 1rem;">
+            TAs get a Gemma-written 1-page handoff: what the student tried, failing tests, recurring mistake patterns, and suggested opening questions.
+          </p>
+          <a href="ta.html" class="btn btn-secondary" style="width: 100%;">Open TA View →</a>
+        </section>
+
+        <!-- Instructor View -->
+        <section class="card" style="border-top: 4px solid var(--maroon);">
+          <div class="card-header">
+            <h3 class="card-title">🎓 Instructor Portal</h3>
+            <span class="tag m">Course Ops</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--ink-light); margin-bottom: 1rem;">
+            Publish new assignments (`hw5`), push spec updates (`hw4-v2`), reset demo course state, and view the class-wide mistake heatmap.
+          </p>
+          <a href="instructor.html" class="btn btn-secondary" style="width: 100%;">Open Instructor Portal →</a>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer style="margin-top: auto; padding: 2rem; text-align: center; font-family: var(--mono); font-size: 0.78rem; color: var(--ink-light);">
+    WolfBox · Persistent Maritime Agent Box + Gemma 4 · Offline Ready
+  </footer>
+
+  <script>
+    async function loadStudents() {
+      const container = document.getElementById('students-container');
+      const badge = document.getElementById('student-count-badge');
+
+      const res = await apiFetch('/api/students');
+
+      let students = [];
+      if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        students = res.data;
+      } else {
+        // Fallback default demo students
+        students = [
+          { id: 'alex', name: 'Alex Rivera (3 wks history)', backend: 'local/maritime', box_id: 'box_alex' },
+          { id: 'sam', name: 'Sam Chen (fresh box)', backend: 'local/maritime', box_id: 'box_sam' }
+        ];
+        if (!res.ok) {
+          showToast('Using local student profiles (API offline)', 'info');
+        }
+      }
+
+      badge.textContent = `${students.length} students`;
+      container.innerHTML = '';
+
+      students.forEach(s => {
+        const card = document.createElement('a');
+        card.href = `student.html?id=${encodeURIComponent(s.id)}`;
+        card.className = 'card';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.gap = '0.4rem';
+        card.style.textDecoration = 'none';
+        card.style.border = '1px solid var(--card-border)';
+        card.style.transition = 'all 0.15s ease';
+
+        card.onmouseenter = () => { card.style.borderColor = 'var(--green)'; card.style.transform = 'translateY(-2px)'; };
+        card.onmouseleave = () => { card.style.borderColor = 'var(--card-border)'; card.style.transform = 'none'; };
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: var(--ink); font-size: 1.05rem;">${escapeHtml(s.name || s.id)}</strong>
+            <span class="tag gray">${escapeHtml(s.id)}</span>
+          </div>
+          <span style="font-family: var(--mono); font-size: 0.75rem; color: var(--ink-light);">
+            Box: ${escapeHtml(s.box_id || s.id)} · ${escapeHtml(s.backend || 'active')}
+          </span>
+          <div style="margin-top: 0.5rem; color: var(--red); font-weight: 600; font-size: 0.85rem;">
+            Open Box Workspace →
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadStudents);
+  </script>
+</body>
+</html>

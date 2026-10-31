@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WolfBox — TA Handoff Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="serial.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <div class="pixel-header">
+    <header class="app-header">
+      <div class="brand">
+        <a href="index.html">WolfBox</a>
+        <span class="tagline">TA Office Hours Copilot · Zero-Context Handoff</span>
+      </div>
+      <div class="header-controls">
+        <span class="tag b">Gemma 4 Summaries</span>
+        <a href="index.html" class="btn btn-secondary btn-sm">Student View</a>
+        <a href="instructor.html" class="btn btn-secondary btn-sm">Instructor Portal</a>
+      </div>
+    </header>
+  </div>
+
+  <main class="container" style="margin-top: 1.5rem;">
+    <div style="margin-bottom: 1.5rem;">
+      <h1 style="font-size: 1.8rem; margin-bottom: 0.3rem;">🧑‍🏫 TA Office Hours Dashboard</h1>
+      <p class="muted" style="font-size: 0.92rem;">
+        No more spending the first 10 minutes asking "What have you tried?". WolfBox synthesizes the student's attempts, diffs, and recurring mistake patterns into an actionable 1-page briefing.
+      </p>
+    </div>
+
+    <div class="ta-layout">
+      <!-- Left: Student Queue & Roster -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Students</h3>
+            <button id="refresh-roster-btn" class="btn btn-secondary btn-sm">↻ Refresh</button>
+          </div>
+          <p class="muted" style="font-size: 0.78rem; margin-bottom: 0.75rem;">
+            Students with recurring test loops are flagged with a <span class="tag r" style="font-size:0.65rem; padding:1px 4px;">STUCK</span> badge.
+          </p>
+
+          <div id="ta-students-list" class="student-list">
+            <div class="muted" style="padding: 1rem; text-align: center;">Loading students...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Selected Student Handoff & History -->
+      <div>
+        <!-- Selected Student Header Card -->
+        <div class="card" id="selected-student-card" style="margin-bottom: 1.25rem;">
+          <div class="card-header">
+            <div>
+              <h2 id="student-name-header" style="margin: 0;">Select a student</h2>
+              <div id="student-meta-sub" class="muted" style="font-family: var(--mono); font-size: 0.78rem; margin-top: 0.2rem;"></div>
+            </div>
+            <div id="student-status-badges" style="display: flex; gap: 0.4rem; align-items: center;"></div>
+          </div>
+
+          <!-- Quick Jump to student workspace -->
+          <div style="margin-top: 0.5rem;">
+            <a id="open-workspace-link" href="#" class="btn btn-secondary btn-sm" target="_blank" style="display: none;">
+              Open Student Workspace in New Tab ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Gemma 1-Page TA Summary -->
+        <div class="card" style="border-top: 4px solid var(--blue); margin-bottom: 1.25rem;">
+          <div class="card-header">
+            <h3 class="card-title">📝 Gemma 4 Handoff Briefing</h3>
+            <span class="tag b">Auto-Synthesized</span>
+          </div>
+
+          <div id="ta-summary-content" class="markdown-body" style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1.25rem; min-height: 120px;">
+            <div class="muted" style="text-align: center; padding: 2rem;">Select a student from the roster to view their handoff summary.</div>
+          </div>
+        </div>
+
+        <!-- Recent Runs History -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">⏱️ Test Runs & Failure Trace History</h3>
+            <span class="tag gray" id="runs-count-badge">0 runs</span>
+          </div>
+
+          <div id="ta-runs-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="muted" style="padding: 1rem; text-align: center;">No runs recorded yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let students = [];
+    let selectedStudentId = null;
+
+    const rosterContainer = document.getElementById('ta-students-list');
+    const refreshRosterBtn = document.getElementById('refresh-roster-btn');
+    const studentNameHeader = document.getElementById('student-name-header');
+    const studentMetaSub = document.getElementById('student-meta-sub');
+    const studentStatusBadges = document.getElementById('student-status-badges');
+    const openWorkspaceLink = document.getElementById('open-workspace-link');
+    const summaryContent = document.getElementById('ta-summary-content');
+    const runsContainer = document.getElementById('ta-runs-container');
+    const runsCountBadge = document.getElementById('runs-count-badge');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check query params if a student is already pre-selected
+      const params = new URLSearchParams(window.location.search);
+      const preselectId = params.get('id');
+
+      await loadRoster(preselectId);
+    });
+
+    refreshRosterBtn.addEventListener('click', () => loadRoster(selectedStudentId));
+
+    async function loadRoster(targetId) {
+      rosterContainer.innerHTML = '<div class="muted" style="padding:1rem; text-align:center;">Checking student boxes...</div>';
+
+      const res = await apiFetch('/api/students');
+      if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
+        students = res.data;
+      } else {
+        students = [
+          { id: 'alex', name: 'Alex Rivera', box_id: 'box_alex', backend: 'local' },
+          { id: 'sam', name: 'Sam Chen', box_id: 'box_sam', backend: 'local' }
+        ];
+      }
+
+      rosterContainer.innerHTML = '';
+
+      for (const student of students) {
+        const item = document.createElement('div');
+        item.className = 'student-item';
+        item.id = `roster-item-${student.id}`;
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 600; font-size: 0.92rem;">${escapeHtml(student.name || student.id)}</div>
+            <div class="muted" style="font-family: var(--mono); font-size: 0.72rem;">${escapeHtml(student.id)}</div>
+          </div>
+          <div id="badge-slot-${student.id}"></div>
+        `;
+
+        item.addEventListener('click', () => selectStudent(student.id));
+        rosterContainer.appendChild(item);
+
+        // Fetch state to check stuck / nudge status
+        checkStudentStuckStatus(student.id);
+      }
+
+      const toSelect = targetId || (students[0] && students[0].id);
+      if (toSelect) {
+        selectStudent(toSelect);
+      }
+    }
+
+    async function checkStudentStuckStatus(sId) {
+      const stateRes = await apiFetch(`/api/students/${encodeURIComponent(sId)}/state`);
+      const slot = document.getElementById(`badge-slot-${sId}`);
+      if (!slot) return;
+
+      if (stateRes.ok && stateRes.data && stateRes.data.nudge && stateRes.data.nudge.active) {
+        slot.innerHTML = `<span class="stuck-badge">STUCK</span>`;
+      } else {
+        slot.innerHTML = `<span class="tag gray" style="font-size:0.68rem;">active</span>`;
+      }
+    }
+
+    async function selectStudent(sId) {
+      selectedStudentId = sId;
+
+      // Update selection styling in sidebar
+      document.querySelectorAll('.student-item').forEach(el => el.classList.remove('selected'));
+      const activeEl = document.getElementById(`roster-item-${sId}`);
+      if (activeEl) activeEl.classList.add('selected');
+
+      const student = students.find(s => s.id === sId) || { id: sId, name: sId };
+
+      studentNameHeader.textContent = student.name || student.id;
+      studentMetaSub.textContent = `Student ID: ${student.id} · Box: ${student.box_id || student.id}`;
+
+      openWorkspaceLink.style.display = 'inline-flex';
+      openWorkspaceLink.href = `student.html?id=${encodeURIComponent(sId)}`;
+
+      // Fetch summary and runs
+      await loadStudentSummary(sId);
+      await loadStudentRuns(sId);
+    }
+
+    async function loadStudentSummary(sId) {
+      summaryContent.innerHTML = '<div class="muted thinking-dots" style="padding:1.5rem; text-align:center;">Gemma 4 is synthesizing the student handoff briefing</div>';
+
+      const res = await apiFetch(`/api/students/${encodeURIComponent(sId)}/ta-summary`);
+      if (res.ok && res.data) {
+        const md = res.data.markdown || res.data.summary || 'No summary available for this student.';
+        summaryContent.innerHTML = renderMarkdown(md);
+      } else {
+        summaryContent.innerHTML = `
+          <div class="muted" style="padding:1rem;">
+            Summary could not be generated. Student box may still be initializing.
+          </div>
+        `;
+      }
+    }
+
+    async function loadStudentRuns(sId) {
+      runsContainer.innerHTML = '<div class="muted" style="padding:1rem; text-align:center;">Loading recent runs...</div>';
+
+      const res = await apiFetch(`/api/students/${encodeURIComponent(sId)}/runs`);
+      if (!res.ok || !res.data) {
+        runsContainer.innerHTML = '<div class="muted" style="padding:1rem;">Could not load test runs.</div>';
+        runsCountBadge.textContent = '0 runs';
+        return;
+      }
+
+      const runs = Array.isArray(res.data) ? res.data : (res.data.runs || []);
+      runsCountBadge.textContent = `${runs.length} runs`;
+
+      if (runs.length === 0) {
+        runsContainer.innerHTML = '<div class="muted" style="padding:1rem; text-align:center;">No test runs on record yet.</div>';
+        return;
+      }
+
+      runsContainer.innerHTML = '';
+
+      runs.forEach(run => {
+        const item = document.createElement('div');
+        item.style.background = '#fff';
+        item.style.border = '1px solid var(--card-border)';
+        item.style.borderRadius = '6px';
+        item.style.padding = '0.85rem';
+
+        const passedCount = (run.passed || []).length;
+        const failedCount = (run.failed || []).length;
+        const total = passedCount + failedCount;
+        const allPass = failedCount === 0 && total > 0;
+
+        const tagBadges = (run.tags || []).map(t => `<span class="tag r">${escapeHtml(t)}</span>`).join(' ');
+
+        let failDetails = '';
+        if (run.failed && run.failed.length > 0) {
+          failDetails = run.failed.map(f => {
+            const tName = typeof f === 'string' ? f : f.test;
+            const msg = typeof f === 'string' ? '' : (f.message || '');
+            return `
+              <div style="margin-top:0.4rem; padding:0.4rem 0.6rem; background:#feeceb; border-radius:4px; font-family:var(--mono); font-size:0.75rem; color:#991b1b;">
+                <strong>✗ ${escapeHtml(tName)}</strong>
+                ${msg ? `<div style="white-space:pre-wrap; margin-top:0.2rem; font-size:0.72rem; color:#7f1d1d;">${escapeHtml(msg.slice(0, 200))}</div>` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
+            <div style="font-family:var(--mono); font-weight:600; font-size:0.85rem;">
+              <span>${escapeHtml(run.assignment || 'hw')}</span>
+              <span class="muted" style="font-weight:normal; font-size:0.75rem;"> · ${escapeHtml(run.run_id || '')}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.4rem;">
+              ${allPass ? '<span class="tag">ALL PASSED ✓</span>' : `<span class="tag r">${failedCount} FAILED ✗</span>`}
+              <span class="muted" style="font-size:0.72rem; font-family:var(--mono);">${formatIsoDate(run.ts)}</span>
+            </div>
+          </div>
+
+          ${tagBadges ? `<div style="margin-top:0.5rem; display:flex; gap:0.3rem; flex-wrap:wrap;">${tagBadges}</div>` : ''}
+          ${failDetails}
+          ${run.hint ? `<div style="margin-top:0.5rem; font-size:0.8rem; background:#f4f4ee; padding:0.5rem 0.7rem; border-radius:4px; border-left:3px solid var(--green);"><strong>Hint given:</strong> ${escapeHtml(run.hint)}</div>` : ''}
+        `;
+
+        runsContainer.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>
