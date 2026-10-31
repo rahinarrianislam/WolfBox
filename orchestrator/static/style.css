@@ -157,6 +157,7 @@ header.app-header {
 .tag.gray { background: #cbd5e1; color: #334155; }
 .tag.outline {
   background: transparent;
+  color: var(--ink);
   border: 1px solid currentColor;
 }
 

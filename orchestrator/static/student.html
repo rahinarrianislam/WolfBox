@@ -82,7 +82,7 @@
                 <select id="assignment-picker" style="background: #283330; color: #fff; border: 1px solid #3d4e4a; border-radius: 4px; padding: 0.25rem 0.6rem; font-family: var(--mono); font-size: 0.8rem; outline: none;">
                   <option value="hw4">hw4 (list utilities)</option>
                 </select>
-                <span id="assignment-due" class="muted" style="font-size: 0.72rem;"></span>
+                <span id="assignment-due" style="font-size: 0.72rem; color: #c9d4cf;"></span>
               </div>
               <div>
                 <span id="run-status-indicator" class="tag gray">Ready</span>
@@ -92,7 +92,7 @@
             <textarea id="code-editor" class="code-textarea" spellcheck="false" placeholder="# Starter code will load from your persistent box..."></textarea>
 
             <div style="background: #18201e; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
-              <span class="muted" style="font-size: 0.75rem; font-family: var(--mono);">Tab key inserts 4 spaces · Isolated Maritime box</span>
+              <span style="font-size: 0.75rem; font-family: var(--mono); color: #a9b8b2;">Tab key inserts 4 spaces · Isolated Maritime box</span>
               <button id="submit-code-btn" class="btn btn-primary">
                 ▶ Run Tests
               </button>
@@ -917,7 +917,7 @@
           <div class="doc-card-summary">
             ${escapeHtml(doc.summary || 'Click to view document text...')}
           </div>
-          ${doc.change_note ? `<div class="tag y" style="margin-top:0.4rem; font-size:0.68rem;">Changed: ${escapeHtml(doc.change_note)}</div>` : ''}
+          ${doc.change_note ? `<div class="tag y" style="margin-top:0.4rem; font-size:0.68rem; display:block; white-space:normal; overflow-wrap:anywhere; line-height:1.35;">Changed: ${escapeHtml(doc.change_note)}</div>` : ''}
         `;
 
         card.addEventListener('click', () => openDocViewer(doc.doc_id));
@@ -1100,7 +1100,10 @@
 
     function generateWeekGrid(sections) {
       const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-      const timeSlots = ['9:30', '11:45', '1:30', '3:00'];
+      // One row per real start time, so no section is ever dropped.
+      const toMin = t => { const [h, m] = (t || '00:00').split(':').map(Number); return h * 60 + m; };
+      const starts = [...new Set(sections.map(s => s.start).filter(Boolean))].sort((a, b) => toMin(a) - toMin(b));
+      const label = t => { let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'p' : 'a'; h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')}${ap}`; };
       const colorMap = {};
       const colorClasses = ['a', 'b2', 'c3', 'd', 'e'];
       let colorIdx = 0;
@@ -1118,21 +1121,10 @@
       let html = `<div class=\"week\">`;
       html += `<div></div><div class=\"h\">Mon</div><div class=\"h\">Tue</div><div class=\"h\">Wed</div><div class=\"h\">Thu</div><div class=\"h\">Fri</div>`;
 
-      timeSlots.forEach((slot, slotIdx) => {
-        html += `<div class=\"t\">${slot}</div>`;
+      starts.forEach(slot => {
+        html += `<div class=\"t\">${label(slot)}</div>`;
         days.forEach(day => {
-          // Find matching section for this day and approximate slot
-          const match = sections.find(s => {
-            const hasDay = (s.days || []).some(d => d.startsWith(day));
-            if (!hasDay) return false;
-            // Slot mapping
-            const startHour = parseInt((s.start || '09:00').split(':')[0], 10);
-            if (slotIdx === 0 && startHour < 11) return true;
-            if (slotIdx === 1 && startHour >= 11 && startHour < 13) return true;
-            if (slotIdx === 2 && startHour >= 13 && startHour < 15) return true;
-            if (slotIdx === 3 && startHour >= 15) return true;
-            return false;
-          });
+          const match = sections.find(s => s.start === slot && (s.days || []).some(d => d.startsWith(day)));
 
           if (match) {
             const courseName = match.course || match.section_id;
@@ -1172,7 +1164,7 @@
         card.innerHTML = `
           <div style="font-weight: 600; font-size: 0.88rem;">${escapeHtml(req.name || req.id)}</div>
           <div style="font-size: 0.78rem; color: var(--ink-light); margin-top: 0.2rem;">
-            ${req.courses_needed ? `<strong>${req.courses_needed}</strong> course(s) needed` : 'Pending'}
+            ${req.remaining != null ? `<strong>${req.remaining}</strong> of ${req.courses_needed} course(s) remaining` : (req.courses_needed ? `<strong>${req.courses_needed}</strong> course(s) needed` : 'Pending')}
           </div>
         `;
         planRemainingContainer.appendChild(card);
