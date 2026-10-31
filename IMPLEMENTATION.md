@@ -162,6 +162,9 @@ GET  /course/{course}/...                → static mock course site (course_sit
 POST /api/instructor/publish {item}      → move a staged item into course.json (e.g. "hw5", "hw4-v2")
 POST /api/instructor/reset-course        → restore course.json to the original published set
 GET  /api/instructor/heatmap             → aggregate over all students (P2)
+POST /api/delegate/moodle/{kind}         → start delegation task: list_assignments, publish_assignment, open_course (202, {task_id})
+GET  /api/delegate/tasks/{task_id}       → poll task details, steps, watch_url, takeover_url, result
+GET  /api/delegate/tasks                 → list recent delegation tasks
 ```
 
 ### BoxClient interface (`orchestrator/wolfhub/boxes.py`)

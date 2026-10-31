@@ -185,6 +185,13 @@ def create_app(box_client=None, registry=None) -> FastAPI:
     except ImportError:
         pass
 
+    try:
+        from wolfhub.delegate import router as delegate_router
+
+        app.include_router(delegate_router)
+    except ImportError:
+        pass
+
     course_dir = ROOT / "course_site"
     static_dir = ROOT / "static"
     course_dir.mkdir(parents=True, exist_ok=True)

@@ -101,6 +101,51 @@ Values shown are defaults where applicable. `.env` is loaded by `scripts/dev.sh`
 
 The current outline provisions one agent per student, builds or selects the WolfBox image, sets `ALLOW_SEED=1`, `GEMINI_API_KEY`, `GEMMA_MODEL`, and a publicly reachable `COURSE_URL`, then records each agent id in the orchestrator registry. Use the `maritime` CLI or Python SDK path described in [IMPLEMENTATION.md §7](IMPLEMENTATION.md#7-maritime-deployment-verify-in-ws0-then-fill-in-the-exact-commands). **Verify every provisioning, custom image, environment, and wake/sleep step per WS0 before relying on it; those provider details are not yet confirmed in this repository.**
 
+## Delegating to Maritime (OpenClaw → Moodle)
+
+Instructors can delegate Moodle course administration to an autonomous OpenClaw agent running in a Maritime Linux Desktop session. The agent crawls assignments, downloads course attachments, and publishes staged homework items directly to Moodle.
+
+### Flow diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Instructor as Instructor UI
+    participant Orch as Orchestrator API
+    participant Agent as MoodleDelegate
+    participant Maritime as Maritime (OpenClaw & Desktop)
+    participant Moodle as Moodle LMS
+    participant Box as Student WolfBox
+
+    Instructor->>Orch: POST /api/delegate/moodle/list_assignments
+    Orch->>Agent: start_task("list_assignments", {course})
+    Orch-->>Instructor: 202 Accepted {task_id}
+    Agent->>Maritime: Ensure OpenClaw agent & Linux desktop session
+    Maritime->>Moodle: Browse course & collect resources
+    Maritime-->>Agent: Assignments & attachments
+    Agent->>Orch: Write course.moodle.json & save attachments
+    Instructor->>Orch: GET /api/delegate/tasks/{task_id} (Polls steps)
+    Orch-->>Instructor: status: done, steps: [...]
+    Box->>Orch: Sync course.moodle.json
+```
+
+### Environment variables
+
+| Variable | Description |
+| --- | --- |
+| `MARITIME_API_KEY` | Maritime API token for provisioning OpenClaw agents and desktop sessions. |
+| `MOODLE_DELEGATE` | Mode of operation: `fake` (fast, deterministic local simulation) or `real` (live Maritime agent/desktop). Defaults to `fake` if `MARITIME_API_KEY` is not present. |
+| `MOODLE_URL` | Base URL of the Moodle LMS. Defaults to `https://school.moodledemo.net`. |
+| `MOODLE_WS_TOKEN` | Optional Moodle web-service REST token (`moodle_mobile_app` service) used as a fast fallback adapter. |
+
+### Human-takeover login (Institutional SSO)
+
+When connecting to real institutional Moodle instances (such as university SSO with Duo 2FA), the delegate never stores or requests raw credentials. Instead, the task enters `needs_human` status and provisions a signed Maritime desktop control viewer link (`POST /api/v1/computers/{id}/viewer` with `mode="control"`). The instructor clicks **Take over to log in** on the dashboard, completes SSO in the interactive browser session, and the agent resumes automation.
+
+### Public demo hourly reset caveat
+
+The public demo instance (`https://school.moodledemo.net`, Mount Orange) automatically resets its database hourly on the hour (e.g., at :00 UTC). Any assignments published to the demo site will be wiped on the subsequent reset.
+
 ## Demo flow
 
 `python scripts/demo_reset.py` restores the original sample course, resets Alex and Sam, seeds Alex with three weeks of synthetic hw2/hw3 run history, and completes an initial course sync for both students. The intended three-minute walkthrough is:
