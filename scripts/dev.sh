@@ -46,7 +46,7 @@ children+=("$!")
 wait_for_health() {
   local name="$1" url="$2"
   for _ in {1..40}; do
-    if curl -fsS "$url" >/dev/null; then
+    if curl -fsS "$url" >/dev/null 2>&1; then
       return 0
     fi
     for pid in "${children[@]}"; do
@@ -69,4 +69,4 @@ curl -fsS -X POST http://127.0.0.1:8000/api/students \
 curl -fsS -X POST http://127.0.0.1:8000/api/students \
   -H 'Content-Type: application/json' -d '{"id":"sam","name":"Sam Chen"}' >/dev/null
 echo "WolfBox dev stack is ready at http://127.0.0.1:8000"
-wait -n "${children[@]}"
+wait
