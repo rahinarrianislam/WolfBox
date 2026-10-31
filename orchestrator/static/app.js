@@ -273,27 +273,20 @@ function formatIsoDate(iso) {
 }
 
 // --- Tabs Utility ---
-function setupTabs(containerSelector = '.tabs') {
-  document.querySelectorAll(containerSelector).forEach(tabContainer => {
-    const buttons = tabContainer.querySelectorAll('.tab-btn');
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('data-tab');
-        if (!targetId) return;
-
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const parent = tabContainer.parentElement;
-        parent.querySelectorAll('.tab-content').forEach(content => {
-          if (content.id === targetId) {
-            content.classList.add('active');
-          } else {
-            content.classList.remove('active');
-          }
-        });
-      });
+function setupTabs() {
+  const buttons = document.querySelectorAll('.tab-btn[data-tab]');
+  const show = (btn) => {
+    buttons.forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-content').forEach(c =>
+      c.classList.toggle('active', c.id === btn.getAttribute('data-tab')));
+  };
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      show(btn);
+      history.replaceState(null, '', '#' + btn.getAttribute('data-tab'));
     });
+    // Deep link: student.html?id=alex#tab-plan opens that tab.
+    if (location.hash === '#' + btn.getAttribute('data-tab')) show(btn);
   });
 }
 
