@@ -51,6 +51,7 @@ def solve(
     completed: list[str] | set[str],
     prefs: dict | None = None,
     full_sections: list[str] | None = None,
+    ratings: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Pure, deterministic solver for conflict-free college course schedules.
 
@@ -97,6 +98,13 @@ def solve(
     must_take = [
         c.strip() for c in (prefs.get("must_take", []) or []) if c and c.strip()
     ]
+    prefer_high_rated = bool(prefs.get("prefer_high_rated", True))
+    min_rating = prefs.get("min_rating")
+    if min_rating is not None:
+        try:
+            min_rating = float(min_rating)
+        except (TypeError, ValueError):
+            min_rating = None
 
     # Calculate unfulfilled requirements
     # Requirement needed count:
@@ -159,6 +167,18 @@ def solve(
                         break
             if blocked_conflict:
                 continue
+
+            # Check min_rating: unrated sections pass
+            if min_rating is not None and ratings:
+                sec_inst = sec.get("instructor")
+                r_info = ratings.get(sec_inst)
+                r_val = None
+                if isinstance(r_info, dict):
+                    r_val = r_info.get("rating")
+                elif isinstance(r_info, (int, float)):
+                    r_val = float(r_info)
+                if r_val is not None and r_val < min_rating:
+                    continue
 
             valid_secs.append(sec)
 
@@ -268,7 +288,32 @@ def solve(
             else:
                 compact_score = 1.0
 
-            raw_score = 0.50 * req_score + 0.30 * days_off_score + 0.20 * compact_score
+            # Compute rating score and option avg rating
+            sec_ratings = []
+            for sec in sec_choice:
+                inst = sec.get("instructor")
+                r_info = ratings.get(inst) if ratings else None
+                sec_ratings.append(r_info)
+
+            numeric_ratings = []
+            for r in sec_ratings:
+                if isinstance(r, dict):
+                    v = r.get("rating")
+                    if isinstance(v, (int, float)):
+                        numeric_ratings.append(float(v))
+                elif isinstance(r, (int, float)):
+                    numeric_ratings.append(float(r))
+
+            if numeric_ratings:
+                opt_avg_rating = sum(numeric_ratings) / len(numeric_ratings)
+            else:
+                opt_avg_rating = None
+
+            if ratings is not None and prefer_high_rated:
+                rating_score = (opt_avg_rating / 5.0) if opt_avg_rating is not None else 0.6
+                raw_score = 0.40 * req_score + 0.25 * days_off_score + 0.15 * compact_score + 0.20 * rating_score
+            else:
+                raw_score = 0.50 * req_score + 0.30 * days_off_score + 0.20 * compact_score
 
             if raw_score > best_score:
                 best_score = raw_score
@@ -284,6 +329,8 @@ def solve(
                         "days": _normalize_days(sec_choice[idx].get("days", [])),
                         "start": sec_choice[idx].get("start", ""),
                         "end": sec_choice[idx].get("end", ""),
+                        "instructor": sec_choice[idx].get("instructor"),
+                        "rating": sec_ratings[idx],
                     }
                     for idx in range(len(combo))
                 ]
@@ -297,6 +344,7 @@ def solve(
                     "score": round(raw_score, 2),
                     "satisfies": sorted(satisfies_set),
                     "explanation": "",
+                    "avg_rating": round(opt_avg_rating, 2) if opt_avg_rating is not None else None,
                     "_raw_score": raw_score,
                 }
 

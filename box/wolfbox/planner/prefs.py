@@ -93,6 +93,10 @@ def _build_echo(prefs: dict) -> str:
     if prefs.get("must_take"):
         courses_str = ", ".join(prefs["must_take"])
         parts.append(f"Must take {courses_str}")
+    if prefs.get("min_rating") is not None:
+        parts.append(f"Min rating {prefs['min_rating']}")
+    elif prefs.get("_explicit_high_rated"):
+        parts.append("Prefer highly rated professors")
 
     if not parts:
         return "Standard schedule (12–15 credits)."
@@ -109,6 +113,8 @@ def _regex_parse(text: str) -> dict[str, Any]:
         "prefer_days_off": [],
         "prefer_compact": False,
         "must_take": [],
+        "prefer_high_rated": True,
+        "min_rating": None,
     }
 
     if not text:
@@ -222,6 +228,36 @@ def _regex_parse(text: str) -> dict[str, Any]:
     if re.search(r"\b(?:compact|minimize\s+gaps|no\s+gaps)\b", text, re.IGNORECASE):
         prefs["prefer_compact"] = True
 
+    # 7. Rating preferences
+    # Hard min_rating
+    m_min_rating = re.search(
+        r"(?:rating|ratings|stars?)\s*(?:above|over|>|>=|at\s+least|min(?:imum)?|of\s+at\s+least)\s*(\d+(?:\.\d+)?)"
+        r"|(?:at\s+least|above|over)\s*(\d+(?:\.\d+)?)\s*(?:stars?|rating)"
+        r"|(?:min(?:imum)?)\s*(?:rating|ratings|stars?)\s*(?:of\s*)?(\d+(?:\.\d+)?)"
+        r"|(\d+(?:\.\d+)?)\+?\s*(?:stars?|rating)\s*(?:min|minimum|or\s+above|or\s+higher)?",
+        text,
+        re.IGNORECASE,
+    )
+    if m_min_rating:
+        val = next(g for g in m_min_rating.groups() if g is not None)
+        prefs["min_rating"] = float(val)
+
+    # Soft prefer_high_rated: "good professors", "highly rated", "avoid bad profs"
+    if re.search(
+        r"\b(?:good\s+professors?|highly\s+rated|high\s+rating|top\s+professors?|top\s+rated|avoid\s+bad\s+profs?|avoid\s+bad\s+professors?|no\s+bad\s+profs?|no\s+bad\s+professors?)\b",
+        text,
+        re.IGNORECASE,
+    ):
+        prefs["prefer_high_rated"] = True
+        prefs["_explicit_high_rated"] = True
+
+    if re.search(
+        r"\b(?:ignore\s+(?:professor\s+)?ratings?|don'?t\s+care\s+about\s+(?:professor\s+)?ratings?)\b",
+        text,
+        re.IGNORECASE,
+    ):
+        prefs["prefer_high_rated"] = False
+
     return prefs
 
 
@@ -238,7 +274,9 @@ def parse(text: str) -> tuple[dict[str, Any], str]:
             '  "max_credits": int,\n'
             '  "prefer_days_off": ["Mon"|"Tue"|"Wed"|"Thu"|"Fri"],\n'
             '  "prefer_compact": bool,\n'
-            '  "must_take": ["COURSE CODE"]\n'
+            '  "must_take": ["COURSE CODE"],\n'
+            '  "prefer_high_rated": bool,\n'
+            '  "min_rating": float or null\n'
             "}\n"
             "Output only JSON without backticks."
         )
@@ -257,6 +295,12 @@ def parse(text: str) -> tuple[dict[str, Any], str]:
                     "prefer_days_off": [],
                     "prefer_compact": bool(data.get("prefer_compact", False)),
                     "must_take": [],
+                    "prefer_high_rated": bool(data.get("prefer_high_rated", True)),
+                    "min_rating": (
+                        float(data["min_rating"])
+                        if data.get("min_rating") is not None
+                        else None
+                    ),
                 }
                 for b in data.get("blocked", []):
                     if isinstance(b, dict):
@@ -306,6 +350,8 @@ def _template_explain(opt: dict, prefs: dict) -> str:
         notes.append("respects your blocked work hours")
     if prefs.get("earliest_start"):
         notes.append(f"no classes before {prefs['earliest_start']}")
+    if opt.get("avg_rating") is not None:
+        notes.append(f"★ {opt['avg_rating']:.1f} avg rating")
 
     notes_str = f" with {', '.join(notes)}" if notes else ""
     reqs = opt.get("satisfies", [])
@@ -324,8 +370,9 @@ def explain(options: list[dict], prefs: dict) -> list[str]:
                     f"Write a concise explanation (under 40 words) for this schedule option.\n"
                     f"Courses: {courses}\n"
                     f"Credits: {opt.get('credits')}\n"
+                    f"Avg Rating: {opt.get('avg_rating')}\n"
                     f"Preferences: {prefs}\n"
-                    f"Do not invent any sections or courses."
+                    f"Do not invent any sections, courses, professors, or ratings. Only cite provided information."
                 )
                 text, _, _ = gemma._generate(
                     "You are a concise academic advisor. Limit response to <= 40 words.",

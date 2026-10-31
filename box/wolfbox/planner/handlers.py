@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from wolfbox.planner import prefs, solver
+from wolfbox.planner import prefs, ratings, solver
 from wolfbox.store import Store
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
@@ -77,6 +77,32 @@ def handle_plan_get(store: Store, payload: dict) -> dict:
     remaining = compute_remaining(catalog, requirements, completed)
     options = plan.get("last_options", []) or []
 
+    if options:
+        inst_names = []
+        for opt in options:
+            for s in opt.get("sections", []):
+                inst = s.get("instructor")
+                if inst and inst not in inst_names:
+                    inst_names.append(inst)
+        if inst_names:
+            prof_ratings = ratings.get_ratings(inst_names, store)
+            for opt in options:
+                num_rs = []
+                for s in opt.get("sections", []):
+                    inst = s.get("instructor")
+                    if inst:
+                        if "rating" not in s or s["rating"] is None:
+                            s["rating"] = prof_ratings.get(inst)
+                        r = s.get("rating")
+                        if isinstance(r, dict) and isinstance(
+                            r.get("rating"), (int, float)
+                        ):
+                            num_rs.append(r["rating"])
+                        elif isinstance(r, (int, float)):
+                            num_rs.append(r)
+                if ("avg_rating" not in opt or opt["avg_rating"] is None) and num_rs:
+                    opt["avg_rating"] = round(sum(num_rs) / len(num_rs), 2)
+
     return {
         "plan": plan,
         "remaining": remaining,
@@ -113,12 +139,23 @@ def handle_plan_solve(store: Store, payload: dict) -> dict:
     catalog = _load_catalog()
     requirements = _load_requirements()
 
+    # Collect instructor names from catalog
+    instructors = []
+    for c in catalog.get("courses", []):
+        for s in c.get("sections", []):
+            inst = s.get("instructor")
+            if inst and inst not in instructors:
+                instructors.append(inst)
+
+    prof_ratings = ratings.get_ratings(instructors, store)
+
     options = solver.solve(
         catalog=catalog,
         requirements=requirements,
         completed=completed,
         prefs=current_prefs,
         full_sections=full_sections,
+        ratings=prof_ratings,
     )
 
     explanations = prefs.explain(options, current_prefs)

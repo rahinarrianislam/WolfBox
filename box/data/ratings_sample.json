@@ -1,0 +1,300 @@
+{
+  "sample": true,
+  "disclaimer": "This is synthetic sample data for the WolfBox hackathon project. Not official RateMyProfessors data.",
+  "ratings": {
+    "Dr. Ada Park": {
+      "rating": 4.8,
+      "difficulty": 2.1,
+      "num_ratings": 45,
+      "would_take_again": 92.0,
+      "source": "sample"
+    },
+    "Prof. Silas Vance": {
+      "rating": 3.4,
+      "difficulty": 3.8,
+      "num_ratings": 18,
+      "would_take_again": 58.0,
+      "source": "sample"
+    },
+    "Dr. Maya Lin": {
+      "rating": 2.6,
+      "difficulty": 4.4,
+      "num_ratings": 31,
+      "would_take_again": 35.0,
+      "source": "sample"
+    },
+    "Dr. Elena Rostova": {
+      "rating": 4.7,
+      "difficulty": 2.6,
+      "num_ratings": 52,
+      "would_take_again": 89.0,
+      "source": "sample"
+    },
+    "Prof. Kenneth Cole": {
+      "rating": 3.5,
+      "difficulty": 3.5,
+      "num_ratings": 24,
+      "would_take_again": 62.0,
+      "source": "sample"
+    },
+    "Dr. Victor Stone": {
+      "rating": 2.3,
+      "difficulty": 4.6,
+      "num_ratings": 39,
+      "would_take_again": 28.0,
+      "source": "sample"
+    },
+    "Dr. Tariq Mercer": {
+      "rating": 4.6,
+      "difficulty": 2.8,
+      "num_ratings": 38,
+      "would_take_again": 87.0,
+      "source": "sample"
+    },
+    "Prof. Nadia Blake": {
+      "rating": 3.3,
+      "difficulty": 3.9,
+      "num_ratings": 21,
+      "would_take_again": 54.0,
+      "source": "sample"
+    },
+    "Dr. Julian Hayes": {
+      "rating": 2.5,
+      "difficulty": 4.3,
+      "num_ratings": 33,
+      "would_take_again": 32.0,
+      "source": "sample"
+    },
+    "Dr. Fiona Gallagher": {
+      "rating": 4.9,
+      "difficulty": 2.1,
+      "num_ratings": 64,
+      "would_take_again": 95.0,
+      "source": "sample"
+    },
+    "Prof. Arthur Pendelton": {
+      "rating": 3.6,
+      "difficulty": 3.4,
+      "num_ratings": 27,
+      "would_take_again": 65.0,
+      "source": "sample"
+    },
+    "Dr. Gavin MacLeod": {
+      "rating": 2.2,
+      "difficulty": 4.7,
+      "num_ratings": 44,
+      "would_take_again": 24.0,
+      "source": "sample"
+    },
+    "Dr. Sarah Sterling": {
+      "rating": 4.8,
+      "difficulty": 2.5,
+      "num_ratings": 58,
+      "would_take_again": 91.0,
+      "source": "sample"
+    },
+    "Prof. Owen Davenport": {
+      "rating": 3.7,
+      "difficulty": 3.6,
+      "num_ratings": 30,
+      "would_take_again": 68.0,
+      "source": "sample"
+    },
+    "Dr. Leonard Snart": {
+      "rating": 2.7,
+      "difficulty": 4.5,
+      "num_ratings": 36,
+      "would_take_again": 39.0,
+      "source": "sample"
+    },
+    "Dr. Harper Reed": {
+      "rating": 4.5,
+      "difficulty": 2.7,
+      "num_ratings": 41,
+      "would_take_again": 84.0,
+      "source": "sample"
+    },
+    "Prof. Benjamin Cruz": {
+      "rating": 3.2,
+      "difficulty": 3.9,
+      "num_ratings": 22,
+      "would_take_again": 50.0,
+      "source": "sample"
+    },
+    "Dr. Dennis Nedry": {
+      "rating": 2.1,
+      "difficulty": 4.8,
+      "num_ratings": 50,
+      "would_take_again": 20.0,
+      "source": "sample"
+    },
+    "Dr. Rachel Green": {
+      "rating": 4.7,
+      "difficulty": 2.4,
+      "num_ratings": 48,
+      "would_take_again": 88.0,
+      "source": "sample"
+    },
+    "Prof. Ross Geller": {
+      "rating": 3.4,
+      "difficulty": 3.7,
+      "num_ratings": 29,
+      "would_take_again": 57.0,
+      "source": "sample"
+    },
+    "Dr. Chandler Bing": {
+      "rating": 2.8,
+      "difficulty": 4.2,
+      "num_ratings": 34,
+      "would_take_again": 41.0,
+      "source": "sample"
+    },
+    "Dr. Monica Geller": {
+      "rating": 4.9,
+      "difficulty": 2.3,
+      "num_ratings": 55,
+      "would_take_again": 94.0,
+      "source": "sample"
+    },
+    "Prof. Joey Tribbiani": {
+      "rating": 3.6,
+      "difficulty": 3.2,
+      "num_ratings": 26,
+      "would_take_again": 66.0,
+      "source": "sample"
+    },
+    "Dr. Phoebe Buffay": {
+      "rating": 2.5,
+      "difficulty": 4.5,
+      "num_ratings": 38,
+      "would_take_again": 33.0,
+      "source": "sample"
+    },
+    "Dr. Iris West": {
+      "rating": 4.6,
+      "difficulty": 2.6,
+      "num_ratings": 37,
+      "would_take_again": 86.0,
+      "source": "sample"
+    },
+    "Prof. Cisco Ramon": {
+      "rating": 3.8,
+      "difficulty": 3.3,
+      "num_ratings": 25,
+      "would_take_again": 70.0,
+      "source": "sample"
+    },
+    "Dr. Harrison Wells": {
+      "rating": 2.9,
+      "difficulty": 4.4,
+      "num_ratings": 40,
+      "would_take_again": 45.0,
+      "source": "sample"
+    },
+    "Dr. Caitlin Snow": {
+      "rating": 4.8,
+      "difficulty": 2.2,
+      "num_ratings": 46,
+      "would_take_again": 90.0,
+      "source": "sample"
+    },
+    "Prof. Barry Allen": {
+      "rating": 3.5,
+      "difficulty": 3.6,
+      "num_ratings": 31,
+      "would_take_again": 61.0,
+      "source": "sample"
+    },
+    "Dr. Ralph Dibny": {
+      "rating": 2.4,
+      "difficulty": 4.6,
+      "num_ratings": 29,
+      "would_take_again": 30.0,
+      "source": "sample"
+    },
+    "Dr. Chloe Sullivan": {
+      "rating": 4.7,
+      "difficulty": 2.1,
+      "num_ratings": 53,
+      "would_take_again": 91.0,
+      "source": "sample"
+    },
+    "Prof. Lois Lane": {
+      "rating": 3.8,
+      "difficulty": 3.1,
+      "num_ratings": 35,
+      "would_take_again": 72.0,
+      "source": "sample"
+    },
+    "Dr. Perry White": {
+      "rating": 2.6,
+      "difficulty": 4.3,
+      "num_ratings": 28,
+      "would_take_again": 36.0,
+      "source": "sample"
+    },
+    "Dr. Bruce Wayne": {
+      "rating": 4.6,
+      "difficulty": 2.9,
+      "num_ratings": 49,
+      "would_take_again": 85.0,
+      "source": "sample"
+    },
+    "Prof. Alfred Pennyworth": {
+      "rating": 3.9,
+      "difficulty": 3.0,
+      "num_ratings": 42,
+      "would_take_again": 78.0,
+      "source": "sample"
+    },
+    "Dr. Lucius Fox": {
+      "rating": 2.8,
+      "difficulty": 4.1,
+      "num_ratings": 26,
+      "would_take_again": 42.0,
+      "source": "sample"
+    },
+    "Dr. Diana Prince": {
+      "rating": 4.9,
+      "difficulty": 1.9,
+      "num_ratings": 60,
+      "would_take_again": 96.0,
+      "source": "sample"
+    },
+    "Prof. Steve Trevor": {
+      "rating": 3.5,
+      "difficulty": 3.4,
+      "num_ratings": 23,
+      "would_take_again": 63.0,
+      "source": "sample"
+    },
+    "Dr. Etta Candy": {
+      "rating": 2.7,
+      "difficulty": 4.2,
+      "num_ratings": 30,
+      "would_take_again": 38.0,
+      "source": "sample"
+    },
+    "Dr. Harleen Quinzel": {
+      "rating": 4.8,
+      "difficulty": 2.3,
+      "num_ratings": 57,
+      "would_take_again": 92.0,
+      "source": "sample"
+    },
+    "Prof. Pamela Isley": {
+      "rating": 3.6,
+      "difficulty": 3.5,
+      "num_ratings": 33,
+      "would_take_again": 67.0,
+      "source": "sample"
+    },
+    "Dr. Jonathan Crane": {
+      "rating": 2.2,
+      "difficulty": 4.9,
+      "num_ratings": 45,
+      "would_take_again": 22.0,
+      "source": "sample"
+    }
+  }
+}
