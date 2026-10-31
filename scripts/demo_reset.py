@@ -76,7 +76,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backend", choices=("local", "maritime"))
     args = parser.parse_args()
-    backend = (args.backend or os.environ.get("BOX_BACKEND", "local")).lower()
+    backend = (args.backend or os.environ.get("BOX_BACKEND", "maritime")).lower()
     if backend not in {"local", "maritime"}:
         raise ValueError(f"Unsupported backend: {backend}")
     os.environ["BOX_BACKEND"] = backend

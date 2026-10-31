@@ -1,3 +1,4 @@
+import os
 from fastapi.testclient import TestClient
 
 from wolfhub.main import create_app
@@ -30,8 +31,9 @@ def test_student_registration_is_idempotent(tmp_path):
     assert first.status_code == second.status_code == 200
     assert first.json()["box_id"] == second.json()["box_id"] == "box:alex"
     assert len([call for call in boxes.calls if call[1]["type"] == "init"]) == 2
+    expected_backend = os.getenv("BOX_BACKEND", "maritime").lower()
     assert test_client.get("/api/students").json()[0] == {
-        "id": "alex", "name": "Alex Rivera", "box_id": "box:alex", "backend": "local"
+        "id": "alex", "name": "Alex Rivera", "box_id": "box:alex", "backend": expected_backend
     }
 
 
@@ -126,3 +128,29 @@ def test_health_endpoint():
     response = TestClient(create_app()).get("/api/health")
     assert response.status_code == 200
     assert response.json() == {"ok": True}
+
+
+def test_config_and_maritime_key_upload(tmp_path, monkeypatch):
+    test_client, _ = next(client(tmp_path))
+    monkeypatch.delenv("MARITIME_API_KEY", raising=False)
+    monkeypatch.delenv("BOX_BACKEND", raising=False)
+
+    cfg = test_client.get("/api/config").json()
+    assert cfg["backend"] == "maritime"
+    assert cfg["has_maritime_key"] is False
+
+    # Empty key rejected
+    bad = test_client.post("/api/config/maritime-key", json={"key": "   "})
+    assert bad.status_code == 400
+
+    # Valid key uploaded
+    res = test_client.post("/api/config/maritime-key", json={"key": "mrt_secret_token_12345"})
+    assert res.status_code == 200
+    assert res.json()["has_maritime_key"] is True
+    assert res.json()["backend"] == "maritime"
+    assert os.environ.get("MARITIME_API_KEY") == "mrt_secret_token_12345"
+
+    # Confirmed in get config
+    cfg_after = test_client.get("/api/config").json()
+    assert cfg_after["has_maritime_key"] is True
+    assert cfg_after["maritime_key_preview"] == "mrt_...2345"

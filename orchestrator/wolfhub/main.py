@@ -41,6 +41,10 @@ class SolveRequest(BaseModel):
     full_sections: list[str] | None = None
 
 
+class MaritimeKeyRequest(BaseModel):
+    key: str
+
+
 def create_app(box_client=None, registry=None) -> FastAPI:
     app = FastAPI()
     app.state.box_client = box_client or get_client()
@@ -85,13 +89,68 @@ def create_app(box_client=None, registry=None) -> FastAPI:
     def health():
         return {"ok": True}
 
+    @app.get("/api/config")
+    def get_config():
+        key = os.getenv("MARITIME_API_KEY", "")
+        backend = os.getenv("BOX_BACKEND", "maritime").lower()
+        return {
+            "backend": backend,
+            "has_maritime_key": bool(key),
+            "maritime_key_preview": f"{key[:4]}...{key[-4:]}" if len(key) >= 8 else ("***" if key else None),
+        }
+
+    @app.post("/api/config/maritime-key")
+    def set_maritime_key(body: MaritimeKeyRequest):
+        new_key = body.key.strip()
+        if not new_key:
+            raise HTTPException(status_code=400, detail="Maritime API key cannot be empty")
+        os.environ["MARITIME_API_KEY"] = new_key
+        # Auto-upload / persist to .env file in root so it survives restarts
+        env_file = ROOT.parent / ".env"
+        try:
+            lines = []
+            if env_file.exists():
+                lines = env_file.read_text().splitlines()
+            key_set = False
+            backend_set = False
+            new_lines = []
+            for line in lines:
+                if line.startswith("MARITIME_API_KEY="):
+                    new_lines.append(f"MARITIME_API_KEY={new_key}")
+                    key_set = True
+                elif line.startswith("BOX_BACKEND="):
+                    new_lines.append("BOX_BACKEND=maritime")
+                    backend_set = True
+                else:
+                    new_lines.append(line)
+            if not key_set:
+                new_lines.append(f"MARITIME_API_KEY={new_key}")
+            if not backend_set:
+                new_lines.append("BOX_BACKEND=maritime")
+            env_file.write_text("\n".join(new_lines) + "\n")
+        except Exception:
+            pass
+
+        # Refresh box_client with the updated key
+        try:
+            app.state.box_client = get_client()
+        except Exception:
+            pass
+
+        return {
+            "ok": True,
+            "backend": os.getenv("BOX_BACKEND", "maritime").lower(),
+            "has_maritime_key": True,
+            "maritime_key_preview": f"{new_key[:4]}...{new_key[-4:]}" if len(new_key) >= 8 else "***",
+        }
+
     @app.get("/api/students")
     def list_students():
         return app.state.registry.list()
 
     @app.post("/api/students")
     def create_student(body: StudentRequest):
-        backend = os.getenv("BOX_BACKEND", "local").lower()
+        backend = os.getenv("BOX_BACKEND", "maritime").lower()
         try:
             box_id = app.state.box_client.ensure(body.id, body.name)
             app.state.registry.set(body.id, body.name, box_id, backend)
