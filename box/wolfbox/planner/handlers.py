@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -12,12 +13,29 @@ from wolfbox.store import Store
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
 
-def _load_catalog() -> dict:
+def _load_sample_catalog() -> dict:
     catalog_path = DATA_DIR / "catalog.json"
     if catalog_path.exists():
         with open(catalog_path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {"courses": []}
+
+
+def _load_catalog(store: Store) -> dict:
+    if os.environ.get("CATALOG_SOURCE", "sample") == "ncsu":
+        live = store.read_json("catalog_ncsu.json")
+        if isinstance(live, dict) and isinstance(live.get("courses"), list):
+            return live
+    return _load_sample_catalog()
+
+
+def _catalog_metadata(catalog: dict) -> dict:
+    return {
+        "source": catalog.get("source", "sample"),
+        "term": catalog.get("term"),
+        "fetched_at": catalog.get("fetched_at"),
+        "sample": catalog.get("sample", True),
+    }
 
 
 def _load_requirements() -> dict:
@@ -66,16 +84,20 @@ def compute_remaining(
 
 
 def handle_plan_get(store: Store, payload: dict) -> dict:
-    """plan_get {} -> {plan, remaining, options}."""
+    """plan_get {} -> {plan, remaining, options, catalog}."""
     plan = store.load_plan()
     completed = plan.get("completed")
     if completed is None:
         completed = ["CSC 116", "MA 141"]
 
-    catalog = _load_catalog()
+    catalog = _load_catalog(store)
     requirements = _load_requirements()
     remaining = compute_remaining(catalog, requirements, completed)
     options = plan.get("last_options", []) or []
+    metadata = _catalog_metadata(catalog)
+    saved_catalog = plan.get("catalog", _catalog_metadata({}))
+    if saved_catalog != metadata:
+        options = []  # Require a re-solve when source, term, or seat snapshot changes.
 
     if options:
         inst_names = []
@@ -106,6 +128,7 @@ def handle_plan_get(store: Store, payload: dict) -> dict:
     return {
         "plan": plan,
         "remaining": remaining,
+        "catalog": _catalog_metadata(catalog),
         "options": options,
     }
 
@@ -127,7 +150,7 @@ def handle_plan_set_prefs(store: Store, payload: dict) -> dict:
 
 
 def handle_plan_solve(store: Store, payload: dict) -> dict:
-    """plan_solve {full_sections?} -> {options}."""
+    """plan_solve {full_sections?} -> {options, catalog}."""
     full_sections = payload.get("full_sections", []) or []
 
     plan = store.load_plan()
@@ -136,7 +159,7 @@ def handle_plan_solve(store: Store, payload: dict) -> dict:
         completed = ["CSC 116", "MA 141"]
 
     current_prefs = plan.get("prefs") or {}
-    catalog = _load_catalog()
+    catalog = _load_catalog(store)
     requirements = _load_requirements()
 
     # Collect instructor names from catalog
@@ -163,13 +186,28 @@ def handle_plan_solve(store: Store, payload: dict) -> dict:
         opt["explanation"] = exp
 
     plan["last_options"] = options
+    plan["catalog"] = _catalog_metadata(catalog)
     store.save_plan(plan)
 
-    return {"options": options}
+    return {"options": options, "catalog": _catalog_metadata(catalog)}
+
+
+def handle_plan_refresh(store: Store, payload: dict) -> dict:
+    from wolfbox.planner import refresh
+
+    return refresh.start_refresh(store, _load_sample_catalog())
+
+
+def handle_plan_refresh_status(store: Store, payload: dict) -> dict:
+    from wolfbox.planner import refresh
+
+    return refresh.get_status(store, payload.get("job_id"))
 
 
 HANDLERS = {
     "plan_get": handle_plan_get,
+    "plan_refresh": handle_plan_refresh,
+    "plan_refresh_status": handle_plan_refresh_status,
     "plan_set_prefs": handle_plan_set_prefs,
     "plan_solve": handle_plan_solve,
 }

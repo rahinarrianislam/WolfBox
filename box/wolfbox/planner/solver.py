@@ -123,14 +123,15 @@ def solve(
         remaining_needed = max(0, courses_needed - completed_in_req)
         req_needed[r_id] = remaining_needed
 
-    # 1. Eligible courses: prereqs all in completed, course not completed
+    # 1. Eligible courses: prerequisites met, course not completed
     eligible_courses: dict[str, dict] = {}
     for c in raw_courses:
         code = c["code"].strip()
         if code in completed_set:
             continue
         prereqs = c.get("prereqs", [])
-        if all(p.strip() in completed_set for p in prereqs):
+        prereqs_met = any if c.get("prereqs_any") else all
+        if not prereqs or prereqs_met(p.strip() in completed_set for p in prereqs):
             eligible_courses[code] = c
 
     # Check must_take: all must be in eligible_courses
@@ -144,7 +145,11 @@ def solve(
         valid_secs = []
         for sec in course.get("sections", []):
             sec_id = sec.get("id", "")
-            if sec_id in full_sec_set:
+            if (
+                sec_id in full_sec_set
+                or sec.get("status") in {"Closed", "Waitlist"}
+                or (sec.get("seats") is not None and sec["seats"].get("open", 0) <= 0)
+            ):
                 continue
 
             sec_start = sec.get("start", "00:00")
@@ -331,6 +336,14 @@ def solve(
                         "end": sec_choice[idx].get("end", ""),
                         "instructor": sec_choice[idx].get("instructor"),
                         "rating": sec_ratings[idx],
+                        **(
+                            {
+                                "seats": sec_choice[idx]["seats"],
+                                "status": sec_choice[idx].get("status"),
+                            }
+                            if "seats" in sec_choice[idx]
+                            else {}
+                        ),
                     }
                     for idx in range(len(combo))
                 ]

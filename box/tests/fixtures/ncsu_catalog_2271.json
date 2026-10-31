@@ -1,0 +1,2317 @@
+{
+  "source": "ncsu-public-class-search",
+  "term": "2271",
+  "fetched_at": "2026-10-31T16:15:30.456142Z",
+  "sample": false,
+  "courses": [
+    {
+      "code": "CSC 116",
+      "title": "Introduction to Computing - Java",
+      "credits": 3.0,
+      "prereqs": [],
+      "satisfies": [
+        "CSC_CORE"
+      ],
+      "sections": [
+        {
+          "id": "CSC116-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:40",
+          "end": "12:30",
+          "instructor": "Shuyin Jiao",
+          "seats": {
+            "open": 40,
+            "capacity": 40
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "CSC116-003",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "12:50",
+          "end": "14:40",
+          "instructor": "Shuyin Jiao",
+          "seats": {
+            "open": 38,
+            "capacity": 40
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "CSC116-006",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:40",
+          "end": "12:30",
+          "instructor": "Jessica Young Schmidt",
+          "seats": {
+            "open": 39,
+            "capacity": 40
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "CSC116-007",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "12:50",
+          "end": "14:40",
+          "instructor": "Zhijin Yang",
+          "seats": {
+            "open": 38,
+            "capacity": 40
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "CSC116-008",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Md. Jakaria",
+          "seats": {
+            "open": 40,
+            "capacity": 40
+          },
+          "status": "Closed"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "CSC 216",
+      "title": "Software Development Fundamentals",
+      "credits": 3.0,
+      "prereqs": [
+        "CSC 116",
+        "CSC 217"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
+      "sections": [
+        {
+          "id": "CSC216-001",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Sarah Smith Heckman",
+          "seats": {
+            "open": 57,
+            "capacity": 60
+          },
+          "status": "Open"
+        },
+        {
+          "id": "CSC216-002",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Jayalakshmi Chandrika Satyavolu",
+          "seats": {
+            "open": 148,
+            "capacity": 150
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "CSC 226",
+      "title": "Discrete Mathematics",
+      "credits": 3.0,
+      "prereqs": [],
+      "satisfies": [
+        "CSC_CORE"
+      ],
+      "sections": [
+        {
+          "id": "CSC226-001",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Tiffany M. Barnes",
+          "seats": {
+            "open": 122,
+            "capacity": 130
+          },
+          "status": "Open"
+        },
+        {
+          "id": "CSC226-002",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Jessica Young Schmidt",
+          "seats": {
+            "open": 129,
+            "capacity": 130
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "CSC 230",
+      "title": "C and Software Tools",
+      "credits": 3.0,
+      "prereqs": [
+        "CSC 216"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
+      "sections": [
+        {
+          "id": "CSC230-001",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "David Brian Sturgill",
+          "seats": {
+            "open": 77,
+            "capacity": 81
+          },
+          "status": "Open"
+        },
+        {
+          "id": "CSC230-002",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "David Brian Sturgill",
+          "seats": {
+            "open": 41,
+            "capacity": 47
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "CSC 316",
+      "title": "Data Structures and Algorithms",
+      "credits": 3.0,
+      "prereqs": [
+        "CSC 216",
+        "CSC 226",
+        "MA 225"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
+      "sections": [
+        {
+          "id": "CSC316-001",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Jason Tyler King",
+          "seats": {
+            "open": 84,
+            "capacity": 90
+          },
+          "status": "Open"
+        },
+        {
+          "id": "CSC316-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Jason Tyler King",
+          "seats": {
+            "open": 86,
+            "capacity": 90
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": true
+    },
+    {
+      "code": "CSC 246",
+      "title": "Concepts and Facilities of Operating Systems for Computer Scientists",
+      "credits": 3.0,
+      "prereqs": [
+        "CSC 230",
+        "ECE 209"
+      ],
+      "satisfies": [
+        "CSC_CORE"
+      ],
+      "sections": [
+        {
+          "id": "CSC246-001",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Sterling Mcleod",
+          "seats": {
+            "open": 68,
+            "capacity": 70
+          },
+          "status": "Open"
+        },
+        {
+          "id": "CSC246-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Sterling Mcleod",
+          "seats": {
+            "open": 60,
+            "capacity": 60
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": true
+    },
+    {
+      "code": "MA 141",
+      "title": "Calculus I",
+      "credits": 4.0,
+      "prereqs": [
+        "MA 111",
+        "MA 108",
+        "MA 141",
+        "MA 121",
+        "MA 131"
+      ],
+      "satisfies": [
+        "MATH_ELECTIVE"
+      ],
+      "sections": [
+        {
+          "id": "MA141-001",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "David Green",
+          "seats": {
+            "open": 86,
+            "capacity": 88
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA141-002",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "09:35",
+          "end": "10:25",
+          "instructor": "Elizabeth J Dempster",
+          "seats": {
+            "open": 51,
+            "capacity": 63
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA141-003",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Maitreyee Chandramohan Kulkarni",
+          "seats": {
+            "open": 86,
+            "capacity": 88
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA141-004",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "13:55",
+          "end": "14:45",
+          "instructor": "David Green",
+          "seats": {
+            "open": 81,
+            "capacity": 88
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA141-005",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Seoyoung Hu",
+          "seats": {
+            "open": 86,
+            "capacity": 88
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": true
+    },
+    {
+      "code": "MA 241",
+      "title": "Calculus II",
+      "credits": 4.0,
+      "prereqs": [
+        "MA 141",
+        "MA 241",
+        "MA 231"
+      ],
+      "satisfies": [
+        "MATH_ELECTIVE"
+      ],
+      "sections": [
+        {
+          "id": "MA241-001",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Nicklas Charles Day",
+          "seats": {
+            "open": 73,
+            "capacity": 75
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-002",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "09:35",
+          "end": "10:25",
+          "instructor": "Benjamin Erickson",
+          "seats": {
+            "open": 89,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-003",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Lili Yan",
+          "seats": {
+            "open": 85,
+            "capacity": 91
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-004",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "11:45",
+          "end": "12:35",
+          "instructor": "Lili Yan",
+          "seats": {
+            "open": 90,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-005",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "12:50",
+          "end": "13:40",
+          "instructor": "Ala Waddah Amin Alalabi",
+          "seats": {
+            "open": 78,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-006",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Elizabeth J Dempster",
+          "seats": {
+            "open": 86,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-007",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Naihuan Jing",
+          "seats": {
+            "open": 94,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-008",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Elizabeth J Dempster",
+          "seats": {
+            "open": 87,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-010",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "16:30",
+          "end": "17:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 96,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-011",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Naihuan Jing",
+          "seats": {
+            "open": 95,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA241-050",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 50,
+            "capacity": 50
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "MA 242",
+      "title": "Calculus III",
+      "credits": 4.0,
+      "prereqs": [
+        "MA 241"
+      ],
+      "satisfies": [
+        "MATH_ELECTIVE"
+      ],
+      "sections": [
+        {
+          "id": "MA242-001",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Leslie Anne Kurtz",
+          "seats": {
+            "open": 84,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-002",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Leslie Anne Kurtz",
+          "seats": {
+            "open": 85,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-003",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "11:45",
+          "end": "12:35",
+          "instructor": "Anna Rebecca Shapiro",
+          "seats": {
+            "open": 93,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-004",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Yuhao Mu",
+          "seats": {
+            "open": 95,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-005",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Evangelia Ftaka",
+          "seats": {
+            "open": 95,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-006",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Evangelia Ftaka",
+          "seats": {
+            "open": 96,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-007",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Evangelia Ftaka",
+          "seats": {
+            "open": 96,
+            "capacity": 96
+          },
+          "status": "Open"
+        },
+        {
+          "id": "MA242-050",
+          "days": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Stepan Paul",
+          "seats": {
+            "open": 50,
+            "capacity": 50
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "ST 370",
+      "title": "Probability and Statistics for Engineers",
+      "credits": 3.0,
+      "prereqs": [
+        "MA 241"
+      ],
+      "satisfies": [
+        "STATISTICS"
+      ],
+      "sections": [
+        {
+          "id": "ST370-001",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Justin Blaise Post",
+          "seats": {
+            "open": 89,
+            "capacity": 90
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ST370-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Charles Eugene Smith",
+          "seats": {
+            "open": 90,
+            "capacity": 90
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ST370-003",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Arnab Maity",
+          "seats": {
+            "open": 79,
+            "capacity": 90
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ST370-004",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Charles Eugene Smith",
+          "seats": {
+            "open": 86,
+            "capacity": 90
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ST370-005",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Justin Blaise Post",
+          "seats": {
+            "open": 89,
+            "capacity": 90
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ST370-006",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Justin Blaise Post",
+          "seats": {
+            "open": 89,
+            "capacity": 90
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "ENG 101",
+      "title": "Academic Writing and Research",
+      "credits": 4.0,
+      "prereqs": [],
+      "satisfies": [
+        "HUMANITIES"
+      ],
+      "sections": [
+        {
+          "id": "ENG101-001",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "10:20",
+          "instructor": "Laura Anne Waldrep",
+          "seats": {
+            "open": 10,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "08:30",
+          "end": "10:20",
+          "instructor": "Sally Grace Parlier",
+          "seats": {
+            "open": 6,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-003",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-004",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-005",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-006",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-007",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-008",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "09:35",
+          "end": "10:25",
+          "instructor": "Matthew C Porter",
+          "seats": {
+            "open": 18,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-009",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "09:35",
+          "end": "10:25",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-010",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-011",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "09:35",
+          "end": "10:25",
+          "instructor": "Chad Lewis",
+          "seats": {
+            "open": 19,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-012",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:40",
+          "end": "12:30",
+          "instructor": "Laura Anne Waldrep",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Waitlist"
+        },
+        {
+          "id": "ENG101-013",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Matthew C Porter",
+          "seats": {
+            "open": 16,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-014",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:40",
+          "end": "12:30",
+          "instructor": "Sarah Ruiz",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-015",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Tommy Jenkins",
+          "seats": {
+            "open": 17,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-016",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "10:40",
+          "end": "11:30",
+          "instructor": "Chad Lewis",
+          "seats": {
+            "open": 18,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-017",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "11:45",
+          "end": "12:35",
+          "instructor": "Holly Elizabeth Hayes",
+          "seats": {
+            "open": 18,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-018",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-019",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "11:45",
+          "end": "12:35",
+          "instructor": "Ed Reges",
+          "seats": {
+            "open": 14,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-020",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "11:45",
+          "end": "12:35",
+          "instructor": "Chad Lewis",
+          "seats": {
+            "open": 20,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-021",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "12:50",
+          "end": "13:40",
+          "instructor": "Holly Elizabeth Hayes",
+          "seats": {
+            "open": 20,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-022",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "12:50",
+          "end": "13:40",
+          "instructor": "Matthew C Porter",
+          "seats": {
+            "open": 20,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-023",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "12:50",
+          "end": "13:40",
+          "instructor": "Ed Reges",
+          "seats": {
+            "open": 17,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-024",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "13:55",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-025",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "13:55",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-026",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "13:55",
+          "end": "14:45",
+          "instructor": "Ed Reges",
+          "seats": {
+            "open": 12,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-027",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "13:55",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-028",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "12:50",
+          "end": "14:40",
+          "instructor": "Sarah Ruiz",
+          "seats": {
+            "open": 10,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-029",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "12:50",
+          "end": "14:40",
+          "instructor": "Sally Grace Parlier",
+          "seats": {
+            "open": 12,
+            "capacity": 18
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-030",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "12:50",
+          "end": "14:40",
+          "instructor": "Alexandria Crews",
+          "seats": {
+            "open": 15,
+            "capacity": 18
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-031",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Sarah Ruiz",
+          "seats": {
+            "open": 1,
+            "capacity": 18
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-032",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-033",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Sally Grace Parlier",
+          "seats": {
+            "open": 13,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-034",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Alexandria Crews",
+          "seats": {
+            "open": 16,
+            "capacity": 18
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-035",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-036",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-037",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-038",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Alexandria Crews",
+          "seats": {
+            "open": 17,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-039",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-040",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "12:50",
+          "end": "14:40",
+          "instructor": "Laura Anne Waldrep",
+          "seats": {
+            "open": 11,
+            "capacity": 20
+          },
+          "status": "Open"
+        },
+        {
+          "id": "ENG101-041",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-042",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:50",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-043",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-044",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "17:20",
+          "end": "19:10",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-045",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "08:30",
+          "end": "09:20",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-046",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "10:20",
+          "instructor": "Sam Rush",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-047",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:40",
+          "end": "12:30",
+          "instructor": "Rachel Evelyn Douglass",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        },
+        {
+          "id": "ENG101-048",
+          "days": [
+            "Mon",
+            "Tue",
+            "Thu",
+            "Fri"
+          ],
+          "start": "13:55",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 0,
+            "capacity": 20
+          },
+          "status": "Closed"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "PHI 205",
+      "title": "Introduction to Philosophy",
+      "credits": 3.0,
+      "prereqs": [],
+      "satisfies": [
+        "HUMANITIES"
+      ],
+      "sections": [
+        {
+          "id": "PHI205-001",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Eric K Carter",
+          "seats": {
+            "open": 40,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Nicholas Barber",
+          "seats": {
+            "open": 31,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-003",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Nicholas Barber",
+          "seats": {
+            "open": 34,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-004",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Stephen Montague Puryear",
+          "seats": {
+            "open": 43,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-005",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Brandon Kidd",
+          "seats": {
+            "open": 43,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-006",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Ronald P Endicott",
+          "seats": {
+            "open": 43,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-007",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Joseph Krylow",
+          "seats": {
+            "open": 45,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-008",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Joseph Krylow",
+          "seats": {
+            "open": 39,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-009",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Sanem Soyarslan",
+          "seats": {
+            "open": 41,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-010",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Joseph Krylow",
+          "seats": {
+            "open": 44,
+            "capacity": 45
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PHI205-011",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Joseph Krylow",
+          "seats": {
+            "open": 42,
+            "capacity": 45
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "COM 110",
+      "title": "Public Speaking",
+      "credits": 3.0,
+      "prereqs": [],
+      "satisfies": [
+        "HUMANITIES"
+      ],
+      "sections": [
+        {
+          "id": "COM110-001",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 15,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-002",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 22,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-003",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 14,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-004",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 16,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-005",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 21,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-006",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-007",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 16,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-008",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 21,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-009",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 21,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-010",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 22,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-011",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-012",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-013",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-014",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Staff",
+          "seats": {
+            "open": 15,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-015",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Staff",
+          "seats": {
+            "open": 15,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-016",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-017",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 20,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-018",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 15,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-019",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-020",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 17,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-021",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "10:15",
+          "end": "11:30",
+          "instructor": "Staff",
+          "seats": {
+            "open": 18,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-022",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 16,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-023",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 17,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-024",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "11:45",
+          "end": "13:00",
+          "instructor": "Staff",
+          "seats": {
+            "open": 17,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-025",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "08:30",
+          "end": "09:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 21,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-026",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 8,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-027",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 19,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-028",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 20,
+            "capacity": 22
+          },
+          "status": "Open"
+        },
+        {
+          "id": "COM110-029",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Staff",
+          "seats": {
+            "open": 18,
+            "capacity": 22
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    },
+    {
+      "code": "PSY 200",
+      "title": "Introduction to Psychology",
+      "credits": 3.0,
+      "prereqs": [],
+      "satisfies": [
+        "HUMANITIES"
+      ],
+      "sections": [
+        {
+          "id": "PSY200-001",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Michelle Russell",
+          "seats": {
+            "open": 187,
+            "capacity": 200
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PSY200-002",
+          "days": [
+            "Tue",
+            "Thu"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Michelle Russell",
+          "seats": {
+            "open": 194,
+            "capacity": 200
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PSY200-003",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "13:30",
+          "end": "14:45",
+          "instructor": "Staff",
+          "seats": {
+            "open": 195,
+            "capacity": 200
+          },
+          "status": "Open"
+        },
+        {
+          "id": "PSY200-004",
+          "days": [
+            "Mon",
+            "Wed"
+          ],
+          "start": "15:00",
+          "end": "16:15",
+          "instructor": "Staff",
+          "seats": {
+            "open": 192,
+            "capacity": 200
+          },
+          "status": "Open"
+        }
+      ],
+      "prereqs_any": false
+    }
+  ]
+}

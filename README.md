@@ -126,3 +126,59 @@ Run the box and orchestrator suites with the fake backend:
 ```sh
 GEMMA_BACKEND=fake .venv/bin/pytest box/tests orchestrator/tests
 ```
+
+## Registration planner: public NC State schedules
+
+The default `CATALOG_SOURCE=sample` keeps the demo deterministic and offline.
+Set `CATALOG_SOURCE=ncsu` on the box to solve using
+`$DATA_DIR/catalog_ncsu.json`; if that file is absent or contains invalid JSON, the box uses
+the sample catalog and the Plan tab retains its sample-data banner. The sample
+notice above describes the default demo: the saved NC State response fixtures
+and an explicitly refreshed public schedule are real public course data.
+Degree requirements, requirement mappings, and Alex's transcript remain synthetic.
+
+`NCSU_TERM` defaults to `2271` (Spring 2027). To refresh a local box's data directory:
+
+```sh
+PYTHONPATH=box DATA_DIR=/path/to/student-data NCSU_TERM=2271 \
+  .venv/bin/python -m wolfbox.planner.refresh
+```
+
+Use the same `DATA_DIR` as the target box. This command writes an atomic catalog
+snapshot and prints the finished job, including course/section counts, missing
+courses, and errors. Requests use the public
+[NC State Class Search](https://webappprd.acs.ncsu.edu/php/coursecat/index.php),
+a browser User-Agent, five-second HTTP timeouts, and a 250 ms pause between
+courses. No login or new runtime dependency is needed.
+
+Box envelopes (through the existing `/chat` protocol, not new orchestrator routes):
+
+- `{"v":1,"type":"plan_refresh"}` returns `{job_id, status:"running"}` immediately.
+- `{"v":1,"type":"plan_refresh_status","job_id":"c_…"}` returns `{job}` with
+  `status: running|done|error`, term, timestamps, counts, missing courses, and errors.
+- `plan_get` and `plan_solve` include `catalog: {source, term, fetched_at, sample}`.
+  Solved sections additionally carry `seats: {open, capacity}` and
+  `status: Open|Closed|Waitlist`; saved `plan.catalog` records their provenance.
+- `GET /schedules` retains the 15-minute sync entry and adds a `catalog` refresh
+  with cron `0 */6 * * *`. Maritime delivers its `plan_refresh` prompt while away.
+
+The refresh keeps exactly the sample course list and its `satisfies` mappings.
+Missing courses have **no sections**; synthetic sections never enter a live
+snapshot. A request or parse error leaves the previous snapshot intact. Only
+lecture components are used when lectures exist; otherwise timed components are
+accepted. TBA/asynchronous sections and rows with multiple meeting time ranges
+are omitted because the solver supports one time range per section. Closed,
+waitlisted, zero-seat, and reserved sections are excluded (reserved is normalized
+to Closed because eligibility for reserved seats is unknown).
+
+Prerequisites are best-effort course-code extraction from prerequisite text.
+**Shortcut:** OR expressions, including mixed AND/OR, are flattened and any one
+listed course may satisfy them; grades, corequisites, restrictions, and linked
+lab/recitation enrollment are not enforced. Use the official registration system
+to confirm eligibility. Real instructor names use the existing ratings lookup;
+unknown instructors show Unrated. Live RMP requests still require `RMP_LIVE=1`.
+
+The Plan tab shows the live term, snapshot time, and open/capacity counts.
+After a source, term, or snapshot change, saved options are hidden until the
+student solves again. Refreshing is available through envelopes or the command
+above; no refresh button or orchestrator route was added.

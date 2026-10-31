@@ -216,7 +216,12 @@ def test_app_chat_round_trip(tmp_path, monkeypatch):
         assert not chat({"type": "missing"})["ok"]
         assert not chat([])["ok"]
         assert client.get("/schedules").json() == [
-            {"id": "sync", "cron": "*/15 * * * *", "prompt": '{"v":1,"type":"sync"}'}
+            {"id": "sync", "cron": "*/15 * * * *", "prompt": '{"v":1,"type":"sync"}'},
+            {
+                "id": "catalog",
+                "cron": "0 */6 * * *",
+                "prompt": '{"v":1,"type":"plan_refresh"}',
+            },
         ]
 
 
