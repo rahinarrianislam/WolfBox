@@ -349,6 +349,8 @@
     const modalDocSummary = document.getElementById('modal-doc-summary');
     const modalDocContent = document.getElementById('modal-doc-content');
 
+    let editorAssignment = null;
+
     // --- Init ---
     document.addEventListener('DOMContentLoaded', async () => {
       setupTabs();
@@ -424,9 +426,11 @@
         DeskLightHelper.setState('offline');
       }
 
-      // Populate code editor if we don't already have unsubmitted edits or on first load
-      if (state.code && (!codeEditor.value || codeEditor.value.trim() === '')) {
-        codeEditor.value = state.code;
+      // Populate the editor on first load and whenever the assignment changes
+      // (otherwise hw4 code would be submitted into the hw5 workspace).
+      if (state.code !== undefined && (state.assignment !== editorAssignment || !codeEditor.value.trim())) {
+        codeEditor.value = state.code || '';
+        editorAssignment = state.assignment;
       }
 
       // Nudge banner
@@ -588,7 +592,7 @@
         const runRes = await apiFetch(`/api/students/${encodeURIComponent(studentId)}/runs/${encodeURIComponent(runId)}`);
 
         if (!runRes.ok) {
-          if (elapsedSeconds > 35) {
+          if (elapsedSeconds > 75) {
             clearInterval(pollInterval);
             submitCodeBtn.disabled = false;
             runStatusIndicator.textContent = 'Timeout';
@@ -604,11 +608,11 @@
         // Check if finished running tests
         if (run.status !== 'running') {
           // If tests finished, check if hint is also done or still pending
-          if (run.hint_status !== 'pending' || elapsedSeconds >= 40) {
+          if (run.hint_status !== 'pending' || elapsedSeconds >= 75) {
             clearInterval(pollInterval);
             submitCodeBtn.disabled = false;
             runStatusIndicator.className = 'tag';
-            runStatusIndicator.textContent = 'Done';
+            runStatusIndicator.textContent = run.hint_status === 'pending' ? 'Hint timed out' : 'Done';
 
             // Refresh state to update nudge & profile counts
             await loadStudentState(currentAssignment);
