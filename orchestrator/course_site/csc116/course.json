@@ -126,31 +126,6 @@
           "url": "/course/csc116/published/announce-01.md"
         }
       ]
-    },
-    {
-      "id": "hw5",
-      "type": "assignment",
-      "title": "HW5: dictionaries",
-      "version": 1,
-      "published_at": "2026-10-31T10:00:00-04:00",
-      "due": "2026-11-13T23:59:00-05:00",
-      "files": [
-        {
-          "path": "hw5/README.md",
-          "url": "/course/csc116/staged/hw5/README.md",
-          "role": null
-        },
-        {
-          "path": "hw5/hw5.py",
-          "url": "/course/csc116/staged/hw5/hw5.py",
-          "role": "starter"
-        },
-        {
-          "path": "hw5/test_hw5.py",
-          "url": "/course/csc116/staged/hw5/test_hw5.py",
-          "role": "tests"
-        }
-      ]
     }
   ]
 }
