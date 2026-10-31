@@ -103,7 +103,7 @@ The current outline provisions one agent per student, builds or selects the Wolf
 
 ## Delegating to Maritime (OpenClaw → Moodle)
 
-Instructors can delegate Moodle course administration to an autonomous OpenClaw agent running in a Maritime Linux Desktop session. The agent crawls assignments, downloads course attachments, and publishes staged homework items directly to Moodle.
+Instructors can delegate Moodle course administration to an autonomous OpenClaw agent running on Maritime. The agent crawls assignments, downloads course attachments, and publishes staged homework items directly to Moodle.
 
 ### Flow diagram
 
@@ -113,14 +113,14 @@ sequenceDiagram
     actor Instructor as Instructor UI
     participant Orch as Orchestrator API
     participant Agent as MoodleDelegate
-    participant Maritime as Maritime (OpenClaw & Desktop)
+    participant Maritime as Maritime (OpenClaw Agent)
     participant Moodle as Moodle LMS
     participant Box as Student WolfBox
 
     Instructor->>Orch: POST /api/delegate/moodle/list_assignments
     Orch->>Agent: start_task("list_assignments", {course})
     Orch-->>Instructor: 202 Accepted {task_id}
-    Agent->>Maritime: Ensure OpenClaw agent & Linux desktop session
+    Agent->>Maritime: Ensure OpenClaw agent (client.agents)
     Maritime->>Moodle: Browse course & collect resources
     Maritime-->>Agent: Assignments & attachments
     Agent->>Orch: Write course.moodle.json & save attachments
@@ -133,14 +133,26 @@ sequenceDiagram
 
 | Variable | Description |
 | --- | --- |
-| `MARITIME_API_KEY` | Maritime API token for provisioning OpenClaw agents and desktop sessions. |
-| `MOODLE_DELEGATE` | Mode of operation: `fake` (fast, deterministic local simulation) or `real` (live Maritime agent/desktop). Defaults to `fake` if `MARITIME_API_KEY` is not present. |
+| `MARITIME_API_KEY` | Maritime API token for provisioning and interacting with OpenClaw agents. |
+| `MOODLE_DELEGATE` | Mode of operation: `fake` (deterministic local simulation) or `real` (live Maritime OpenClaw agent). Defaults to `real`; without `MARITIME_API_KEY`, real tasks fail closed with a clear configuration error. |
 | `MOODLE_URL` | Base URL of the Moodle LMS. Defaults to `https://school.moodledemo.net`. |
-| `MOODLE_WS_TOKEN` | Optional Moodle web-service REST token (`moodle_mobile_app` service) used as a fast fallback adapter. |
+| `MOODLE_WS_TOKEN` | Optional Moodle web-service REST token (`moodle_mobile_app` service) used for direct REST operations or institutional login. |
 
-### Human-takeover login (Institutional SSO)
+### Desktop attachment limitation & watch/takeover links
 
-When connecting to real institutional Moodle instances (such as university SSO with Duo 2FA), the delegate never stores or requests raw credentials. Instead, the task enters `needs_human` status and provisions a signed Maritime desktop control viewer link (`POST /api/v1/computers/{id}/viewer` with `mode="control"`). The instructor clicks **Take over to log in** on the dashboard, completes SSO in the interactive browser session, and the agent resumes automation.
+Official Maritime SDK inspection reveals that OpenClaw runs in headless agent containers (`client.agents`), distinct from standalone persistent desktop sessions (`client.computers`). There is currently no official bridge connecting an OpenClaw agent container to a Maritime desktop session. As a result, watch and interactive takeover links are omitted (`None`), and task logs explicitly report this architectural limitation.
+
+### Institutional authentication & resume flow
+
+When connecting to institutional Moodle instances (outside the exact demo allowlist `school.moodledemo.net` and `sandbox.moodledemo.net`), tasks require authentication:
+1. If neither `task.ws_token` nor `MOODLE_WS_TOKEN` is present, the task transitions to `needs_human`.
+2. The instructor can resume the task via `POST /api/delegate/tasks/{task_id}/resume` with `{"token": "<token>"}`.
+3. Resuming without a token fails closed with an explicit error detailing that interactive desktop takeover is unsupported without desktop integration.
+
+### Implementation status vs. live validation
+
+- **Implemented & verified in test suite:** Strict Pydantic models with input sanitization, Moodle REST client adapter with authenticated file downloads, deterministic fake simulation mode, exact allowlist hostname enforcement, fail-closed auth and no-key configuration error handling, background worker exception trapping, concrete resume API flow, and stubbed agent interaction tests for `open_course` and `publish_assignment`.
+- **Remaining live validation:** Live OpenClaw browser execution against a real Maritime cluster and live Moodle instance requires an active `MARITIME_API_KEY` and reachable remote infrastructure.
 
 ### Public demo hourly reset caveat
 

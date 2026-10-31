@@ -105,3 +105,18 @@ def get_task(task_id: str, request: Request):
 def list_tasks(request: Request):
     delegate = get_delegate(request)
     return delegate.list_tasks()
+
+class ResumeTaskRequest(BaseModel):
+    token: Optional[str] = None
+
+
+@router.post("/api/delegate/tasks/{task_id}/resume")
+def resume_task(task_id: str, body: ResumeTaskRequest, request: Request):
+    delegate = get_delegate(request)
+    try:
+        task = delegate.resume_task(task_id, body.token)
+        return task
+    except KeyError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))

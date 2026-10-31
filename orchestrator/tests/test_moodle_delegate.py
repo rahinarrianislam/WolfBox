@@ -197,3 +197,258 @@ def test_institutional_credentials_never_used_for_token_login(monkeypatch):
         pytest.fail("institutional credentials sent over network")
     with pytest.raises(ValueError, match="token|takeover"):
         MoodleRest("https://moodle.example.edu", client=httpx.Client(transport=httpx.MockTransport(no_network))).authenticate()
+
+
+def test_no_key_defaults_fail_closed_with_config_error(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.delenv("MARITIME_API_KEY", raising=False)
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+    assert delegate.mode == "real"
+    task_id = delegate.start_task("open_course", {"course": "csc116"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "error"
+    assert any("MARITIME_API_KEY must be configured" in step for step in task["steps"])
+    assert task["result"] is None
+
+
+def test_fake_worker_exception_reaches_error_state(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.setenv("MOODLE_DELEGATE", "fake")
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+
+    def explode(*args, **kwargs):
+        raise RuntimeError("Simulated crash in worker")
+
+    monkeypatch.setattr(delegate, "_run_fake", explode)
+    task_id = delegate.start_task("open_course", {"course": "csc116"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "error"
+    assert any("Simulated crash in worker" in step for step in task["steps"])
+
+
+def test_demo_host_exact_allowlist(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(
+        site_dir=site,
+        moodle_url="https://evil-moodledemo.net",
+        fake_delay=0,
+    )
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+    task_id = delegate.start_task("open_course", {"course": "csc116"})
+    time.sleep(0.05)
+    task = delegate.get_task(task_id)
+    assert task["status"] == "needs_human"
+    assert any("Institutional Moodle requires authentication token" in step for step in task["steps"])
+
+
+def test_desktop_limitation_reported_and_links_omitted(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+    
+    fake_client = ModuleType("fake_maritime")
+    class Agents:
+        def chat(self, agent_id, prompt):
+            return {
+                "response": json.dumps({
+                    "status": "done",
+                    "steps": ["navigated"],
+                    "result": {"moodle_url": "https://school.moodledemo.net/course/view.php?id=12"}
+                })
+            }
+    fake_client.agents = Agents()
+    monkeypatch.setattr(delegate, "_client", fake_client)
+
+    task_id = delegate.start_task("open_course", {"course": "csc116"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "done"
+    assert task["watch_url"] is None
+    assert task["takeover_url"] is None
+    assert any("desktop attachment unsupported" in step for step in task["steps"])
+
+
+def test_real_open_course_calls_agent_and_verifies_url(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+
+    prompts_received = []
+    fake_client = ModuleType("fake_maritime")
+    class Agents:
+        def chat(self, agent_id, prompt):
+            prompts_received.append((agent_id, prompt))
+            return {
+                "response": json.dumps({
+                    "status": "done",
+                    "steps": ["opened course", "verified session"],
+                    "result": {"moodle_url": "https://school.moodledemo.net/course/view.php?id=99"}
+                })
+            }
+    fake_client.agents = Agents()
+    monkeypatch.setattr(delegate, "_client", fake_client)
+
+    task_id = delegate.start_task("open_course", {"course": "csc116"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "done"
+    assert len(prompts_received) == 1
+    assert prompts_received[0][0] == "ag_123"
+    assert "csc116" in prompts_received[0][1]
+    assert task["result"]["moodle_url"] == "https://school.moodledemo.net/course/view.php?id=99"
+
+
+def test_real_publish_assignment_loads_staged_files_and_calls_agent(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+
+    prompts_received = []
+    fake_client = ModuleType("fake_maritime")
+    class Agents:
+        def chat(self, agent_id, prompt):
+            prompts_received.append((agent_id, prompt))
+            return {
+                "response": json.dumps({
+                    "status": "done",
+                    "steps": ["created assignment", "uploaded files", "verified publish"],
+                    "result": {"moodle_url": "https://school.moodledemo.net/mod/assign/view.php?id=123"}
+                })
+            }
+    fake_client.agents = Agents()
+    monkeypatch.setattr(delegate, "_client", fake_client)
+
+    task_id = delegate.start_task("publish_assignment", {"course": "csc116", "item": "hw5"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "done"
+    assert len(prompts_received) == 1
+    prompt = prompts_received[0][1]
+    assert "HW5: dictionaries" in prompt
+    assert "2026-11-13" in prompt
+    assert "hw5.py" in prompt
+    assert "README.md" in prompt
+    assert task["result"]["moodle_url"] == "https://school.moodledemo.net/mod/assign/view.php?id=123"
+
+
+@pytest.mark.parametrize("bad_response,expected_err", [
+    ({"error": "Agent process died"}, "OpenClaw agent error"),
+    ({"response": ""}, "empty response"),
+    ({"response": "not json"}, "Expecting value"),
+    ({"response": json.dumps({"status": "error", "steps": ["login failed"]})}, "Agent did not"),
+    ({"response": json.dumps({"status": "done", "steps": [], "result": {"moodle_url": "https://attacker.com/pwn"}})}, "does not match expected Moodle host"),
+    ({"response": json.dumps({"status": "done", "steps": [], "result": {"moodle_url": "http://insecure.site"}})}, "Expected an HTTPS URL"),
+])
+def test_real_failures_never_become_done(site, monkeypatch, bad_response, expected_err):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+
+    fake_client = ModuleType("fake_maritime")
+    class Agents:
+        def chat(self, agent_id, prompt):
+            return bad_response
+    fake_client.agents = Agents()
+    monkeypatch.setattr(delegate, "_client", fake_client)
+
+    task_id = delegate.start_task("open_course", {"course": "csc116"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "error"
+    assert task["result"] is None
+    assert any(expected_err.lower() in step.lower() for step in task["steps"])
+
+
+def test_real_publish_missing_staged_item_never_done(site, monkeypatch):
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(site_dir=site, fake_delay=0)
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+
+    task_id = delegate.start_task("publish_assignment", {"course": "csc116", "item": "nonexistent_hw"})
+    task = finish(delegate, task_id)
+    assert task["status"] == "error"
+    assert task["result"] is None
+    assert any("not found" in step.lower() for step in task["steps"])
+
+
+def test_institutional_needs_human_and_concrete_resume_flow(site, monkeypatch):
+    import wolfhub.delegate as routes
+    from wolfhub.moodle.agent import MoodleDelegate
+
+    monkeypatch.delenv("MOODLE_DELEGATE", raising=False)
+    monkeypatch.setenv("MARITIME_API_KEY", "dummy-key")
+    delegate = MoodleDelegate(
+        site_dir=site,
+        moodle_url="https://moodle.ncsu.edu",
+        fake_delay=0,
+    )
+    monkeypatch.setattr(delegate, "ensure_agent", lambda: {"id": "ag_123"})
+
+    task_id = delegate.start_task("list_assignments", {"course": "csc116"})
+    time.sleep(0.05)
+    task = delegate.get_task(task_id)
+    assert task["status"] == "needs_human"
+
+    task_no_token = delegate.resume_task(task_id, token=None)
+    assert task_no_token["status"] == "error"
+    assert any("interactive browser takeover is unsupported" in s for s in task_no_token["steps"])
+
+    delegate.tasks[task_id]["status"] = "needs_human"
+
+    def mock_import(self, course, name, site_dir, tid):
+        return {"course": course, "title": "NCSU", "source": "moodle", "sample": False, "items": []}
+    monkeypatch.setattr("wolfhub.moodle.agent.MoodleRest.import_course", mock_import)
+
+    task_resumed = delegate.resume_task(task_id, token="valid-ws-token")
+    task_done = finish(delegate, task_id)
+    assert task_done["status"] == "done"
+
+    app = FastAPI()
+    app.include_router(routes.router)
+    app.state.moodle_delegate = delegate
+    app.dependency_overrides[routes.instructor_only] = lambda: {"user": "instructor"}
+    client = TestClient(app)
+
+    res_404 = client.post("/api/delegate/tasks/missing_task/resume", json={"token": "t"})
+    assert res_404.status_code == 404
+
+    res_400 = client.post(f"/api/delegate/tasks/{task_id}/resume", json={"token": "t"})
+    assert res_400.status_code == 400
+
+
+def test_auth_contract_matches_require_instructor(monkeypatch):
+    import wolfhub.delegate as routes
+
+    auth = ModuleType("wolfhub.auth")
+    def require_instructor(request: Request):
+        if request.headers.get("Authorization") != "Bearer valid-inst":
+            raise HTTPException(403, detail="instructor role required")
+        return {"role": "instructor"}
+
+    auth.require_instructor = require_instructor
+    monkeypatch.setitem(sys.modules, "wolfhub.auth", auth)
+
+    app = FastAPI()
+    app.include_router(routes.router)
+    client = TestClient(app)
+
+    assert client.get("/api/delegate/tasks").status_code == 403
+    assert client.get("/api/delegate/tasks", headers={"Authorization": "Bearer invalid"}).status_code == 403
+    assert client.get("/api/delegate/tasks", headers={"Authorization": "Bearer valid-inst"}).status_code == 200
