@@ -101,6 +101,63 @@ Values shown are defaults where applicable. `.env` is loaded by `scripts/dev.sh`
 
 The current outline provisions one agent per student, builds or selects the WolfBox image, sets `ALLOW_SEED=1`, `GEMINI_API_KEY`, `GEMMA_MODEL`, and a publicly reachable `COURSE_URL`, then records each agent id in the orchestrator registry. Use the `maritime` CLI or Python SDK path described in [IMPLEMENTATION.md §7](IMPLEMENTATION.md#7-maritime-deployment-verify-in-ws0-then-fill-in-the-exact-commands). **Verify every provisioning, custom image, environment, and wake/sleep step per WS0 before relying on it; those provider details are not yet confirmed in this repository.**
 
+## Delegating to Maritime (OpenClaw → Moodle)
+
+Instructors can delegate Moodle course administration to an autonomous OpenClaw agent running on Maritime. The agent crawls assignments, downloads course attachments, and publishes staged homework items directly to Moodle.
+
+### Flow diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Instructor as Instructor UI
+    participant Orch as Orchestrator API
+    participant Agent as MoodleDelegate
+    participant Maritime as Maritime (OpenClaw Agent)
+    participant Moodle as Moodle LMS
+    participant Box as Student WolfBox
+
+    Instructor->>Orch: POST /api/delegate/moodle/list_assignments
+    Orch->>Agent: start_task("list_assignments", {course})
+    Orch-->>Instructor: 202 Accepted {task_id}
+    Agent->>Maritime: Ensure OpenClaw agent (client.agents)
+    Maritime->>Moodle: Browse course & collect resources
+    Maritime-->>Agent: Assignments & attachments
+    Agent->>Orch: Write course.moodle.json & save attachments
+    Instructor->>Orch: GET /api/delegate/tasks/{task_id} (Polls steps)
+    Orch-->>Instructor: status: done, steps: [...]
+    Box->>Orch: Sync course.moodle.json
+```
+
+### Environment variables
+
+| Variable | Description |
+| --- | --- |
+| `MARITIME_API_KEY` | Maritime API token for provisioning and interacting with OpenClaw agents. |
+| `MOODLE_DELEGATE` | Mode of operation: `fake` (deterministic local simulation) or `real` (live Maritime OpenClaw agent). Defaults to `real`; without `MARITIME_API_KEY`, real tasks fail closed with a clear configuration error. |
+| `MOODLE_URL` | Base URL of the Moodle LMS. Defaults to `https://school.moodledemo.net`. |
+| `MOODLE_WS_TOKEN` | Optional Moodle web-service REST token (`moodle_mobile_app` service) used for direct REST operations or institutional login. |
+
+### Desktop attachment limitation & watch/takeover links
+
+Official Maritime SDK inspection reveals that OpenClaw runs in headless agent containers (`client.agents`), distinct from standalone persistent desktop sessions (`client.computers`). There is currently no official bridge connecting an OpenClaw agent container to a Maritime desktop session. As a result, watch and interactive takeover links are omitted (`None`), and task logs explicitly report this architectural limitation.
+
+### Institutional authentication & resume flow
+
+When connecting to institutional Moodle instances (outside the exact demo allowlist `school.moodledemo.net` and `sandbox.moodledemo.net`), tasks require authentication:
+1. If neither `task.ws_token` nor `MOODLE_WS_TOKEN` is present, the task transitions to `needs_human`.
+2. The instructor can resume the task via `POST /api/delegate/tasks/{task_id}/resume` with `{"token": "<token>"}`.
+3. Resuming without a token fails closed with an explicit error detailing that interactive desktop takeover is unsupported without desktop integration.
+
+### Implementation status vs. live validation
+
+- **Implemented & verified in test suite:** Strict Pydantic models with input sanitization, Moodle REST client adapter with authenticated file downloads, deterministic fake simulation mode, exact allowlist hostname enforcement, fail-closed auth and no-key configuration error handling, background worker exception trapping, concrete resume API flow, and stubbed agent interaction tests for `open_course` and `publish_assignment`.
+- **Remaining live validation:** Live OpenClaw browser execution against a real Maritime cluster and live Moodle instance requires an active `MARITIME_API_KEY` and reachable remote infrastructure.
+
+### Public demo hourly reset caveat
+
+The public demo instance (`https://school.moodledemo.net`, Mount Orange) automatically resets its database hourly on the hour (e.g., at :00 UTC). Any assignments published to the demo site will be wiped on the subsequent reset.
+
 ## Demo flow
 
 `python scripts/demo_reset.py` restores the original sample course, resets Alex and Sam, seeds Alex with three weeks of synthetic hw2/hw3 run history, and completes an initial course sync for both students. The intended three-minute walkthrough is:

@@ -97,6 +97,83 @@
       </div>
     </section>
 
+    <!-- Maritime Moodle Delegation Card -->
+    <section class="card" style="border-top: 4px solid #6366f1; margin-bottom: 1.5rem;">
+      <div class="card-header">
+        <h2 class="card-title">🤖 Delegating to Maritime (OpenClaw → Moodle)</h2>
+        <span class="tag" style="background:#e0e7ff; color:#3730a3;">OpenClaw Agent</span>
+      </div>
+      <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">
+        Delegate course operations to an OpenClaw agent running in a Maritime Linux Desktop. Supports live watch sessions, human takeover login for institutional SSO, and sync-compatible course manifests.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+        <!-- Open Moodle via OpenClaw -->
+        <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size: 1rem;">Open Moodle</strong>
+              <span class="tag">Browser View</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
+              Launches OpenClaw in a Maritime Linux Desktop to view the course site and opens the live watch link.
+            </p>
+          </div>
+          <button id="btn-open-moodle" class="btn btn-secondary" style="width: 100%;">
+            Open Moodle via OpenClaw
+          </button>
+        </div>
+
+        <!-- Import assignments from Moodle -->
+        <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size: 1rem;">Import Assignments</strong>
+              <span class="tag y">course.moodle.json</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
+              Crawls Moodle assignments & starter files, producing a WolfBox manifest for boxes to sync seamlessly.
+            </p>
+          </div>
+          <button id="btn-import-moodle" class="btn btn-primary" style="width: 100%;">
+            Import assignments from Moodle
+          </button>
+        </div>
+
+        <!-- Publish hw5 to Moodle -->
+        <div style="background: #fff; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="font-size: 1rem;">Publish HW5 to Moodle</strong>
+              <span class="tag">Create Mod</span>
+            </div>
+            <p class="muted" style="font-size: 0.82rem; margin-top: 0.4rem;">
+              Stages hw5 into Moodle with assignment title, README description, and starter attachments.
+            </p>
+          </div>
+          <button id="btn-publish-moodle-hw5" class="btn btn-success" style="width: 100%;">
+            Publish hw5 to Moodle
+          </button>
+        </div>
+      </div>
+
+      <!-- Task Panel -->
+      <div id="moodle-task-panel" style="margin-top: 1.2rem; display: none; background: #fafafa; border: 1px solid var(--card-border); border-radius: 6px; padding: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+          <div>
+            <strong id="task-panel-title" style="font-size: 0.95rem;">Task Progress</strong>
+            <span id="task-badge" class="tag" style="margin-left: 0.5rem;">queued</span>
+          </div>
+          <div id="task-links" style="display: flex; gap: 0.8rem; align-items: center;">
+            <a id="task-watch-link" href="#" target="_blank" style="display: none; font-size: 0.85rem; color: #4f46e5; font-weight: 600;">👁️ Watch Live Desktop</a>
+            <a id="task-takeover-link" href="#" target="_blank" class="btn btn-danger btn-sm" style="display: none; font-weight: 700; background: var(--red); color: white; padding: 0.35rem 0.75rem; border-radius: 4px; text-decoration: none;">🔑 Take over to log in</a>
+          </div>
+        </div>
+        <ul id="task-steps-list" style="margin: 0; padding-left: 1.2rem; font-family: var(--mono); font-size: 0.8rem; color: #374151; max-height: 150px; overflow-y: auto;">
+        </ul>
+      </div>
+    </section>
+
     <!-- Class-Wide Mistake Heatmap (P2) -->
     <section class="card" style="border-top: 4px solid var(--maroon);">
       <div class="card-header">
@@ -283,6 +360,82 @@
 
       heatmapContent.innerHTML = html;
     }
+
+    // --- Moodle OpenClaw Delegation Controls ---
+    const btnOpenMoodle = document.getElementById('btn-open-moodle');
+    const btnImportMoodle = document.getElementById('btn-import-moodle');
+    const btnPublishMoodleHw5 = document.getElementById('btn-publish-moodle-hw5');
+    const moodleTaskPanel = document.getElementById('moodle-task-panel');
+    const taskBadge = document.getElementById('task-badge');
+    const taskStepsList = document.getElementById('task-steps-list');
+    const taskWatchLink = document.getElementById('task-watch-link');
+    const taskTakeoverLink = document.getElementById('task-takeover-link');
+
+    function getAuthHeaders() {
+      const token = localStorage.getItem('auth_token') || localStorage.getItem('token') || '';
+      return token ? { 'Authorization': `Bearer ${token}` } : {};
+    }
+
+    let pollInterval = null;
+    function startTaskPolling(taskId) {
+      if (pollInterval) clearInterval(pollInterval);
+      moodleTaskPanel.style.display = 'block';
+      taskStepsList.innerHTML = '<li>Starting task...</li>';
+      taskWatchLink.style.display = 'none';
+      taskTakeoverLink.style.display = 'none';
+
+      const poll = async () => {
+        const res = await apiFetch(`/api/delegate/tasks/${taskId}`, { headers: getAuthHeaders() });
+        if (!res.ok) return;
+        const task = res.data;
+        taskBadge.textContent = task.status;
+        taskBadge.className = 'tag ' + (task.status === 'done' ? 'g' : task.status === 'error' ? 'r' : task.status === 'needs_human' ? 'y' : 'm');
+
+        if (task.watch_url) {
+          taskWatchLink.href = task.watch_url;
+          taskWatchLink.style.display = 'inline-block';
+        }
+        if (task.status === 'needs_human' && task.takeover_url) {
+          taskTakeoverLink.href = task.takeover_url;
+          taskTakeoverLink.style.display = 'inline-block';
+        } else {
+          taskTakeoverLink.style.display = 'none';
+        }
+
+        if (task.steps && task.steps.length > 0) {
+          taskStepsList.innerHTML = task.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('');
+          taskStepsList.scrollTop = taskStepsList.scrollHeight;
+        }
+
+        if (task.status === 'done' || task.status === 'error') {
+          clearInterval(pollInterval);
+          pollInterval = null;
+          if (task.status === 'done') {
+            showToast('Moodle task completed successfully!', 'success');
+          } else {
+            showToast('Moodle task failed: ' + (task.steps[task.steps.length - 1] || 'error'), 'error');
+          }
+        }
+      };
+
+      poll();
+      pollInterval = setInterval(poll, 1000);
+    }
+
+    async function triggerMoodleTask(kind, body) {
+      const res = await apiFetch(`/api/delegate/moodle/${kind}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(body)
+      });
+      if (res.ok && res.data && res.data.task_id) {
+        startTaskPolling(res.data.task_id);
+      }
+    }
+
+    if (btnOpenMoodle) btnOpenMoodle.addEventListener('click', () => triggerMoodleTask('open_course', { course: 'csc116' }));
+    if (btnImportMoodle) btnImportMoodle.addEventListener('click', () => triggerMoodleTask('list_assignments', { course: 'csc116' }));
+    if (btnPublishMoodleHw5) btnPublishMoodleHw5.addEventListener('click', () => triggerMoodleTask('publish_assignment', { course: 'csc116', item: 'hw5' }));
   </script>
 </body>
 </html>
