@@ -1,11 +1,32 @@
 import hashlib
+import os
 import shutil
+import time
+from contextvars import ContextVar
 from pathlib import PurePosixPath
 
 from wolfbox import gemma
 from wolfbox.store import now_iso
 
 from .extract import extract_text
+
+
+# Job-wide Gemma budget: a slow model must not keep a sync "running" for minutes.
+_llm_deadline = ContextVar("sync_llm_deadline", default=None)
+
+
+def start_llm_budget():
+    _llm_deadline.set(time.monotonic() + float(os.environ.get("SYNC_LLM_BUDGET", "45")))
+
+
+def _llm(fn, *args):
+    deadline = _llm_deadline.get()
+    if deadline is not None and time.monotonic() > deadline:
+        return None
+    try:
+        return fn(*args)
+    except Exception:
+        return None
 
 
 def process_item(store, course, item, fetcher):
@@ -50,21 +71,15 @@ def process_item(store, course, item, fetcher):
         target.write_bytes(content)
     text = "\n\n".join(texts)
     store.write_text(f"{rel}/text.md", text)
-    try:
-        summary = gemma.summarize_doc(item.get("title", item["id"]), text)
-    except Exception:
-        summary = None
-    try:
-        deadlines = gemma.extract_deadlines(item.get("title", item["id"]), text, item.get("due"))
-    except Exception:
-        deadlines = []
+    title = item.get("title", item["id"])
+    # Most demo-visible first: the "what changed" note, then the summary.
+    change_note = _llm(gemma.change_note, title, previous_text, text) if old else None
+    summary = _llm(gemma.summarize_doc, title, text)
     if item.get("due"):
-        deadlines = [d for d in deadlines if d.get("due") != item["due"]]
-        deadlines.insert(0, {"what": f"{item.get('title', item['id'])} due", "due": item["due"]})
-    try:
-        change_note = gemma.change_note(item.get("title", item["id"]), previous_text, text) if old else None
-    except Exception:
-        change_note = None
+        # The manifest due date wins anyway, so skip the model call.
+        deadlines = [{"what": f"{title} due", "due": item["due"]}]
+    else:
+        deadlines = _llm(gemma.extract_deadlines, title, text, None) or []
 
     workspace = None
     if any(role == "tests" for _, _, role in files):

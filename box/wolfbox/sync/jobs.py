@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from .fetch import fetch
 from .manifest import load_manifest
-from .process import process_item
+from .process import process_item, start_llm_budget
 
 
 def run_sync(store, course_url, fetcher=None, job_id=None):
@@ -12,6 +12,7 @@ def run_sync(store, course_url, fetcher=None, job_id=None):
     started = datetime.now(timezone.utc).isoformat()
     job = {"job_id": job_id or "s_" + uuid.uuid4().hex[:12], "status": "running", "started": started,
            "finished": None, "new": [], "changed": [], "unchanged": 0, "errors": []}
+    start_llm_budget()
     try:
         manifest = load_manifest(course_url, get)
         course = manifest["course"]
